@@ -1,6 +1,8 @@
 # Runtime dependencies
 # Add production dependencies as the platform evolves.
 
+fastapi>=0.115.0
+uvicorn>=0.30.0
 numpy>=2.1.0
 pandas>=2.2.0
 scipy>=1.14.0

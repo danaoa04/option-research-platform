@@ -2,6 +2,7 @@
 
 ## Vision
 
+
 Option Research Platform is a production-ready research and engineering foundation for quantitative options analysis, strategy development, backtesting, and experimentation.
 
 ## Scope
@@ -28,3 +29,13 @@ Use the following workflow to get started:
 1. Create a virtual environment.
 2. Install dependencies with `pip install -r requirements-dev.txt`.
 3. Run `make setup`, `make lint`, `make test`, and `make format`.
+
+## Local Backend Run
+
+Start the FastAPI backend locally with:
+
+```bash
+uvicorn backend.main:app --reload
+```
+
+Then visit `http://127.0.0.1:8000/health` to verify the health endpoint.
