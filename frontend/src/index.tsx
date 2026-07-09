@@ -1,0 +1,2 @@
+// Frontend placeholder entrypoint.
+export {};
