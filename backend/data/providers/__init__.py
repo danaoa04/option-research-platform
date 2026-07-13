@@ -2,6 +2,13 @@
 
 from .base import AbstractDataProvider, ProviderContext
 from .cboe import CboeProvider
+from .config import (
+    ProviderConfigError,
+    ProvidersConfiguration,
+    ProviderSecrets,
+    ProviderSettings,
+    load_providers_configuration,
+)
 from .databento import DatabentoProvider
 from .exceptions import (
     ProviderAlreadyRegisteredError,
@@ -20,6 +27,10 @@ __all__ = [
     "DatabentoProvider",
     "OratsProvider",
     "PolygonProvider",
+    "ProviderConfigError",
+    "ProviderSecrets",
+    "ProviderSettings",
+    "ProvidersConfiguration",
     "ProviderAlreadyRegisteredError",
     "ProviderContext",
     "ProviderError",
@@ -27,4 +38,5 @@ __all__ = [
     "ProviderMetadata",
     "ProviderNotFoundError",
     "ProviderRegistry",
+    "load_providers_configuration",
 ]

@@ -37,10 +37,19 @@ The Database Architecture defines the storage strategy for market data, research
 ## Data Models
 
 - `DatasetRecord`
+- `DatasetManifestRecord`
+- `DatasetLineageRecord`
 - `RunMetadata`
 - `ConfigurationSnapshot`
 - `SimulationArtifact`
 - `ResearchNote`
+
+## Historical Data Metadata Strategy
+
+- Store a deterministic manifest for each ingested dataset version containing provider, dataset version, schema version, symbol scope, date range, checksum, row count, and source metadata.
+- Persist lineage and audit events for imports, transformations, validation outcomes, timestamps, and software version.
+- Redact credential-like fields from persisted lineage metadata and logs.
+- Link data payload records to manifest checksum values to support integrity verification and cache/database consistency checks.
 
 ## Error Handling
 

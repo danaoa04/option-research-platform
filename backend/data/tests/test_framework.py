@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from backend.data.cache.manager import CacheManager
-from backend.data.providers.base import AbstractDataProvider
+from backend.data.providers.base import AbstractDataProvider, ProviderContext
 from backend.data.providers.exceptions import (
     ProviderAlreadyRegisteredError,
     ProviderNotFoundError,
@@ -20,7 +20,7 @@ from backend.data.validation.engine import ValidationEngine
 class DummyProvider(AbstractDataProvider):
     """Simple provider used to exercise the base interface."""
 
-    def fetch(self, symbol: str) -> dict[str, object]:
+    def fetch(self, symbol: str, context: ProviderContext | None = None) -> dict[str, object]:
         return {"provider": "dummy", "symbol": symbol}
 
 

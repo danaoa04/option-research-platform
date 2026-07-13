@@ -12,6 +12,7 @@ dependencies = [
   "numpy>=2.1.0",
   "pandas>=2.2.0",
   "scipy>=1.14.0",
+  "PyYAML>=6.0.2",
 ]
 
 [project.optional-dependencies]
@@ -35,6 +36,7 @@ python = ">=3.14,<4.0"
 numpy = ">=2.1.0"
 pandas = ">=2.2.0"
 scipy = ">=1.14.0"
+PyYAML = ">=6.0.2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.6.0"

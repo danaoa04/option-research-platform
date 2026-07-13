@@ -1,5 +1,5 @@
 """Cache-management package for historical-data framework components."""
 
-from .manager import CacheEntry, CacheManager
+from .manager import CacheCleanupReport, CacheEntry, CacheManager
 
-__all__ = ["CacheEntry", "CacheManager"]
+__all__ = ["CacheCleanupReport", "CacheEntry", "CacheManager"]

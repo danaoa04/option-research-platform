@@ -59,6 +59,21 @@ The first production framework for the historical-data subsystem is now implemen
 - a validation engine that returns structured reports for duplicate, missing, invalid, and malformed records
 - unit tests for provider discovery, provider contracts, caching, and validation workflow
 
+## Sprint 2 Pack 2 Delivered
+
+The Pack 2 historical-data foundation extends the subsystem with offline-safe infrastructure in [backend/data](../backend/data):
+
+- typed provider configuration loader and validation backed by [config/providers.yaml](../config/providers.yaml)
+- reproducible dataset manifests with provider identity, versioning, schema version, symbol scope, date coverage, row counts, and checksums
+- lineage and audit logging models that capture imports, transformations, validation outcomes, timestamps, and software version while redacting secrets
+- provider-neutral download manager framework with retries, exponential backoff, timeout controls, cancellation hooks, and resumable metadata
+- incremental update planning to detect cached date coverage and request only missing ranges
+- cache safety improvements: atomic writes, integrity verification, explicit invalidation, and cleanup of expired/corrupt entries
+- validation policy framework with severity levels, fail-fast or collect-all modes, and structured summaries
+- opt-in benchmark package for provider lookup, manifest serialization, cache read/write, validation throughput, and update planning
+
+No live vendor API calls are performed by these components.
+
 ## Validation Rules
 
 - Timestamps must be monotonic within each symbol series.

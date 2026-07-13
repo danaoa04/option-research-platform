@@ -1,0 +1,70 @@
+providers:
+  orats:
+    enabled: false
+    dataset: options_eod
+    timeout_seconds: 30.0
+    max_retries: 3
+    backoff_seconds: 0.5
+    base_url: https://api.orats.io
+    credentials:
+      api_key_env: ORATS_API_KEY
+
+  databento:
+    enabled: false
+    dataset: opra_pillars
+    timeout_seconds: 30.0
+    max_retries: 3
+    backoff_seconds: 0.5
+    base_url: https://hist.databento.com
+    credentials:
+      api_key_env: DATABENTO_API_KEY
+
+  polygon:
+    enabled: false
+    dataset: options_aggregates
+    timeout_seconds: 30.0
+    max_retries: 3
+    backoff_seconds: 0.5
+    base_url: https://api.polygon.io
+    credentials:
+      api_key_env: POLYGON_API_KEY
+
+  cboe:
+    enabled: false
+    dataset: delayed_quotes
+    timeout_seconds: 30.0
+    max_retries: 3
+    backoff_seconds: 0.5
+    base_url: https://www.cboe.com
+    credentials:
+      username_env: CBOE_USERNAME
+      password_env: CBOE_PASSWORD
+
+  yahoo:
+    enabled: false
+    dataset: options_chain
+    timeout_seconds: 30.0
+    max_retries: 2
+    backoff_seconds: 0.5
+    base_url: https://query1.finance.yahoo.com
+    credentials: {}
+
+  csv:
+    enabled: false
+    dataset: local_import
+    timeout_seconds: 0.0
+    max_retries: 0
+    backoff_seconds: 0.0
+    base_url: file://local
+    credentials: {}
+
+future_providers:
+  template:
+    enabled: false
+    dataset: your_dataset_name
+    timeout_seconds: 30.0
+    max_retries: 3
+    backoff_seconds: 0.5
+    base_url: https://example.com
+    credentials:
+      api_key_env: YOUR_PROVIDER_API_KEY
