@@ -17,3 +17,6 @@ All notable changes to this project will be documented in this file.
 - Enhanced validation engine with severity levels, policy controls, and structured summaries.
 - Added opt-in benchmark framework for historical-data foundation components.
 - Added comprehensive offline unit tests for Pack 2 capabilities.
+- Added a production-quality database foundation package in `backend/database` with SQLAlchemy 2.x configuration, engine/session management, typed models, repositories, and migration scaffolding.
+- Added an initial schema migration and deterministic offline database tests for constraints, relationships, rollback safety, duplicate handling, and nullable vendor data behavior.
+- Updated environment examples and documentation for Sprint 3 historical options database foundation.

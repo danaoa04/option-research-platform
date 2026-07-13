@@ -33,6 +33,11 @@ The Database Architecture defines the storage strategy for market data, research
 - `save_run_metadata(run_id, metadata)`
 - `load_run_results(run_id)`
 - `list_available_snapshots()`
+- `batch_upsert_contracts(records)`
+- `batch_upsert_quotes(records)`
+- `query_quotes(contract_id, start_ts, end_ts)`
+- `batch_upsert_manifests(records)`
+- `insert_lineage(records)`
 
 ## Data Models
 
@@ -43,6 +48,16 @@ The Database Architecture defines the storage strategy for market data, research
 - `ConfigurationSnapshot`
 - `SimulationArtifact`
 - `ResearchNote`
+
+## Sprint 3A Implementation
+
+Implemented in `backend/database`:
+
+- SQLAlchemy 2.x typed models for providers, manifests, underlyings, exchanges/calendars, option contracts/quotes, underlying prices, dividends, earnings events, corporate actions, rate curves, and lineage records.
+- Engine/session management for SQLite and PostgreSQL-ready URLs via environment configuration.
+- Repository layer supporting batch insertion/upsert, lookups, and date-range query patterns.
+- Alembic migration scaffolding with an initial schema migration.
+- Deterministic offline tests for schema, constraints, relationships, rollback behavior, duplicate handling, and nullable vendor data.
 
 ## Historical Data Metadata Strategy
 

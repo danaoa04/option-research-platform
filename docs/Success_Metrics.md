@@ -13,6 +13,9 @@ Success for the platform will be measured through engineering quality, research 
 - Cache integrity verification detects corruption and supports safe cleanup/invalidation without data races.
 - Validation reports expose severity-level summaries and policy-driven fail-fast/collect-all behavior.
 - Benchmark suite remains opt-in and does not impact default lint or test runtime.
+- Database schema creation and migration tests run fully offline and deterministically in CI.
+- Repository upsert and date-range query paths handle duplicates safely and preserve nullable vendor fields.
+- Transaction rollback tests prove failed writes do not leave partial committed state.
 - High coverage of validation scenarios for Greeks, pricing, assignment, margin, and execution.
 - Clear and timely support for new data providers and strategies through the plugin architecture.
 - Strong usability of the GUI for strategy construction, execution modeling, and result exploration.
