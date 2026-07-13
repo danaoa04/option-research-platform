@@ -7,7 +7,7 @@ name = "option-research-platform"
 version = "0.1.0"
 description = "A research-first platform for quantitative options analysis"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
   "numpy>=2.1.0",
   "pandas>=2.2.0",
@@ -31,7 +31,7 @@ description = "A research-first platform for quantitative options analysis"
 authors = ["Your Team <team@example.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.13,<4.0"
+python = ">=3.14,<4.0"
 numpy = ">=2.1.0"
 pandas = ">=2.2.0"
 scipy = ">=1.14.0"
@@ -53,17 +53,17 @@ include = ["backend*"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py313"
+target-version = "py314"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP"]
 
 [tool.black]
 line-length = 100
-target-version = ["py313"]
+target-version = ["py314"]
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 warn_return_any = true
 warn_unused_configs = true
 

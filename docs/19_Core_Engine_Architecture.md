@@ -89,6 +89,11 @@ Provide normalized historical market data for options, equities, corporate actio
 - Validation engine
 - Configuration service
 
+#### Sprint 2 implementation status
+- Provider abstraction and registry are implemented under [backend/data/providers](../backend/data/providers).
+- Placeholder providers for ORATS, Databento, Polygon, and CBOE are scaffolded and raise a documented NotImplementedError for vendor-specific work.
+- The cache manager and validation engine provide a production-ready foundation for future ingestion and normalization layers.
+
 #### Error handling
 - Missing or partial data should be marked with explicit quality flags.
 - Data gaps should be surfaced without silently filling them.

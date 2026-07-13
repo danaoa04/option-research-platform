@@ -49,6 +49,16 @@ The Historical Data Engine provides a normalized, reproducible, and versioned vi
 - Provider failures should be wrapped with contextual diagnostics.
 - Partial or inconsistent data should be quarantined and surfaced rather than silently accepted.
 
+## Sprint 2 Foundation Delivered
+
+The first production framework for the historical-data subsystem is now implemented in [backend/data](../backend/data):
+
+- provider interfaces, registry, metadata, and custom exceptions
+- placeholder providers for ORATS, Databento, Polygon, and CBOE
+- a filesystem-backed cache manager with metadata, versioning, expiry, and integrity hashes
+- a validation engine that returns structured reports for duplicate, missing, invalid, and malformed records
+- unit tests for provider discovery, provider contracts, caching, and validation workflow
+
 ## Validation Rules
 
 - Timestamps must be monotonic within each symbol series.
