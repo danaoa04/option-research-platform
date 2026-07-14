@@ -51,7 +51,7 @@ Implemented provider-neutral pricing framework in `backend/pricing` with:
 
 The pricing framework is now extended by a provider-neutral Greeks subsystem in `backend/greeks` with analytic Black-Scholes Greeks, finite-difference verification, batch processing, and portfolio/multi-leg aggregation.
 
-See [Greeks Engine](./27_Greeks_Engine.md).
+See [Greeks Engine](./33_Greeks_Engine.md).
 
 ## Sprint 4C Extension
 

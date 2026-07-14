@@ -4,9 +4,29 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date
+from enum import StrEnum
 from typing import Any
 
 from backend.pricing.models import ExerciseStyle, OptionType, PricingModelName
+
+
+class GreekWarningCode(StrEnum):
+    NUMERICAL_INSTABILITY = "numerical_instability"
+    DEGENERATE_INPUT = "degenerate_input"
+    UNSUPPORTED_VERIFICATION = "unsupported_verification"
+
+
+class GreekWarningSeverity(StrEnum):
+    INFO = "info"
+    WARNING = "warning"
+
+
+@dataclass(slots=True, frozen=True)
+class GreekWarning:
+    code: GreekWarningCode
+    message: str
+    severity: GreekWarningSeverity
+    greek: str | None = None
 
 
 @dataclass(slots=True, frozen=True)
@@ -39,7 +59,7 @@ class GreeksResult:
     ultima: float
     time_to_expiry: float
     calculation_metadata: dict[str, Any] = field(default_factory=dict)
-    warnings: list[str] = field(default_factory=list)
+    warnings: list[GreekWarning] = field(default_factory=list)
 
 
 @dataclass(slots=True, frozen=True)
@@ -56,6 +76,7 @@ class FiniteDifferenceComparison:
     finite_difference: float
     absolute_error: float
     relative_error: float
+    stable: bool
 
 
 @dataclass(slots=True, frozen=True)
@@ -67,6 +88,7 @@ class FiniteDifferenceVerificationResult:
     rho: FiniteDifferenceComparison
     vanna: FiniteDifferenceComparison
     vomma: FiniteDifferenceComparison
+    warnings: list[GreekWarning] = field(default_factory=list)
 
 
 @dataclass(slots=True, frozen=True)

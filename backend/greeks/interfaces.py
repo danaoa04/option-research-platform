@@ -18,3 +18,10 @@ class GreeksModel(ABC):
     @abstractmethod
     def calculate(self, request: GreeksRequest) -> GreeksResult:
         """Calculate Greeks for a single request."""
+
+    def calculate_batch(self, requests: list[GreeksRequest]) -> list[GreeksResult]:
+        """Calculate Greeks for multiple requests.
+
+        Default behavior falls back to single-request evaluation.
+        """
+        return [self.calculate(request) for request in requests]

@@ -36,6 +36,10 @@ All notable changes to this project will be documented in this file.
 - Added Sprint 4C provider-neutral implied-volatility engine in `backend/implied_volatility` with Newton-Raphson solving, bisection fallback, and Brent solver interface support.
 - Added convergence detection and configurable failure handling, plus smile/term-structure/surface interpolation and a volatility cube framework.
 - Added historical IV storage hooks, validation rules, deterministic unit tests, and implied-volatility documentation updates.
+- Extended Sprint 4B Greeks engine with structured warning contracts for numerical instability, degenerate inputs, and unsupported finite-difference verification dimensions.
+- Added vectorized Black-Scholes batch Greeks calculation path with deterministic outputs and benchmark hook support.
+- Expanded Greeks test coverage for published reference values, put-call sensitivity relationships, long/short and multiplier scaling, edge-case warnings, and deterministic batch behavior.
+- Added Sprint 4 checklist and official Greeks documentation update in `docs/33_Greeks_Engine.md`.
 - Added official frontend architecture foundation with feature-based module structure and plugin-ready registry contracts under `frontend/src`.
 - Added typed frontend API boundary contracts and placeholder client methods for health, pricing, Greeks, volatility surfaces, term structures, strategy definitions, backtest jobs, optimization jobs, and research results.
 - Added frontend UX/workspace architecture documentation, plugin architecture documentation, and Tauri-first desktop packaging decision (no Electron).

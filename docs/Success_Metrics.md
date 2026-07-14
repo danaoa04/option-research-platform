@@ -39,3 +39,7 @@ Success for the platform will be measured through engineering quality, research 
 - Typed frontend API contracts remain versionable and validated before UI rendering.
 - Browser and Tauri desktop builds share a single frontend codebase without Electron dependencies.
 - Workspace usability targets are met for saved layouts, keyboard shortcuts, guided setup, accessibility, and reversible strategy configuration.
+- Greeks outputs (first-order and higher-order) are deterministic for identical inputs across single, batch, and portfolio calculations.
+- Finite-difference verification keeps primary and selected higher-order Greeks within declared relative-error stability tolerances.
+- Portfolio aggregation preserves expected sign behavior for long/short quantity and contract multiplier scaling.
+- Structured warnings reliably flag degenerate inputs, near-expiry numerical instability, and unsupported verification dimensions.

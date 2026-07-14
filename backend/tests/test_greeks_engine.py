@@ -1,15 +1,19 @@
 from __future__ import annotations
 
+import math
 from datetime import date
 
 import pytest
 
 from backend.greeks import (
+    FiniteDifferenceConfig,
     GreeksEngine,
     GreeksNotImplementedError,
     GreeksRequest,
     GreeksValidationError,
+    GreekWarningCode,
     PositionLeg,
+    benchmark_batch_runtime,
 )
 from backend.pricing.models import ExerciseStyle, OptionType, PricingModelName
 
@@ -65,6 +69,9 @@ def test_finite_difference_verification_matches_primary_analytics() -> None:
     assert verification.theta.absolute_error < 2e-3
     assert verification.vanna.absolute_error < 5e-2
     assert verification.vomma.absolute_error < 2e-1
+    assert verification.delta.stable
+    assert verification.gamma.stable
+    assert verification.vega.stable
 
 
 def test_batch_calculation_returns_one_result_per_request() -> None:
@@ -122,3 +129,98 @@ def test_only_black_scholes_model_is_currently_supported() -> None:
 
     with pytest.raises(GreeksNotImplementedError):
         engine.calculate(_request(), model_name=PricingModelName.BLACK_76)
+
+
+def test_reference_values_match_published_black_scholes_benchmarks() -> None:
+    engine = GreeksEngine()
+    result = engine.calculate(_request(option_type=OptionType.CALL))
+
+    assert result.delta == pytest.approx(0.6368, rel=2e-3)
+    assert result.gamma == pytest.approx(0.0188, rel=3e-3)
+    assert result.vega == pytest.approx(37.5240, rel=2e-3)
+    assert result.rho == pytest.approx(53.2325, rel=2e-3)
+    assert result.theta == pytest.approx(-0.0176, rel=3e-2)
+
+
+def test_put_call_delta_relationship_with_dividend_yield() -> None:
+    engine = GreeksEngine()
+    call_request = _request(option_type=OptionType.CALL, dividend_yield=0.02)
+    put_request = _request(option_type=OptionType.PUT, dividend_yield=0.02)
+    call = engine.calculate(call_request)
+    put = engine.calculate(put_request)
+
+    time_to_expiry = call.time_to_expiry
+    expected = pytest.approx(
+        call_request.multiplier * math.exp(-call_request.dividend_yield * time_to_expiry),
+        rel=1e-6,
+    )
+    assert (call.delta - put.delta) == expected
+
+
+def test_short_positions_and_multiplier_are_applied_consistently() -> None:
+    engine = GreeksEngine()
+    base = engine.calculate(_request(multiplier=100.0))
+    short_leg = engine.calculate_portfolio(
+        [
+            PositionLeg(
+                request=_request(multiplier=100.0),
+                quantity=-2.0,
+            )
+        ]
+    )
+
+    assert short_leg.total.delta == pytest.approx(-2.0 * base.delta)
+    assert short_leg.total.gamma == pytest.approx(-2.0 * base.gamma)
+    assert short_leg.total.vega == pytest.approx(-2.0 * base.vega)
+
+
+def test_expired_and_zero_volatility_behaviors() -> None:
+    engine = GreeksEngine()
+
+    with pytest.raises(GreeksValidationError, match="negative expiry"):
+        engine.calculate(_request(expiry=date(2025, 12, 31)))
+
+    zero_vol = engine.calculate(_request(volatility=0.0))
+    assert zero_vol.delta == 0.0
+    assert any(w.code == GreekWarningCode.DEGENERATE_INPUT for w in zero_vol.warnings)
+
+
+def test_near_zero_time_to_expiry_emits_stability_warning() -> None:
+    engine = GreeksEngine()
+    near_expiry = _request(expiry=date(2026, 1, 2), valuation_date=date(2026, 1, 1))
+    result = engine.calculate(near_expiry)
+
+    assert any(w.code == GreekWarningCode.NUMERICAL_INSTABILITY for w in result.warnings)
+
+
+def test_finite_difference_config_validation_and_warning_contract() -> None:
+    engine = GreeksEngine()
+
+    with pytest.raises(GreeksValidationError, match="bumps must be positive"):
+        engine.finite_difference_verify(_request(), FiniteDifferenceConfig(spot_bump=0.0))
+
+    verification = engine.finite_difference_verify(_request())
+    warning_codes = {w.code for w in verification.warnings}
+    assert GreekWarningCode.UNSUPPORTED_VERIFICATION in warning_codes
+
+
+def test_batch_calculation_is_deterministic_for_same_inputs() -> None:
+    engine = GreeksEngine()
+    requests = [
+        _request(option_type=OptionType.CALL, strike=95.0),
+        _request(option_type=OptionType.PUT, strike=105.0),
+        _request(option_type=OptionType.CALL, volatility=0.3),
+    ]
+
+    first = engine.calculate_batch(requests)
+    second = engine.calculate_batch(requests)
+    assert first == second
+
+
+def test_greeks_batch_benchmark_hook_runs() -> None:
+    requests = [_request(strike=90.0), _request(strike=100.0), _request(strike=110.0)]
+    result = benchmark_batch_runtime(requests, iterations=5)
+
+    assert result.name == "greeks_batch_runtime"
+    assert result.request_count == 3
+    assert result.elapsed_seconds >= 0.0

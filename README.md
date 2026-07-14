@@ -41,3 +41,12 @@ The repository includes a production-oriented database foundation in `backend/da
 - Alembic migration scaffolding with an initial schema migration.
 - corporate-action reproducibility services with announcement-aware no-look-ahead policies.
 - immutable dataset snapshot and audit services for deterministic research lineage.
+
+## Pricing and Greeks Foundation
+
+The repository includes provider-neutral quantitative foundations for pricing and sensitivities:
+
+- Pricing engine in backend/pricing with typed contracts and Black-Scholes implementation.
+- Greeks engine in backend/greeks with first-order and higher-order Black-Scholes Greeks.
+- Finite-difference verification utilities with configurable bumps and stability diagnostics.
+- Batch and portfolio aggregation workflows supporting long/short multi-leg positions.
