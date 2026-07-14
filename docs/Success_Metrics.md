@@ -22,6 +22,13 @@ Success for the platform will be measured through engineering quality, research 
 - Announcement-aware and effective-date knowledge policies are both tested to prevent forward-looking leakage.
 - Immutable dataset snapshots can be verified and compared deterministically across runs.
 - Audit events provide traceable lineage for snapshot creation and checksum-validation outcomes.
+- Volatility term-structure outputs (classification, slope, curvature, forward-IV, and front/back metrics) are deterministic for identical snapshot/config inputs.
+- Term-structure research features explicitly report that contango/backwardation are filters, not guaranteed profit signals.
+- Multi-expiry spread research supports calendar, diagonal, double-calendar, and double-diagonal structures with call/put comparisons.
+- Entry/exit filters are fully auditable and reproducible with no-look-ahead-safe as-of alignment.
+- Historical and model-estimated probability outputs include calibration diagnostics and out-of-sample reporting.
+- Walk-forward and regime analysis reports remain leakage-free and reproducible under fixed seeds/configuration.
+- Volatility-spread simulations include realistic bid/ask, slippage, commission, and liquidity assumptions.
 - Validation failures are surfaced before persistence for crossed markets, invalid strikes/timestamps, and manifest-contract mismatches.
 - High coverage of validation scenarios for Greeks, pricing, assignment, margin, and execution.
 - Clear and timely support for new data providers and strategies through the plugin architecture.

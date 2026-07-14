@@ -20,3 +20,9 @@ The product backlog is organized into epics that reflect the agreed scope of the
    - Dashboard, strategy builder, backtest runner, results explorer, portfolio analysis, watchlists, dark mode, and custom layouts.
 7. Collaboration and extensibility
    - Research workspace, AI assistant, plugins, export capabilities, and reproducibility.
+8. Volatility term structure and spread optimisation (future)
+   - Implement the Volatility Term Structure and Spread Optimisation Engine after historical database, pricing engine, and Greeks engine core completion.
+   - Build historical IV and volatility services, term-structure builder/classifier, forward-IV, and surface/skew analytics.
+   - Support calendar/diagonal/double-calendar/double-diagonal spread analysis with call/put comparisons and ATM/OTM/delta strike selection.
+   - Add entry/exit filter framework, probability engines, parameter optimizer, walk-forward validator, out-of-sample testing, and regime analysis.
+   - Enforce no-look-ahead safeguards and realistic bid/ask, slippage, commission, and liquidity modelling.

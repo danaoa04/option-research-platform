@@ -10,6 +10,7 @@ The Simulation Engine runs historical and scenario-based simulations for strateg
 - Support deterministic and stochastic simulation modes.
 - Generate trade logs, equity curves, and performance summaries.
 - Coordinate with execution, portfolio, analytics, and optimization engines.
+- Support planned volatility term-structure spread research with realistic execution assumptions.
 
 ## Inputs
 
@@ -51,6 +52,17 @@ The Simulation Engine runs historical and scenario-based simulations for strateg
 - Inputs must be compatible with the selected simulation mode.
 - Results must preserve reproducibility metadata.
 - Scenario and backtest outputs must remain consistent with configured assumptions.
+- Simulation paths used for volatility-spread research must enforce no-look-ahead feature alignment.
+- Execution assumptions must include realistic bid/ask, slippage, commissions, and liquidity constraints.
+
+## Planned Integration: Volatility Term Structure and Spread Optimisation Engine
+
+- Consume entry filters based on contango/backwardation, IV rank/percentile, realised/historical volatility, skew, and earnings/event timing.
+- Evaluate exits based on profit target, loss limit, DTE, delta, IV change, term-structure normalization, and event timing.
+- Support calendar, diagonal, double-calendar, and double-diagonal spread simulation paths.
+- Support walk-forward and out-of-sample validation schedules produced by optimization workflows.
+
+This integration is future roadmap scope and not implemented in Sprint 3C.
 
 ## Performance Targets
 

@@ -44,7 +44,8 @@
 - [x] Deterministic offline Sprint 3C tests
 - [x] Lint passing
 - [x] Tests passing
+- [x] Planned Volatility Term Structure and Spread Optimisation Engine documentation and architecture updates (no Sprint 3C implementation)
 
 ## Notes
 
-Sprint 3A through 3C now deliver the database foundation, ingestion/query services, and corporate-action reproducibility primitives with strict as-of semantics and no live vendor API dependencies.
+Sprint 3A through 3C now deliver the database foundation, ingestion/query services, and corporate-action reproducibility primitives with strict as-of semantics and no live vendor API dependencies. Volatility term-structure and spread optimization capabilities are documented for a future phase after historical database, pricing engine, and Greeks engine completion.

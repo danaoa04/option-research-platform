@@ -28,3 +28,11 @@ All notable changes to this project will be documented in this file.
 - Added Sprint 3C corporate-action processing services with effective-date and announcement-aware knowledge policies, adjustment warnings, and adjusted underlying/contract view persistence.
 - Added Sprint 3C snapshot services for create/get/verify/compare workflows and immutable mutation rejection.
 - Added Sprint 3C audit event services and deterministic offline tests covering split handling, no-look-ahead policy behavior, snapshot integrity, and audit lineage.
+- Added a documentation-only roadmap subsystem for a Volatility Term Structure and Spread Optimisation Engine, including planned interfaces, acceptance criteria, no-look-ahead rules, validation requirements, and architecture diagrams.
+- Updated product, design, architecture, pricing, simulation, backlog, success metrics, and Sprint 3 checklist docs to include future volatility term-structure and multi-expiry spread optimization scope.
+- Added Sprint 4B provider-neutral Greeks engine in `backend/greeks` with analytic Black-Scholes support for Delta, Gamma, Theta, Vega, Rho, Vanna, Vomma, Charm, Color, Speed, Zomma, and Ultima.
+- Added finite-difference verification utilities, batch calculations, and portfolio/multi-leg Greeks aggregation.
+- Added deterministic unit tests and Greeks engine documentation updates.
+- Added Sprint 4C provider-neutral implied-volatility engine in `backend/implied_volatility` with Newton-Raphson solving, bisection fallback, and Brent solver interface support.
+- Added convergence detection and configurable failure handling, plus smile/term-structure/surface interpolation and a volatility cube framework.
+- Added historical IV storage hooks, validation rules, deterministic unit tests, and implied-volatility documentation updates.

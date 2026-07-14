@@ -35,6 +35,31 @@ This specification defines the major software subsystems, interfaces, and qualit
 - Replay engine, IV surface and term structure analysis, Greeks, volatility, correlation, beta, and liquidity tools.
 - Optimization and simulation workflows including grid search, random search, walk-forward testing, and Monte Carlo analysis.
 
+### 7. Planned Volatility Term Structure and Spread Optimisation Engine
+
+- Documentation and architecture scope only for Sprint 3C; implementation is deferred.
+- Planned components:
+	- VolatilityObservation model
+	- RealisedVolatilityCalculator
+	- HistoricalVolatilityService
+	- TermStructureBuilder
+	- ForwardVolatilityCalculator
+	- TermStructureClassifier
+	- VolatilitySurfaceBuilder
+	- EarningsTermStructureAnalyzer
+	- MultiExpirySpreadAnalyzer
+	- HistoricalProbabilityEngine
+	- ModelProbabilityEngine
+	- SpreadParameterOptimizer
+	- WalkForwardValidator
+	- VolatilityRegimeAnalyzer
+- Planned support:
+	- Historical IV and volatility windows, term-structure metrics, forward-IV, skew/surface analytics.
+	- Multi-expiry spread evaluation with entry/exit filters and PoP/EV/risk-adjusted scoring.
+	- Walk-forward and out-of-sample validation with strict no-look-ahead protections.
+
+Contango and backwardation classifications are research features and filter inputs, not profit guarantees.
+
 ### 5. Presentation and Collaboration Layer
 
 - Modern GUI with dashboards, strategy builder, backtest runner, results explorer, option chain explorer, portfolio analysis, watchlists, saved research, and dark mode.
@@ -49,3 +74,19 @@ This specification defines the major software subsystems, interfaces, and qualit
 
 - Clear service boundaries between data ingestion, calculations, orchestration, and presentation.
 - API and plugin contracts for providers, brokers, indicators, pricing models, risk models, and reports.
+
+### Planned Public Interfaces for Volatility Term Structure Engine
+
+- `get_volatility_observations(symbol, start_ts, end_ts, strikes, tenors)`
+- `compute_realised_volatility(symbol, window, sampling, as_of)`
+- `compute_historical_volatility(symbol, window, sampling, as_of)`
+- `build_term_structure(symbol, as_of, strike_selector, tenor_set)`
+- `compute_forward_implied_volatility(symbol, near_tenor, far_tenor, as_of)`
+- `classify_term_structure(term_structure, thresholds)`
+- `build_volatility_surface(symbol, as_of, interpolation_config)`
+- `analyze_multi_expiry_spreads(symbol, config, as_of)`
+- `estimate_historical_pop(strategy_spec, history_window, as_of)`
+- `estimate_model_pop(strategy_spec, model_config, as_of)`
+- `optimize_spread_parameters(search_space, objective, constraints)`
+- `run_walk_forward_validation(strategy_spec, train_test_schedule)`
+- `analyze_volatility_regimes(symbols, features, schedule)`

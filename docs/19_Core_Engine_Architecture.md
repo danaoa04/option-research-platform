@@ -25,6 +25,7 @@ flowchart LR
     EE[Execution Engine]
     PTE[Portfolio Engine]
     SE[Simulation Engine]
+    VTSE[Volatility Term Structure and Spread Optimisation Engine]
     AE[Analytics Engine]
     OE[Optimization Engine]
     ARE[AI Research Engine]
@@ -35,6 +36,10 @@ flowchart LR
     PE --> EE
     EE --> PTE
     PTE --> SE
+    PE --> VTSE
+    GE --> VTSE
+    HDE --> VTSE
+    VTSE --> SE
     SE --> AE
     AE --> OE
     ARE --> AE
@@ -235,6 +240,8 @@ Price options and related instruments under a variety of market assumptions and 
 #### Purpose
 Compute option Greeks and related sensitivities for risk analysis and strategy evaluation.
 
+Implementation details are documented in [Greeks Engine](./27_Greeks_Engine.md).
+
 #### Responsibilities
 - Calculate delta, gamma, vega, theta, rho, and related measures.
 - Support scenario-based sensitivity analysis.
@@ -283,6 +290,38 @@ Compute option Greeks and related sensitivities for risk analysis and strategy e
 - Portfolio aggregation tests.
 - Numerical consistency tests versus pricing outputs.
 - Edge-case tests for near-expiry and deep ITM/OTM scenarios.
+
+---
+
+### Planned Engine: Volatility Term Structure and Spread Optimisation Engine
+
+#### Purpose
+Provide a research-focused subsystem for volatility term-structure analytics, multi-expiry spread evaluation, and parameter optimization under realistic and bias-safe assumptions.
+
+#### Scope note
+Sprint 3C contains documentation and architecture planning only. Production implementation is deferred.
+
+#### Planned responsibilities
+- Build historical volatility observations by symbol, strike, tenor, and timestamp.
+- Compute realised and historical volatility windows.
+- Build and classify implied-volatility term structures including contango/backwardation, slope, curvature, and front/back relationships.
+- Compute forward implied volatility and construct volatility surfaces/skew analytics.
+- Run earnings-aware and event-aware term-structure analysis.
+- Analyze calendar/diagonal/double-calendar/double-diagonal structures and related multi-expiry spreads.
+- Estimate historical and model-based probability of profit, expected value, and risk-adjusted performance.
+- Perform parameter optimization with walk-forward and out-of-sample validation.
+- Run volatility regime analysis and integrate findings into simulation research workflows.
+
+#### Planned no-look-ahead controls
+- Features must only use records at or before decision timestamp.
+- Event-aware logic must use announcement timestamps.
+- Walk-forward must separate train and validation windows.
+- Optimization must not access out-of-sample windows during search.
+
+Contango and backwardation are research features and entry filters, not guaranteed profit signals.
+
+#### Roadmap dependency
+Planned after completion of the historical database foundation, pricing engine core, and Greeks engine core.
 
 ---
 
