@@ -1,5 +1,6 @@
 """Provider-neutral option pricing framework."""
 
+from .early_exercise import EarlyExerciseAdvisory, EarlyExerciseAnalyzer, EarlyExerciseSignal
 from .engine import PricingEngine
 from .exceptions import (
     PricingError,
@@ -8,18 +9,43 @@ from .exceptions import (
     UnsupportedOptionStyleError,
     UnsupportedPricingModelError,
 )
-from .models import ExerciseStyle, OptionType, PricingModelName, PricingRequest, PricingResult
+from .models import (
+    Currency,
+    DiscreteDividend,
+    DividendTreatment,
+    DividendType,
+    ExerciseStyle,
+    ModelCapabilities,
+    OptionType,
+    PricingModelName,
+    PricingRequest,
+    PricingResult,
+    PricingRoutingDecision,
+    SettlementType,
+    UnderlyingType,
+)
 
 __all__ = [
     "PricingEngine",
+    "EarlyExerciseAdvisory",
+    "EarlyExerciseAnalyzer",
+    "EarlyExerciseSignal",
     "PricingError",
     "PricingModelNotImplementedError",
     "PricingValidationError",
     "UnsupportedOptionStyleError",
     "UnsupportedPricingModelError",
     "ExerciseStyle",
+    "SettlementType",
+    "UnderlyingType",
+    "Currency",
+    "DividendType",
+    "DividendTreatment",
     "OptionType",
     "PricingModelName",
+    "DiscreteDividend",
+    "ModelCapabilities",
+    "PricingRoutingDecision",
     "PricingRequest",
     "PricingResult",
 ]

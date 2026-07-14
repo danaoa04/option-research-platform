@@ -39,6 +39,28 @@ _FD_RELATIVE_TOLERANCES: dict[str, float] = {
 }
 
 
+def _to_pricing_request(request: GreeksRequest) -> PricingRequest:
+    return PricingRequest(
+        spot=request.spot,
+        strike=request.strike,
+        expiry=request.expiry,
+        volatility=request.volatility,
+        risk_free_rate=request.risk_free_rate,
+        dividend_yield=request.dividend_yield,
+        option_type=request.option_type,
+        exercise_style=request.exercise_style,
+        multiplier=request.multiplier,
+        valuation_date=request.valuation_date,
+        settlement_type=request.settlement_type,
+        underlying_type=request.underlying_type,
+        currency=request.currency,
+        discrete_dividends=request.discrete_dividends,
+        futures_price=request.futures_price,
+        tree_steps=request.tree_steps,
+        contract_symbol=request.contract_symbol,
+    )
+
+
 @dataclass(slots=True)
 class GreeksEngine:
     """Coordinates model dispatch and verification helpers for Greeks."""
@@ -47,46 +69,91 @@ class GreeksEngine:
     _pricing_engine: PricingEngine = field(default_factory=PricingEngine)
 
     def __post_init__(self) -> None:
-        self._models = {PricingModelName.BLACK_SCHOLES: BlackScholesGreeksModel()}
+        self._models = {
+            PricingModelName.BLACK_SCHOLES: BlackScholesGreeksModel(),
+            PricingModelName.BLACK_76: Black76GreeksModel(),
+            PricingModelName.COX_ROSS_RUBINSTEIN: AmericanNumericalGreeksModel(
+                pricing_engine=self._pricing_engine,
+                model_name=PricingModelName.COX_ROSS_RUBINSTEIN,
+            ),
+            PricingModelName.BINOMIAL_TREE: AmericanNumericalGreeksModel(
+                pricing_engine=self._pricing_engine,
+                model_name=PricingModelName.BINOMIAL_TREE,
+            ),
+            PricingModelName.BARONE_ADESI_WHALEY: AmericanNumericalGreeksModel(
+                pricing_engine=self._pricing_engine,
+                model_name=PricingModelName.BARONE_ADESI_WHALEY,
+            ),
+            PricingModelName.BJERKSUND_STENSLAND: AmericanNumericalGreeksModel(
+                pricing_engine=self._pricing_engine,
+                model_name=PricingModelName.BJERKSUND_STENSLAND,
+            ),
+        }
 
     def calculate(
         self,
         request: GreeksRequest,
-        model_name: PricingModelName = PricingModelName.BLACK_SCHOLES,
+        model_name: PricingModelName | None = None,
     ) -> GreeksResult:
         self._validate_request(request)
-        model = self._models.get(model_name)
+        selected_model = model_name or self._pricing_engine.resolve_model(
+            _to_pricing_request(request)
+        ).model_name
+        model = self._models.get(selected_model)
         if model is None:
             raise GreeksNotImplementedError(
-                f"Greeks for model {model_name.value} are not implemented"
+                f"Greeks for model {selected_model.value} are not implemented"
             )
         if request.exercise_style not in model.supported_styles:
             raise UnsupportedOptionStyleError(
-                f"Greeks model {model_name.value} does not support {request.exercise_style.value}"
+                "Greeks model "
+                f"{selected_model.value} does not support "
+                f"{request.exercise_style.value}"
             )
         return model.calculate(request)
 
     def calculate_batch(
         self,
         requests: list[GreeksRequest],
-        model_name: PricingModelName = PricingModelName.BLACK_SCHOLES,
+        model_name: PricingModelName | None = None,
     ) -> list[GreeksResult]:
-        model = self._models.get(model_name)
-        if model is None:
-            raise GreeksNotImplementedError(
-                f"Greeks for model {model_name.value} are not implemented"
-            )
-
-        for request in requests:
-            self._validate_request(request)
-            if request.exercise_style not in model.supported_styles:
-                raise UnsupportedOptionStyleError(
-                    "Greeks model "
-                    f"{model_name.value} does not support "
-                    f"{request.exercise_style.value}"
+        if model_name is not None:
+            model = self._models.get(model_name)
+            if model is None:
+                raise GreeksNotImplementedError(
+                    f"Greeks for model {model_name.value} are not implemented"
                 )
+            for request in requests:
+                self._validate_request(request)
+                if request.exercise_style not in model.supported_styles:
+                    raise UnsupportedOptionStyleError(
+                        "Greeks model "
+                        f"{model_name.value} does not support "
+                        f"{request.exercise_style.value}"
+                    )
+            return model.calculate_batch(requests)
 
-        return model.calculate_batch(requests)
+        routed_results: dict[int, GreeksResult] = {}
+        grouped: dict[PricingModelName, list[tuple[int, GreeksRequest]]] = {}
+        for idx, request in enumerate(requests):
+            self._validate_request(request)
+            selected_model = self._pricing_engine.resolve_model(
+                _to_pricing_request(request)
+            ).model_name
+            grouped.setdefault(selected_model, []).append((idx, request))
+
+        for selected_model, entries in grouped.items():
+            model = self._models.get(selected_model)
+            if model is None:
+                raise GreeksNotImplementedError(
+                    f"Greeks for model {selected_model.value} are not implemented"
+                )
+            batch_requests = [entry[1] for entry in entries]
+            batch_results = model.calculate_batch(batch_requests)
+            for entry, result in zip(entries, batch_results, strict=True):
+                routed_results[entry[0]] = result
+
+        return [routed_results[idx] for idx in range(len(requests))]
 
     def calculate_portfolio(self, legs: list[PositionLeg]) -> PortfolioGreeksResult:
         per_leg: list[GreeksResult] = []
@@ -104,6 +171,7 @@ class GreeksEngine:
         self,
         request: GreeksRequest,
         config: FiniteDifferenceConfig | None = None,
+        model_name: PricingModelName | None = None,
     ) -> FiniteDifferenceVerificationResult:
         cfg = config or FiniteDifferenceConfig()
         if cfg.spot_bump <= 0.0 or cfg.volatility_bump <= 0.0 or cfg.rate_bump <= 0.0:
@@ -111,24 +179,35 @@ class GreeksEngine:
         if cfg.day_bump <= 0:
             raise GreeksValidationError("day_bump must be positive")
 
-        analytic = self.calculate(request)
+        selected_model = model_name or self._pricing_engine.resolve_model(
+            _to_pricing_request(request)
+        ).model_name
+        analytic = self.calculate(request, model_name=selected_model)
 
-        base = self._price(request)
+        base = self._price(request, model_name=selected_model)
 
-        up_spot = self._price(_replace_request(request, spot=request.spot + cfg.spot_bump))
-        down_spot = self._price(_replace_request(request, spot=request.spot - cfg.spot_bump))
+        up_spot = self._price(
+            _replace_request(request, spot=request.spot + cfg.spot_bump),
+            model_name=selected_model,
+        )
+        down_spot = self._price(
+            _replace_request(request, spot=max(request.spot - cfg.spot_bump, 1e-9)),
+            model_name=selected_model,
+        )
 
         delta_fd = (up_spot - down_spot) / (2.0 * cfg.spot_bump)
         gamma_fd = (up_spot - 2.0 * base + down_spot) / (cfg.spot_bump**2)
 
         up_vol = self._price(
-            _replace_request(request, volatility=request.volatility + cfg.volatility_bump)
+            _replace_request(request, volatility=request.volatility + cfg.volatility_bump),
+            model_name=selected_model,
         )
         down_vol = self._price(
             _replace_request(
                 request,
                 volatility=max(request.volatility - cfg.volatility_bump, 1e-9),
-            )
+            ),
+            model_name=selected_model,
         )
 
         vega_fd = (up_vol - down_vol) / (2.0 * cfg.volatility_bump)
@@ -139,28 +218,32 @@ class GreeksEngine:
                 request,
                 spot=request.spot + cfg.spot_bump,
                 volatility=request.volatility + cfg.volatility_bump,
-            )
+            ),
+            model_name=selected_model,
         )
         up_spot_down_vol = self._price(
             _replace_request(
                 request,
                 spot=request.spot + cfg.spot_bump,
                 volatility=max(request.volatility - cfg.volatility_bump, 1e-9),
-            )
+            ),
+            model_name=selected_model,
         )
         down_spot_up_vol = self._price(
             _replace_request(
                 request,
-                spot=request.spot - cfg.spot_bump,
+                spot=max(request.spot - cfg.spot_bump, 1e-9),
                 volatility=request.volatility + cfg.volatility_bump,
-            )
+            ),
+            model_name=selected_model,
         )
         down_spot_down_vol = self._price(
             _replace_request(
                 request,
-                spot=request.spot - cfg.spot_bump,
+                spot=max(request.spot - cfg.spot_bump, 1e-9),
                 volatility=max(request.volatility - cfg.volatility_bump, 1e-9),
-            )
+            ),
+            model_name=selected_model,
         )
 
         vanna_fd = (
@@ -171,15 +254,17 @@ class GreeksEngine:
         ) / (4.0 * cfg.spot_bump * cfg.volatility_bump)
 
         up_rate = self._price(
-            _replace_request(request, risk_free_rate=request.risk_free_rate + cfg.rate_bump)
+            _replace_request(request, risk_free_rate=request.risk_free_rate + cfg.rate_bump),
+            model_name=selected_model,
         )
         down_rate = self._price(
-            _replace_request(request, risk_free_rate=request.risk_free_rate - cfg.rate_bump)
+            _replace_request(request, risk_free_rate=request.risk_free_rate - cfg.rate_bump),
+            model_name=selected_model,
         )
         rho_fd = (up_rate - down_rate) / (2.0 * cfg.rate_bump)
 
         later_req = bump_request_date(request, cfg.day_bump)
-        later_value = self._price(later_req)
+        later_value = self._price(later_req, model_name=selected_model)
         theta_fd = (later_value - base) / cfg.day_bump
 
         comparisons = {
@@ -194,6 +279,19 @@ class GreeksEngine:
 
         warnings: list[GreekWarning] = []
         for greek_name, comparison in comparisons.items():
+            if greek_name in analytic.unsupported_greeks:
+                warnings.append(
+                    GreekWarning(
+                        code=GreekWarningCode.UNSUPPORTED_VERIFICATION,
+                        message=(
+                            "finite-difference verification is "
+                            f"not implemented for {greek_name}"
+                        ),
+                        severity=GreekWarningSeverity.INFO,
+                        greek=greek_name,
+                    )
+                )
+                continue
             if not comparison.stable:
                 warnings.append(
                     GreekWarning(
@@ -228,20 +326,15 @@ class GreeksEngine:
             warnings=warnings,
         )
 
-    def _price(self, request: GreeksRequest) -> float:
-        pricing_request = PricingRequest(
-            spot=request.spot,
-            strike=request.strike,
-            expiry=request.expiry,
-            volatility=request.volatility,
-            risk_free_rate=request.risk_free_rate,
-            dividend_yield=request.dividend_yield,
-            option_type=request.option_type,
-            exercise_style=request.exercise_style,
-            multiplier=request.multiplier,
-            valuation_date=request.valuation_date,
-        )
-        return self._pricing_engine.price(pricing_request).option_value
+    def _price(
+        self,
+        request: GreeksRequest,
+        model_name: PricingModelName | None = None,
+    ) -> float:
+        return self._pricing_engine.price(
+            _to_pricing_request(request),
+            model_name=model_name,
+        ).option_value
 
     def _validate_request(self, request: GreeksRequest) -> None:
         if request.spot <= 0.0:
@@ -386,6 +479,21 @@ class BlackScholesGreeksModel(GreeksModel):
             zomma=zomma * scale,
             ultima=ultima * scale,
             time_to_expiry=terms.t,
+            supported_greeks=(
+                "delta",
+                "gamma",
+                "theta",
+                "vega",
+                "rho",
+                "vanna",
+                "vomma",
+                "charm",
+                "color",
+                "speed",
+                "zomma",
+                "ultima",
+            ),
+            unsupported_greeks=(),
             calculation_metadata={
                 "model": self.model_name.value,
                 "option_type": request.option_type.value,
@@ -593,6 +701,21 @@ class BlackScholesGreeksModel(GreeksModel):
                     zomma=zomma_value * scale[idx],
                     ultima=ultima_value * scale[idx],
                     time_to_expiry=float(t[idx]),
+                    supported_greeks=(
+                        "delta",
+                        "gamma",
+                        "theta",
+                        "vega",
+                        "rho",
+                        "vanna",
+                        "vomma",
+                        "charm",
+                        "color",
+                        "speed",
+                        "zomma",
+                        "ultima",
+                    ),
+                    unsupported_greeks=(),
                     calculation_metadata={
                         "model": self.model_name.value,
                         "option_type": request.option_type.value,
@@ -603,6 +726,199 @@ class BlackScholesGreeksModel(GreeksModel):
             )
 
         return results
+
+
+class Black76GreeksModel(GreeksModel):
+    """Analytic first-order Greeks for European futures options under Black-76."""
+
+    model_name = PricingModelName.BLACK_76
+    supported_styles = {ExerciseStyle.EUROPEAN}
+
+    def calculate(self, request: GreeksRequest) -> GreeksResult:
+        warnings: list[GreekWarning] = []
+        t = year_fraction(request.valuation_date, request.expiry)
+
+        if t <= 0.0 or request.volatility <= 0.0:
+            warnings.append(
+                GreekWarning(
+                    code=GreekWarningCode.DEGENERATE_INPUT,
+                    message="degenerate time-to-expiry or volatility for Black-76 Greeks",
+                    severity=GreekWarningSeverity.WARNING,
+                )
+            )
+            return _unsupported_higher_order_result(
+                delta=0.0,
+                gamma=0.0,
+                theta=0.0,
+                vega=0.0,
+                rho=0.0,
+                time_to_expiry=max(t, 0.0),
+                metadata={"model": self.model_name.value, "greeks_method": "analytic"},
+                warnings=warnings,
+            )
+
+        forward = (
+            request.futures_price
+            if request.futures_price is not None
+            else request.spot
+            * math.exp((request.risk_free_rate - request.dividend_yield) * t)
+        )
+        if request.futures_price is None:
+            warnings.append(
+                GreekWarning(
+                    code=GreekWarningCode.NUMERICAL_INSTABILITY,
+                    message=(
+                        "futures_price missing; using forward proxy "
+                        "from spot for Black-76 Greeks"
+                    ),
+                    severity=GreekWarningSeverity.INFO,
+                )
+            )
+
+        sigma_sqrt_t = request.volatility * math.sqrt(t)
+        d1 = (math.log(forward / request.strike) + 0.5 * request.volatility**2 * t) / sigma_sqrt_t
+        discount = math.exp(-request.risk_free_rate * t)
+        pdf_d1 = math.exp(-0.5 * d1 * d1) / math.sqrt(2.0 * math.pi)
+
+        delta = (
+            discount * _norm_cdf(d1)
+            if request.option_type == OptionType.CALL
+            else -discount * _norm_cdf(-d1)
+        )
+        gamma = discount * pdf_d1 / (forward * request.volatility * math.sqrt(t))
+        vega = discount * forward * pdf_d1 * math.sqrt(t)
+        value = self._black76_price(request, forward=forward, t=t)
+        theta = (
+            -discount * forward * pdf_d1 * request.volatility / (2.0 * math.sqrt(t))
+            + request.risk_free_rate * value
+        ) / 365.0
+        rho = -t * value
+
+        return _unsupported_higher_order_result(
+            delta=delta * request.multiplier,
+            gamma=gamma * request.multiplier,
+            theta=theta * request.multiplier,
+            vega=vega * request.multiplier,
+            rho=rho * request.multiplier,
+            time_to_expiry=t,
+            metadata={"model": self.model_name.value, "greeks_method": "analytic"},
+            warnings=warnings,
+        )
+
+    def _black76_price(self, request: GreeksRequest, *, forward: float, t: float) -> float:
+        discount = math.exp(-request.risk_free_rate * t)
+        sigma_sqrt_t = request.volatility * math.sqrt(t)
+        d1 = (math.log(forward / request.strike) + 0.5 * request.volatility**2 * t) / sigma_sqrt_t
+        d2 = d1 - sigma_sqrt_t
+        if request.option_type == OptionType.CALL:
+            return discount * (forward * _norm_cdf(d1) - request.strike * _norm_cdf(d2))
+        return discount * (request.strike * _norm_cdf(-d2) - forward * _norm_cdf(-d1))
+
+
+@dataclass(slots=True)
+class AmericanNumericalGreeksModel(GreeksModel):
+    """Finite-difference first-order Greeks for American-style model pricing."""
+
+    pricing_engine: PricingEngine
+    model_name: PricingModelName
+    supported_styles: set[ExerciseStyle] = field(default_factory=lambda: {ExerciseStyle.AMERICAN})
+
+    def calculate(self, request: GreeksRequest) -> GreeksResult:
+        warnings: list[GreekWarning] = []
+        t = year_fraction(request.valuation_date, request.expiry)
+        if t <= 0.0:
+            warnings.append(
+                GreekWarning(
+                    code=GreekWarningCode.DEGENERATE_INPUT,
+                    message="expired contract for numerical American Greeks",
+                    severity=GreekWarningSeverity.WARNING,
+                )
+            )
+            return _unsupported_higher_order_result(
+                delta=0.0,
+                gamma=0.0,
+                theta=0.0,
+                vega=0.0,
+                rho=0.0,
+                time_to_expiry=0.0,
+                metadata={"model": self.model_name.value, "greeks_method": "numerical_fd"},
+                warnings=warnings,
+            )
+
+        spot_bump = max(1e-4, request.spot * 1e-3)
+        vol_bump = max(1e-4, max(request.volatility, 1e-4) * 1e-2)
+        rate_bump = 1e-4
+        day_bump = 1
+
+        base = self._price(request)
+        up_spot = self._price(_replace_request(request, spot=request.spot + spot_bump))
+        down_spot = self._price(_replace_request(request, spot=max(request.spot - spot_bump, 1e-9)))
+        up_vol = self._price(
+            _replace_request(request, volatility=request.volatility + vol_bump)
+        )
+        down_vol = self._price(
+            _replace_request(request, volatility=max(request.volatility - vol_bump, 1e-9))
+        )
+        up_rate = self._price(
+            _replace_request(
+                request,
+                risk_free_rate=request.risk_free_rate + rate_bump,
+            )
+        )
+        down_rate = self._price(
+            _replace_request(request, risk_free_rate=request.risk_free_rate - rate_bump)
+        )
+        later_req = bump_request_date(request, day_bump)
+        later_val = self._price(later_req)
+
+        delta = (up_spot - down_spot) / (2.0 * spot_bump)
+        gamma = (up_spot - 2.0 * base + down_spot) / (spot_bump**2)
+        theta = (later_val - base) / day_bump
+        vega = (up_vol - down_vol) / (2.0 * vol_bump)
+        rho = (up_rate - down_rate) / (2.0 * rate_bump)
+
+        for greek_name, greek_value in {
+            "delta": delta,
+            "gamma": gamma,
+            "theta": theta,
+            "vega": vega,
+            "rho": rho,
+        }.items():
+            if not math.isfinite(greek_value):
+                warnings.append(
+                    GreekWarning(
+                        code=GreekWarningCode.NUMERICAL_INSTABILITY,
+                        message=f"non-finite numerical American Greek for {greek_name}",
+                        severity=GreekWarningSeverity.WARNING,
+                        greek=greek_name,
+                    )
+                )
+
+        return _unsupported_higher_order_result(
+            delta=delta,
+            gamma=gamma,
+            theta=theta,
+            vega=vega,
+            rho=rho,
+            time_to_expiry=t,
+            metadata={
+                "model": self.model_name.value,
+                "greeks_method": "numerical_fd",
+                "finite_difference_bumps": {
+                    "spot_bump": spot_bump,
+                    "volatility_bump": vol_bump,
+                    "rate_bump": rate_bump,
+                    "day_bump": day_bump,
+                },
+            },
+            warnings=warnings,
+        )
+
+    def _price(self, request: GreeksRequest) -> float:
+        return self.pricing_engine.price(
+            _to_pricing_request(request),
+            model_name=self.model_name,
+        ).option_value
 
 
 def _replace_request(
@@ -623,6 +939,13 @@ def _replace_request(
         exercise_style=request.exercise_style,
         multiplier=request.multiplier,
         valuation_date=request.valuation_date,
+        settlement_type=request.settlement_type,
+        underlying_type=request.underlying_type,
+        currency=request.currency,
+        discrete_dividends=request.discrete_dividends,
+        futures_price=request.futures_price,
+        tree_steps=request.tree_steps,
+        contract_symbol=request.contract_symbol,
     )
 
 
@@ -631,6 +954,14 @@ def _comparison(
     finite_difference: float,
     greek_name: str,
 ) -> FiniteDifferenceComparison:
+    if not math.isfinite(analytic) or not math.isfinite(finite_difference):
+        return FiniteDifferenceComparison(
+            analytic=analytic,
+            finite_difference=finite_difference,
+            absolute_error=math.nan,
+            relative_error=math.nan,
+            stable=False,
+        )
     abs_error = abs(analytic - finite_difference)
     rel_error = abs_error / max(abs(analytic), 1e-12)
     stable = rel_error <= _FD_RELATIVE_TOLERANCES.get(greek_name, 5e-2)
@@ -678,8 +1009,70 @@ def _zero_result(
         zomma=0.0,
         ultima=0.0,
         time_to_expiry=time_to_expiry,
+        supported_greeks=(
+            "delta",
+            "gamma",
+            "theta",
+            "vega",
+            "rho",
+            "vanna",
+            "vomma",
+            "charm",
+            "color",
+            "speed",
+            "zomma",
+            "ultima",
+        ),
+        unsupported_greeks=(),
         calculation_metadata=metadata or {},
         warnings=warnings or [],
+    )
+
+
+def _unsupported_higher_order_result(
+    *,
+    delta: float,
+    gamma: float,
+    theta: float,
+    vega: float,
+    rho: float,
+    time_to_expiry: float,
+    metadata: dict[str, str | dict[str, float]],
+    warnings: list[GreekWarning],
+) -> GreeksResult:
+    unsupported = ("vanna", "vomma", "charm", "color", "speed", "zomma", "ultima")
+    result_warnings = list(warnings)
+    for greek_name in unsupported:
+        result_warnings.append(
+            GreekWarning(
+                code=GreekWarningCode.UNSUPPORTED_GREEK,
+                message=(
+                    f"{greek_name} is not available for this model; "
+                    "only first-order Greeks are provided"
+                ),
+                severity=GreekWarningSeverity.INFO,
+                greek=greek_name,
+            )
+        )
+
+    return GreeksResult(
+        delta=delta,
+        gamma=gamma,
+        theta=theta,
+        vega=vega,
+        rho=rho,
+        vanna=math.nan,
+        vomma=math.nan,
+        charm=math.nan,
+        color=math.nan,
+        speed=math.nan,
+        zomma=math.nan,
+        ultima=math.nan,
+        time_to_expiry=time_to_expiry,
+        supported_greeks=("delta", "gamma", "theta", "vega", "rho"),
+        unsupported_greeks=unsupported,
+        calculation_metadata=metadata,
+        warnings=result_warnings,
     )
 
 
@@ -716,12 +1109,20 @@ def _scale_result(result: GreeksResult, scale: float) -> GreeksResult:
         zomma=result.zomma * scale,
         ultima=result.ultima * scale,
         time_to_expiry=result.time_to_expiry,
+        supported_greeks=tuple(result.supported_greeks),
+        unsupported_greeks=tuple(result.unsupported_greeks),
         calculation_metadata=dict(result.calculation_metadata),
         warnings=list(result.warnings),
     )
 
 
 def _add_results(left: GreeksResult, right: GreeksResult) -> GreeksResult:
+    combined_supported = tuple(
+        sorted(set(left.supported_greeks) & set(right.supported_greeks))
+    )
+    combined_unsupported = tuple(
+        sorted(set(left.unsupported_greeks) | set(right.unsupported_greeks))
+    )
     return GreeksResult(
         delta=left.delta + right.delta,
         gamma=left.gamma + right.gamma,
@@ -736,6 +1137,8 @@ def _add_results(left: GreeksResult, right: GreeksResult) -> GreeksResult:
         zomma=left.zomma + right.zomma,
         ultima=left.ultima + right.ultima,
         time_to_expiry=max(left.time_to_expiry, right.time_to_expiry),
+        supported_greeks=combined_supported,
+        unsupported_greeks=combined_unsupported,
         calculation_metadata={"aggregate": "sum"},
         warnings=left.warnings + right.warnings,
     )

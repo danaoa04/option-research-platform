@@ -43,3 +43,10 @@ All notable changes to this project will be documented in this file.
 - Added official frontend architecture foundation with feature-based module structure and plugin-ready registry contracts under `frontend/src`.
 - Added typed frontend API boundary contracts and placeholder client methods for health, pricing, Greeks, volatility surfaces, term structures, strategy definitions, backtest jobs, optimization jobs, and research results.
 - Added frontend UX/workspace architecture documentation, plugin architecture documentation, and Tauri-first desktop packaging decision (no Electron).
+- Added Sprint 4B.1 US-listed option compatibility in `backend/pricing` with typed contract conventions for exercise style, settlement type, underlying type, currency, and discrete-dividend metadata.
+- Added configurable model routing policy with metadata-driven defaults (European spot -> Black-Scholes, European futures -> Black-76, American equity/ETF -> CRR) and route reasoning in calculation metadata.
+- Implemented production CRR American pricing with node-wise early-exercise checks, configurable tree steps, convergence diagnostics, intrinsic bounds, and deterministic warnings for insufficient resolution.
+- Implemented Black-76 futures-option pricing and first-order Greek diagnostics.
+- Extended `backend/greeks` with Black-76 first-order support and American numerical first-order Greeks plus explicit unsupported higher-order capability reporting.
+- Added advisory early-exercise analysis service for dividend-capture call scenarios, deep-ITM put signals, missing dividend data, and special-dividend uncertainty.
+- Added deterministic tests for routing by contract metadata, American-versus-European valuation relationships, CRR convergence, Black-76 references, American numerical Greeks, and dividend edge handling.

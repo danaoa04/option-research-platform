@@ -7,13 +7,22 @@ from datetime import date
 from enum import StrEnum
 from typing import Any
 
-from backend.pricing.models import ExerciseStyle, OptionType, PricingModelName
+from backend.pricing.models import (
+    Currency,
+    DiscreteDividend,
+    ExerciseStyle,
+    OptionType,
+    PricingModelName,
+    SettlementType,
+    UnderlyingType,
+)
 
 
 class GreekWarningCode(StrEnum):
     NUMERICAL_INSTABILITY = "numerical_instability"
     DEGENERATE_INPUT = "degenerate_input"
     UNSUPPORTED_VERIFICATION = "unsupported_verification"
+    UNSUPPORTED_GREEK = "unsupported_greek"
 
 
 class GreekWarningSeverity(StrEnum):
@@ -41,6 +50,13 @@ class GreeksRequest:
     exercise_style: ExerciseStyle
     multiplier: float
     valuation_date: date
+    settlement_type: SettlementType = SettlementType.PHYSICAL
+    underlying_type: UnderlyingType = UnderlyingType.EQUITY
+    currency: Currency = Currency.USD
+    discrete_dividends: tuple[DiscreteDividend, ...] = ()
+    futures_price: float | None = None
+    tree_steps: int = 400
+    contract_symbol: str | None = None
 
 
 @dataclass(slots=True, frozen=True)
@@ -58,6 +74,8 @@ class GreeksResult:
     zomma: float
     ultima: float
     time_to_expiry: float
+    supported_greeks: tuple[str, ...] = field(default_factory=tuple)
+    unsupported_greeks: tuple[str, ...] = field(default_factory=tuple)
     calculation_metadata: dict[str, Any] = field(default_factory=dict)
     warnings: list[GreekWarning] = field(default_factory=list)
 

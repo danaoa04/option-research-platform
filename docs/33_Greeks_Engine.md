@@ -16,6 +16,16 @@ Implemented in backend/greeks:
 - Batch interfaces and deterministic portfolio aggregation
 - Optional benchmark hook for batch runtime
 
+## Sprint 4B.1 - US Listed Compatibility Extension
+
+The Greeks subsystem now routes by contract metadata through pricing-model selection rules.
+
+- European spot contracts -> analytic Black-Scholes Greeks (first and higher order)
+- European futures contracts -> analytic Black-76 first-order Greeks
+- American equity/ETF contracts -> numerical first-order Greeks using selected American pricing model
+
+For American-style contracts, values are explicitly marked as numerical finite-difference Greeks. They are not labeled analytic.
+
 No live API integrations are used.
 
 ## Interfaces
@@ -58,6 +68,8 @@ Finite-difference verification currently reports:
 
 Each comparison includes analytic value, finite-difference estimate, absolute error, relative error, and a stability flag.
 
+For models without higher-order support, unsupported Greeks are returned with explicit capability metadata and warnings rather than fabricated finite values.
+
 ## Batch and Portfolio Scope
 
 - Supports calls and puts.
@@ -82,6 +94,8 @@ flowchart LR
 
 ## Known Limitations
 
-- Analytic Greeks are currently implemented for Black-Scholes and European exercise style only.
+- Analytic higher-order Greeks are currently implemented for Black-Scholes and European spot style only.
+- Black-76 currently provides first-order Greeks only.
+- American-style Greeks currently provide first-order numerical Greeks only.
 - Finite-difference verification is not yet implemented for charm, color, speed, zomma, and ultima.
 - Date-based time granularity means near-expiry warnings are day-resolution, not intraday.

@@ -2,4 +2,6 @@
 
 ## Overview
 
-This document will describe the execution model for research and live trading workflows.
+The official execution-model specification is maintained in:
+
+- [06_Execution_Model.md](./06_Execution_Model.md)

@@ -43,3 +43,8 @@ Success for the platform will be measured through engineering quality, research 
 - Finite-difference verification keeps primary and selected higher-order Greeks within declared relative-error stability tolerances.
 - Portfolio aggregation preserves expected sign behavior for long/short quantity and contract multiplier scaling.
 - Structured warnings reliably flag degenerate inputs, near-expiry numerical instability, and unsupported verification dimensions.
+- Pricing model routing is deterministic from stored contract metadata (exercise, settlement, underlying, dividends) with selected model and reason in outputs.
+- American equity/ETF option pricing via CRR passes convergence and early-exercise behavior checks under deterministic settings.
+- Black-76 futures-option pricing and first-order Greeks remain reproducible against published references.
+- American-style Greeks expose first-order numerical sensitivities and explicit unsupported higher-order capabilities.
+- Historical execution workflows preserve bid/ask as source-of-truth and never overwrite quote history with theoretical values.

@@ -50,3 +50,15 @@ The repository includes provider-neutral quantitative foundations for pricing an
 - Greeks engine in backend/greeks with first-order and higher-order Black-Scholes Greeks.
 - Finite-difference verification utilities with configurable bumps and stability diagnostics.
 - Batch and portfolio aggregation workflows supporting long/short multi-leg positions.
+
+US-listed compatibility details:
+
+- Contract-aware model routing based on stored metadata (exercise style, settlement type, underlying type, dividend inputs).
+- Black-Scholes is used for European spot contexts, Black-76 for European futures options, and CRR for American equity/ETF options.
+- American first-order Greeks are computed numerically and reported with explicit higher-order capability limits.
+- Early-exercise advisory signals are available for dividend and deep-ITM contexts (assignment simulation deferred).
+
+Backtesting boundary:
+
+- Historical bid/ask quotes remain the source of truth for fill simulation.
+- Theoretical model outputs are analytics inputs and do not overwrite historical quote data.

@@ -41,3 +41,19 @@
 - [x] Documentation updates
 - [x] Lint passing
 - [x] Tests passing
+
+## Sprint 4B.1 - US Listed Options Pricing and Greeks Compatibility
+
+- [x] Typed contract conventions for exercise, settlement, underlying, currency, and dividend schedule metadata
+- [x] Configurable pricing-model router with metadata-driven default policy
+- [x] CRR American pricing with node-wise early-exercise checks and convergence diagnostics
+- [x] Black-76 futures-option pricing support
+- [x] American first-order numerical Greeks with stability diagnostics
+- [x] Explicit unsupported capability reporting for higher-order American Greeks
+- [x] Early-exercise advisory service for dividend and deep-ITM scenarios
+- [x] Historical execution boundary documented (theoretical values do not overwrite historical quotes)
+- [x] Model capability registry for routing and diagnostics
+- [x] Deterministic unit tests for routing, pricing, Greeks, and edge conditions
+- [x] Documentation updates completed
+- [x] Lint passing
+- [x] Tests passing

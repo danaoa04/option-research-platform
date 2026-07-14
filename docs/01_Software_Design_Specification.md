@@ -80,6 +80,25 @@ Contango and backwardation classifications are research features and filter inpu
 - Validation framework for Greeks, pricing, assignment, margin, execution, and performance benchmarks.
 - Reproducibility metadata for data snapshots, software versions, configuration, parameters, and random seed.
 
+### 9. US Listed Options Model Routing
+
+- Black-Scholes is not used as a universal model for all US-listed options.
+- Model selection is driven by stored contract metadata:
+	- exercise style
+	- settlement type
+	- underlying type
+	- dividend characteristics
+- Default policy:
+	- European spot -> Black-Scholes
+	- European futures -> Black-76
+	- American equity/ETF -> Cox-Ross-Rubinstein
+- American approximation interfaces (Barone-Adesi-Whaley, Bjerksund-Stensland) are declared for extension.
+
+### 10. Historical Execution Boundary
+
+- Historical bid/ask quotes remain authoritative for backtest fills.
+- Theoretical pricing/Greeks outputs are analytics inputs and must not overwrite historical quote data.
+
 ## Interface Strategy
 
 - Clear service boundaries between data ingestion, calculations, orchestration, and presentation.

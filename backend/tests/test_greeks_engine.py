@@ -8,14 +8,21 @@ import pytest
 from backend.greeks import (
     FiniteDifferenceConfig,
     GreeksEngine,
-    GreeksNotImplementedError,
     GreeksRequest,
     GreeksValidationError,
     GreekWarningCode,
     PositionLeg,
     benchmark_batch_runtime,
 )
-from backend.pricing.models import ExerciseStyle, OptionType, PricingModelName
+from backend.pricing.exceptions import UnsupportedOptionStyleError
+from backend.pricing.models import (
+    DiscreteDividend,
+    ExerciseStyle,
+    OptionType,
+    PricingModelName,
+    SettlementType,
+    UnderlyingType,
+)
 
 
 def _request(
@@ -30,6 +37,11 @@ def _request(
     valuation_date: date = date(2026, 1, 1),
     expiry: date = date(2027, 1, 1),
     multiplier: float = 1.0,
+    underlying_type: UnderlyingType = UnderlyingType.EQUITY,
+    settlement_type: SettlementType = SettlementType.PHYSICAL,
+    futures_price: float | None = None,
+    tree_steps: int = 400,
+    discrete_dividends: tuple[DiscreteDividend, ...] = (),
 ) -> GreeksRequest:
     return GreeksRequest(
         spot=spot,
@@ -42,6 +54,11 @@ def _request(
         exercise_style=exercise_style,
         multiplier=multiplier,
         valuation_date=valuation_date,
+        underlying_type=underlying_type,
+        settlement_type=settlement_type,
+        futures_price=futures_price,
+        tree_steps=tree_steps,
+        discrete_dividends=discrete_dividends,
     )
 
 
@@ -124,11 +141,98 @@ def test_rejects_invalid_greeks_inputs() -> None:
         engine.calculate(_request(spot=0.0))
 
 
-def test_only_black_scholes_model_is_currently_supported() -> None:
+def test_american_numerical_model_rejects_european_style_override() -> None:
     engine = GreeksEngine()
 
-    with pytest.raises(GreeksNotImplementedError):
-        engine.calculate(_request(), model_name=PricingModelName.BLACK_76)
+    with pytest.raises(UnsupportedOptionStyleError):
+        engine.calculate(_request(), model_name=PricingModelName.COX_ROSS_RUBINSTEIN)
+
+
+def test_black76_first_order_greeks_for_futures_option() -> None:
+    engine = GreeksEngine()
+    result = engine.calculate(
+        _request(
+            option_type=OptionType.CALL,
+            exercise_style=ExerciseStyle.EUROPEAN,
+            underlying_type=UnderlyingType.FUTURES,
+            settlement_type=SettlementType.CASH,
+            futures_price=100.0,
+        ),
+        model_name=PricingModelName.BLACK_76,
+    )
+
+    assert math.isfinite(result.delta)
+    assert math.isfinite(result.gamma)
+    assert math.isfinite(result.theta)
+    assert math.isfinite(result.vega)
+    assert math.isfinite(result.rho)
+    assert "vanna" in result.unsupported_greeks
+
+
+def test_american_greeks_are_numerical_first_order_only() -> None:
+    engine = GreeksEngine()
+    request = _request(
+        option_type=OptionType.PUT,
+        exercise_style=ExerciseStyle.AMERICAN,
+        underlying_type=UnderlyingType.EQUITY,
+    )
+    result = engine.calculate(request)
+
+    assert math.isfinite(result.delta)
+    assert math.isfinite(result.gamma)
+    assert math.isfinite(result.theta)
+    assert math.isfinite(result.vega)
+    assert math.isfinite(result.rho)
+    assert math.isnan(result.vanna)
+    assert "vanna" in result.unsupported_greeks
+
+
+def test_american_numerical_greeks_handle_multipliers_and_signs() -> None:
+    engine = GreeksEngine()
+    base = engine.calculate(
+        _request(
+            exercise_style=ExerciseStyle.AMERICAN,
+            option_type=OptionType.PUT,
+            multiplier=100.0,
+        )
+    )
+    portfolio = engine.calculate_portfolio(
+        [
+            PositionLeg(
+                request=_request(
+                    exercise_style=ExerciseStyle.AMERICAN,
+                    option_type=OptionType.PUT,
+                    multiplier=100.0,
+                ),
+                quantity=-2.0,
+                model_name=PricingModelName.COX_ROSS_RUBINSTEIN,
+            )
+        ]
+    )
+
+    assert portfolio.total.delta == pytest.approx(-2.0 * base.delta)
+    assert portfolio.total.gamma == pytest.approx(-2.0 * base.gamma)
+
+
+def test_american_greeks_with_dividend_schedule_are_deterministic() -> None:
+    engine = GreeksEngine()
+    request = _request(
+        option_type=OptionType.CALL,
+        exercise_style=ExerciseStyle.AMERICAN,
+        discrete_dividends=(
+            DiscreteDividend(ex_dividend_date=date(2026, 3, 15), amount=1.25),
+        ),
+    )
+
+    first = engine.calculate(request)
+    second = engine.calculate(request)
+    assert first.delta == pytest.approx(second.delta)
+    assert first.gamma == pytest.approx(second.gamma)
+    assert first.theta == pytest.approx(second.theta)
+    assert first.vega == pytest.approx(second.vega)
+    assert first.rho == pytest.approx(second.rho)
+    assert first.supported_greeks == second.supported_greeks
+    assert first.unsupported_greeks == second.unsupported_greeks
 
 
 def test_reference_values_match_published_black_scholes_benchmarks() -> None:
