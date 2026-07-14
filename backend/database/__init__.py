@@ -1,21 +1,36 @@
 """Database foundation package for historical options data."""
 
+from .audit import AuditEventService
 from .config import DatabaseSettings, load_database_settings
+from .corporate_actions import (
+    AdjustmentPolicy,
+    AdjustmentRunResult,
+    AdjustmentWarning,
+    CorporateActionKnowledgePolicy,
+    CorporateActionService,
+)
 from .dtos import (
+    AuditEventDTO,
     CorporateActionDTO,
+    CorporateActionType,
     DataLineageRecordDTO,
     DatasetManifestDTO,
+    DatasetSnapshotDTO,
     DividendDTO,
     EarningsEventDTO,
     InterestRateCurveDTO,
+    NormalizedCorporateActionDTO,
     OptionContractDTO,
     OptionQuoteDTO,
+    RawVendorRecordDTO,
+    SymbolHistoryDTO,
     UnderlyingPriceDTO,
 )
 from .engine import create_database_engine
 from .ingestion import BulkIngestionService, ImportResult, IngestionConfig, UpsertPolicy
 from .query import AsOfQueryResult, HistoricalQueryService
 from .session import DatabaseSessionManager
+from .snapshots import SnapshotMutationError, SnapshotService
 from .validation import RecordValidator, ValidationIssue, ValidationSummary
 
 __all__ = [
@@ -24,8 +39,10 @@ __all__ = [
     "AsOfQueryResult",
     "BulkIngestionService",
     "CorporateActionDTO",
+    "CorporateActionType",
     "DataLineageRecordDTO",
     "DatasetManifestDTO",
+    "DatasetSnapshotDTO",
     "DividendDTO",
     "EarningsEventDTO",
     "HistoricalQueryService",
@@ -34,11 +51,23 @@ __all__ = [
     "InterestRateCurveDTO",
     "OptionContractDTO",
     "OptionQuoteDTO",
+    "RawVendorRecordDTO",
     "RecordValidator",
+    "SnapshotMutationError",
+    "SnapshotService",
+    "SymbolHistoryDTO",
     "UnderlyingPriceDTO",
     "UpsertPolicy",
     "ValidationIssue",
     "ValidationSummary",
     "create_database_engine",
     "load_database_settings",
+    "AdjustmentPolicy",
+    "AdjustmentRunResult",
+    "AdjustmentWarning",
+    "CorporateActionKnowledgePolicy",
+    "AuditEventDTO",
+    "AuditEventService",
+    "CorporateActionService",
+    "NormalizedCorporateActionDTO",
 ]

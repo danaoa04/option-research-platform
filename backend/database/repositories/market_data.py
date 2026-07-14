@@ -296,8 +296,14 @@ class CorporateActionsRepository(RepositoryBase[CorporateAction]):
                     CorporateAction.manifest_id,
                 ],
                 set_={
+                    "announcement_timestamp": stmt.excluded.announcement_timestamp,
+                    "provider_action_id": stmt.excluded.provider_action_id,
                     "ratio": stmt.excluded.ratio,
+                    "cash_amount": stmt.excluded.cash_amount,
+                    "multiplier_after": stmt.excluded.multiplier_after,
+                    "deliverable_after": stmt.excluded.deliverable_after,
                     "description": stmt.excluded.description,
+                    "source_metadata": stmt.excluded.source_metadata,
                 },
             )
         )

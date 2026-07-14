@@ -255,9 +255,18 @@ class CorporateAction(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     underlying_id: Mapped[int] = mapped_column(ForeignKey("underlyings.id"), nullable=False)
     action_date: Mapped[date] = mapped_column(Date, nullable=False)
+    announcement_timestamp: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
     action_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    provider_action_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
     ratio: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    cash_amount: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    multiplier_after: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    deliverable_after: Mapped[str | None] = mapped_column(Text, nullable=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_metadata: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     provider_id: Mapped[int] = mapped_column(ForeignKey("data_providers.id"), nullable=False)
     manifest_id: Mapped[int] = mapped_column(ForeignKey("dataset_manifests.id"), nullable=False)
 
@@ -296,3 +305,204 @@ class DataLineageRecord(Base):
 
     provider: Mapped[DataProvider] = relationship()
     manifest: Mapped[DatasetManifest] = relationship()
+
+
+class RawVendorRecord(Base):
+    __tablename__ = "raw_vendor_records"
+    __table_args__ = (
+        UniqueConstraint("provider_id", "entity_type", "provider_record_id", "checksum"),
+        Index("ix_raw_vendor_records_provider_entity", "provider_id", "entity_type"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    provider_id: Mapped[int] = mapped_column(ForeignKey("data_providers.id"), nullable=False)
+    entity_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    provider_record_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    payload: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    source_metadata: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    checksum: Mapped[str] = mapped_column(String(128), nullable=False)
+    ingested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    immutable: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+
+class NormalizedCorporateAction(Base):
+    __tablename__ = "normalized_corporate_actions"
+    __table_args__ = (
+        UniqueConstraint("provider_id", "provider_action_id"),
+        Index(
+            "ix_normalized_corp_actions_underlying_effective",
+            "underlying_id",
+            "effective_date",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    raw_record_id: Mapped[int] = mapped_column(ForeignKey("raw_vendor_records.id"), nullable=False)
+    provider_id: Mapped[int] = mapped_column(ForeignKey("data_providers.id"), nullable=False)
+    manifest_id: Mapped[int | None] = mapped_column(
+        ForeignKey("dataset_manifests.id"),
+        nullable=True,
+    )
+    underlying_id: Mapped[int] = mapped_column(ForeignKey("underlyings.id"), nullable=False)
+    provider_action_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    action_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    effective_date: Mapped[date] = mapped_column(Date, nullable=False)
+    announcement_timestamp: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    ratio: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    cash_amount: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    multiplier_after: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    deliverable_after: Mapped[str | None] = mapped_column(Text, nullable=True)
+    terms: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    source_metadata: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    normalized_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class SymbolHistory(Base):
+    __tablename__ = "symbol_history"
+    __table_args__ = (
+        UniqueConstraint("underlying_id", "old_symbol", "new_symbol", "effective_date"),
+        Index("ix_symbol_history_old_symbol", "old_symbol"),
+        Index("ix_symbol_history_new_symbol", "new_symbol"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    underlying_id: Mapped[int] = mapped_column(ForeignKey("underlyings.id"), nullable=False)
+    old_symbol: Mapped[str] = mapped_column(String(32), nullable=False)
+    new_symbol: Mapped[str] = mapped_column(String(32), nullable=False)
+    effective_date: Mapped[date] = mapped_column(Date, nullable=False)
+    announcement_timestamp: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    provider_id: Mapped[int] = mapped_column(ForeignKey("data_providers.id"), nullable=False)
+    source_action_id: Mapped[int | None] = mapped_column(
+        ForeignKey("normalized_corporate_actions.id"),
+        nullable=True,
+    )
+    source_metadata: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+
+
+class AdjustedUnderlyingPriceView(Base):
+    __tablename__ = "adjusted_underlying_price_views"
+    __table_args__ = (
+        UniqueConstraint("underlying_id", "price_timestamp", "view_name", "policy_name"),
+        CheckConstraint("base_price >= 0", name="adjusted_view_base_price_non_negative"),
+        CheckConstraint("adjusted_price >= 0", name="adjusted_view_adjusted_price_non_negative"),
+        Index(
+            "ix_adjusted_underlying_views_lookup",
+            "underlying_id",
+            "view_name",
+            "price_timestamp",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    underlying_id: Mapped[int] = mapped_column(ForeignKey("underlyings.id"), nullable=False)
+    source_price_id: Mapped[int | None] = mapped_column(
+        ForeignKey("underlying_prices.id"),
+        nullable=True,
+    )
+    source_action_id: Mapped[int | None] = mapped_column(
+        ForeignKey("normalized_corporate_actions.id"),
+        nullable=True,
+    )
+    view_name: Mapped[str] = mapped_column(String(64), nullable=False)
+    policy_name: Mapped[str] = mapped_column(String(64), nullable=False)
+    price_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    base_price: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    adjusted_price: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    adjustment_details: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+
+
+class AdjustedOptionContractView(Base):
+    __tablename__ = "adjusted_option_contract_views"
+    __table_args__ = (
+        UniqueConstraint("contract_id", "as_of_date", "view_name", "policy_name"),
+        CheckConstraint(
+            "adjusted_multiplier > 0",
+            name="adjusted_contract_multiplier_positive",
+        ),
+        CheckConstraint("adjusted_strike >= 0", name="adjusted_contract_strike_non_negative"),
+        Index("ix_adjusted_option_views_contract", "contract_id", "as_of_date"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    contract_id: Mapped[int] = mapped_column(ForeignKey("option_contracts.id"), nullable=False)
+    source_action_id: Mapped[int | None] = mapped_column(
+        ForeignKey("normalized_corporate_actions.id"),
+        nullable=True,
+    )
+    view_name: Mapped[str] = mapped_column(String(64), nullable=False)
+    policy_name: Mapped[str] = mapped_column(String(64), nullable=False)
+    as_of_date: Mapped[date] = mapped_column(Date, nullable=False)
+    adjusted_strike: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    adjusted_multiplier: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    deliverable_after: Mapped[str | None] = mapped_column(Text, nullable=True)
+    adjustment_details: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+
+
+class DatasetSnapshot(Base):
+    __tablename__ = "dataset_snapshots"
+    __table_args__ = (
+        Index("ix_dataset_snapshots_manifest", "manifest_id"),
+        Index("ix_dataset_snapshots_provider_created", "provider_id", "created_at"),
+    )
+
+    id: Mapped[str] = mapped_column(String(96), primary_key=True)
+    manifest_id: Mapped[int] = mapped_column(ForeignKey("dataset_manifests.id"), nullable=False)
+    provider_id: Mapped[int] = mapped_column(ForeignKey("data_providers.id"), nullable=False)
+    schema_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    dataset_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    git_commit: Mapped[str] = mapped_column(String(64), nullable=False)
+    date_start: Mapped[date] = mapped_column(Date, nullable=False)
+    date_end: Mapped[date] = mapped_column(Date, nullable=False)
+    symbol_scope: Mapped[list[str]] = mapped_column(JSON, nullable=False)
+    row_counts: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    checksums: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    transformation_history: Mapped[list[dict[str, Any]]] = mapped_column(JSON, nullable=False)
+    validation_summary: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    parent_snapshot_id: Mapped[str | None] = mapped_column(
+        ForeignKey("dataset_snapshots.id"),
+        nullable=True,
+    )
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="completed")
+
+
+class SnapshotSourceManifest(Base):
+    __tablename__ = "snapshot_source_manifests"
+    __table_args__ = (UniqueConstraint("snapshot_id", "source_manifest_id"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    snapshot_id: Mapped[str] = mapped_column(ForeignKey("dataset_snapshots.id"), nullable=False)
+    source_manifest_id: Mapped[int] = mapped_column(
+        ForeignKey("dataset_manifests.id"),
+        nullable=False,
+    )
+
+
+class AuditEvent(Base):
+    __tablename__ = "audit_events"
+    __table_args__ = (
+        Index("ix_audit_events_type_ts", "event_type", "event_timestamp"),
+        Index("ix_audit_events_snapshot", "snapshot_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    event_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    event_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    severity: Mapped[str] = mapped_column(String(16), nullable=False, default="info")
+    provider_id: Mapped[int | None] = mapped_column(ForeignKey("data_providers.id"), nullable=True)
+    manifest_id: Mapped[int | None] = mapped_column(
+        ForeignKey("dataset_manifests.id"),
+        nullable=True,
+    )
+    snapshot_id: Mapped[str | None] = mapped_column(
+        ForeignKey("dataset_snapshots.id"),
+        nullable=True,
+    )
+    correlation_id: Mapped[str | None] = mapped_column(String(96), nullable=True)
+    details: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)

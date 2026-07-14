@@ -24,3 +24,7 @@ All notable changes to this project will be documented in this file.
 - Added Sprint 3B historical query service with as-of exact/nearest-prior behavior, stale-age reporting, and no-look-ahead protections.
 - Added pre-persistence validation for ingestion mismatches and market-data integrity failures.
 - Added opt-in database ingestion/query benchmarks and deterministic offline tests for ingestion/query workflows.
+- Added Sprint 3C schema and migration extensions for raw vendor records, normalized corporate actions, symbol history, adjusted views, immutable snapshots, snapshot-source lineage, and audit events.
+- Added Sprint 3C corporate-action processing services with effective-date and announcement-aware knowledge policies, adjustment warnings, and adjusted underlying/contract view persistence.
+- Added Sprint 3C snapshot services for create/get/verify/compare workflows and immutable mutation rejection.
+- Added Sprint 3C audit event services and deterministic offline tests covering split handling, no-look-ahead policy behavior, snapshot integrity, and audit lineage.

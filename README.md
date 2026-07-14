@@ -39,3 +39,5 @@ The repository includes a production-oriented database foundation in `backend/da
 - session and engine management for SQLite and PostgreSQL-ready URLs.
 - repository abstractions for batch ingestion and date-range queries.
 - Alembic migration scaffolding with an initial schema migration.
+- corporate-action reproducibility services with announcement-aware no-look-ahead policies.
+- immutable dataset snapshot and audit services for deterministic research lineage.

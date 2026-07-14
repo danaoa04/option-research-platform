@@ -74,6 +74,16 @@ The Pack 2 historical-data foundation extends the subsystem with offline-safe in
 
 No live vendor API calls are performed by these components.
 
+## Sprint 3C Database Reproducibility Delivered
+
+The database layer now includes reproducibility primitives for corporate-action-sensitive research workflows:
+
+- Corporate-action processing policies with effective-date and announcement-aware no-look-ahead behavior.
+- Persisted adjusted views for underlyings and contracts tied to source action lineage.
+- Symbol history resolution for historical identifier changes.
+- Immutable dataset snapshots with verification and comparison support.
+- Audit event recording for snapshot and checksum lifecycle events.
+
 ## Validation Rules
 
 - Timestamps must be monotonic within each symbol series.

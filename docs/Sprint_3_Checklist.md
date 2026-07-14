@@ -31,6 +31,20 @@
 - [x] Lint passing
 - [x] Tests passing
 
+## Sprint 3C Progress
+
+- [x] Corporate-action reproducibility schema extension
+- [x] Raw, normalized, and adjusted data separation models
+- [x] Snapshot and source-manifest persistence models
+- [x] Audit event persistence model
+- [x] Corporate-action adjustment and policy services
+- [x] Announcement-aware and effective-date knowledge policies
+- [x] Snapshot create/verify/compare and immutability guardrails
+- [x] Audit event service for snapshot and lineage workflows
+- [x] Deterministic offline Sprint 3C tests
+- [x] Lint passing
+- [x] Tests passing
+
 ## Notes
 
-Sprint 3A and 3B together deliver the database foundation plus bulk ingestion and historical querying layers with strict as-of semantics and no live vendor API dependencies.
+Sprint 3A through 3C now deliver the database foundation, ingestion/query services, and corporate-action reproducibility primitives with strict as-of semantics and no live vendor API dependencies.

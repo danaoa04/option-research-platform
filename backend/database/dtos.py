@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from decimal import Decimal
+from enum import StrEnum
 from typing import Any
 
 
@@ -91,6 +92,12 @@ class CorporateActionDTO:
     description: str | None
     provider_id: int
     manifest_id: int
+    announcement_timestamp: datetime | None = None
+    provider_action_id: str | None = None
+    cash_amount: Decimal | None = None
+    multiplier_after: Decimal | None = None
+    deliverable_after: str | None = None
+    source_metadata: dict[str, Any] | None = None
 
 
 @dataclass(slots=True, frozen=True)
@@ -126,3 +133,92 @@ class DataLineageRecordDTO:
     validation_summary: dict[str, Any] | None
     source_metadata: dict[str, Any] | None
     software_version: str
+
+
+class CorporateActionType(StrEnum):
+    STOCK_SPLIT = "stock_split"
+    REVERSE_STOCK_SPLIT = "reverse_stock_split"
+    SYMBOL_CHANGE = "symbol_change"
+    MERGER = "merger"
+    ACQUISITION = "acquisition"
+    SPIN_OFF = "spin_off"
+    ORDINARY_DIVIDEND = "ordinary_dividend"
+    SPECIAL_DIVIDEND = "special_dividend"
+    MULTIPLIER_CHANGE = "multiplier_change"
+    DELIVERABLE_CHANGE = "deliverable_change"
+    DELISTING = "delisting"
+
+
+@dataclass(slots=True, frozen=True)
+class RawVendorRecordDTO:
+    provider_id: int
+    entity_type: str
+    provider_record_id: str
+    payload: dict[str, Any]
+    source_metadata: dict[str, Any] | None
+    checksum: str
+    ingested_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class NormalizedCorporateActionDTO:
+    raw_record_id: int
+    provider_id: int
+    manifest_id: int | None
+    underlying_id: int
+    provider_action_id: str
+    action_type: CorporateActionType
+    effective_date: date
+    announcement_timestamp: datetime | None
+    ratio: Decimal | None
+    cash_amount: Decimal | None
+    multiplier_after: Decimal | None
+    deliverable_after: str | None
+    terms: dict[str, Any] | None
+    source_metadata: dict[str, Any] | None
+    normalized_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class SymbolHistoryDTO:
+    underlying_id: int
+    old_symbol: str
+    new_symbol: str
+    effective_date: date
+    announcement_timestamp: datetime | None
+    provider_id: int
+    source_action_id: int | None
+    source_metadata: dict[str, Any] | None
+
+
+@dataclass(slots=True, frozen=True)
+class DatasetSnapshotDTO:
+    id: str
+    manifest_id: int
+    provider_id: int
+    schema_version: str
+    dataset_version: str
+    git_commit: str
+    date_start: date
+    date_end: date
+    symbol_scope: list[str]
+    row_counts: dict[str, Any]
+    checksums: dict[str, Any]
+    transformation_history: list[dict[str, Any]]
+    validation_summary: dict[str, Any]
+    created_at: datetime
+    parent_snapshot_id: str | None = None
+    status: str = "completed"
+    source_manifest_ids: list[int] = field(default_factory=list)
+
+
+@dataclass(slots=True, frozen=True)
+class AuditEventDTO:
+    event_type: str
+    event_timestamp: datetime
+    severity: str
+    details: dict[str, Any]
+    provider_id: int | None = None
+    manifest_id: int | None = None
+    snapshot_id: str | None = None
+    correlation_id: str | None = None

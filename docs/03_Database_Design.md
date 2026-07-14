@@ -108,3 +108,23 @@ Repository modules support:
 - Exact-match queries only return records at the requested timestamp/date.
 - Staleness age is computed and returned for nearest-prior records.
 - Tests verify no look-ahead bias in as-of quote retrieval.
+
+## Sprint 3C Reproducibility Layer
+
+- Raw vendor payloads are persisted in immutable `RawVendorRecord` rows with checksums.
+- Normalized actions are represented in `NormalizedCorporateAction` with effective date and optional announcement timestamp.
+- Symbol transitions are tracked in `SymbolHistory` for deterministic historical symbol resolution.
+- Policy-driven adjusted research views are persisted in `AdjustedUnderlyingPriceView` and `AdjustedOptionContractView`.
+- Immutable reproducibility snapshots are persisted in `DatasetSnapshot` and linked to source manifests through `SnapshotSourceManifest`.
+- Audit and lineage events are captured in append-only `AuditEvent` records.
+
+### Knowledge Policies
+
+- `effective-date`: action is considered knowable when `effective_date <= as_of`.
+- `announcement-aware`: action is knowable only when `announcement_timestamp <= as_of`; unknown announcement timestamps are excluded.
+
+### Snapshot Integrity Rules
+
+- Snapshots are immutable once created.
+- Verification uses a deterministic digest over core metadata and source manifest lineage.
+- Snapshot comparisons report dataset/schema version changes, checksum differences, and row-count deltas.

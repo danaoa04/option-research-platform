@@ -10,6 +10,11 @@ from .market_data import (
     QuotesRepository,
     UnderlyingPricesRepository,
 )
+from .reproducibility import (
+    AuditRepository,
+    CorporateActionNormalizationRepository,
+    SnapshotRepository,
+)
 
 __all__ = [
     "ContractsRepository",
@@ -20,4 +25,7 @@ __all__ = [
     "ManifestsLineageRepository",
     "QuotesRepository",
     "UnderlyingPricesRepository",
+    "AuditRepository",
+    "CorporateActionNormalizationRepository",
+    "SnapshotRepository",
 ]

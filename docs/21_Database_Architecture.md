@@ -69,6 +69,17 @@ Implemented service-layer extensions in `backend/database`:
 - As-of rules enforcing no future lookups and exposing stale data age for nearest-prior results.
 - Deterministic offline tests for ingestion, rollback safety, duplicate handling, upserts, as-of and no-look-ahead behavior, stale data reporting, and validation failures.
 
+## Sprint 3C Implementation
+
+Implemented reproducibility and corporate-action extension modules in `backend/database`:
+
+- New persistence models for raw vendor records, normalized corporate actions, symbol history, adjusted research views, immutable snapshots, snapshot-source lineage, and audit events.
+- Corporate-action service with explicit adjustment policies for split/dividend/contract-adjustment behavior and warning emission for incomplete actions.
+- Knowledge policies supporting both effective-date semantics and announcement-aware no-look-ahead enforcement.
+- Snapshot service supporting create/get/verify/compare workflows and explicit mutation rejection.
+- Audit event service for immutable event recording and filtered retrieval.
+- Deterministic offline tests validating forward/reverse split behavior, incomplete-action warnings, symbol history resolution, snapshot verification/comparison, immutability, and audit persistence.
+
 ## Historical Data Metadata Strategy
 
 - Store a deterministic manifest for each ingested dataset version containing provider, dataset version, schema version, symbol scope, date range, checksum, row count, and source metadata.

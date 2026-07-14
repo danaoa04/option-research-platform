@@ -18,6 +18,10 @@ Success for the platform will be measured through engineering quality, research 
 - Transaction rollback tests prove failed writes do not leave partial committed state.
 - Batch ingestion services process deterministic chunks with explicit duplicate policy outcomes.
 - As-of queries are verified to avoid look-ahead bias and to report stale-age when nearest-prior data is used.
+- Corporate-action adjustment policies are deterministic and produce explicit warnings when action inputs are incomplete.
+- Announcement-aware and effective-date knowledge policies are both tested to prevent forward-looking leakage.
+- Immutable dataset snapshots can be verified and compared deterministically across runs.
+- Audit events provide traceable lineage for snapshot creation and checksum-validation outcomes.
 - Validation failures are surfaced before persistence for crossed markets, invalid strikes/timestamps, and manifest-contract mismatches.
 - High coverage of validation scenarios for Greeks, pricing, assignment, margin, and execution.
 - Clear and timely support for new data providers and strategies through the plugin architecture.
