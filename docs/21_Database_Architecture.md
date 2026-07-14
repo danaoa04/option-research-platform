@@ -59,6 +59,16 @@ Implemented in `backend/database`:
 - Alembic migration scaffolding with an initial schema migration.
 - Deterministic offline tests for schema, constraints, relationships, rollback behavior, duplicate handling, and nullable vendor data.
 
+## Sprint 3B Implementation
+
+Implemented service-layer extensions in `backend/database`:
+
+- Provider-neutral ingestion DTOs for all core historical dataset entities.
+- Batch ingestion services with configurable batch size, explicit upsert policy modes, deterministic duplicate handling, validation-first writes, and structured import results.
+- Historical query services for option-chain snapshots, contract range filters, quote ranges, nearest-prior as-of lookups, underlying history, event ranges, corporate actions, and interest-rate curves.
+- As-of rules enforcing no future lookups and exposing stale data age for nearest-prior results.
+- Deterministic offline tests for ingestion, rollback safety, duplicate handling, upserts, as-of and no-look-ahead behavior, stale data reporting, and validation failures.
+
 ## Historical Data Metadata Strategy
 
 - Store a deterministic manifest for each ingested dataset version containing provider, dataset version, schema version, symbol scope, date range, checksum, row count, and source metadata.

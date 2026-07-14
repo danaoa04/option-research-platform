@@ -84,3 +84,27 @@ Repository modules support:
 ## Transactions and Rollback
 
 `DatabaseSessionManager.session_scope()` wraps each unit of work with commit/rollback semantics and raises a typed transaction error on failure.
+
+## Sprint 3B Bulk Ingestion Layer
+
+- Provider-neutral DTOs define import payloads for contracts, quotes, prices, dividends, earnings, corporate actions, rate curves, manifests, and lineage.
+- Batch ingestion supports configurable batch sizes and explicit upsert policy modes.
+- Duplicate handling is deterministic by stable key selection before persistence.
+- Import operations return structured results with processed counts, dropped duplicates, and validation failures.
+- Validation runs before writes and checks timestamp validity, strike validity, crossed markets, identifier duplication, quote-contract consistency, and manifest/provider consistency.
+
+## Sprint 3B Historical Query Layer
+
+- Option chain at timestamp with exact-match and nearest-prior modes.
+- Contracts by symbol and expiration range.
+- Quotes by contract and date range.
+- Nearest available quote lookup with stale-age reporting.
+- Underlying price history and event/date-range queries for dividends and earnings.
+- Corporate actions by symbol and interest-rate curve lookup by date.
+
+## As-Of Query Rules
+
+- Nearest-prior queries never return future records.
+- Exact-match queries only return records at the requested timestamp/date.
+- Staleness age is computed and returned for nearest-prior records.
+- Tests verify no look-ahead bias in as-of quote retrieval.

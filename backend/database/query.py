@@ -1,0 +1,206 @@
+"""Historical query services with strict as-of no-look-ahead rules."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import UTC, date, datetime
+
+from sqlalchemy import Select, select
+from sqlalchemy.orm import Session
+
+from backend.database.models import (
+    CorporateAction,
+    Dividend,
+    EarningsEvent,
+    InterestRateCurve,
+    OptionContract,
+    OptionQuote,
+    Underlying,
+    UnderlyingPrice,
+)
+
+
+@dataclass(slots=True, frozen=True)
+class AsOfQueryResult[T]:
+    record: T | None
+    exact_match: bool
+    stale_age_seconds: float | None
+
+
+class HistoricalQueryService:
+    """Read-only query service for historical option and underlying data."""
+
+    def __init__(self, session: Session) -> None:
+        self.session = session
+
+    def option_chain_at(
+        self,
+        symbol: str,
+        as_of: datetime,
+        *,
+        nearest_prior: bool = True,
+    ) -> list[OptionQuote]:
+        condition = (
+            OptionQuote.quote_timestamp <= as_of
+            if nearest_prior
+            else OptionQuote.quote_timestamp == as_of
+        )
+        stmt: Select[tuple[OptionQuote]] = (
+            select(OptionQuote)
+            .join(OptionContract, OptionQuote.contract_id == OptionContract.id)
+            .join(Underlying, OptionContract.underlying_id == Underlying.id)
+            .where(Underlying.symbol == symbol, condition)
+            .order_by(OptionQuote.quote_timestamp.desc())
+        )
+        quotes = list(self.session.execute(stmt).scalars())
+        if not nearest_prior:
+            return quotes
+
+        # For nearest-prior mode, keep only records from the latest timestamp <= as_of.
+        if not quotes:
+            return []
+        latest_ts = quotes[0].quote_timestamp
+        return [quote for quote in quotes if quote.quote_timestamp == latest_ts]
+
+    def contracts_by_symbol_and_expiration(
+        self,
+        symbol: str,
+        expiration_start: date,
+        expiration_end: date,
+    ) -> list[OptionContract]:
+        stmt: Select[tuple[OptionContract]] = (
+            select(OptionContract)
+            .join(Underlying, OptionContract.underlying_id == Underlying.id)
+            .where(
+                Underlying.symbol == symbol,
+                OptionContract.expiration >= expiration_start,
+                OptionContract.expiration <= expiration_end,
+            )
+            .order_by(OptionContract.expiration.asc(), OptionContract.strike.asc())
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def quotes_by_contract_and_range(
+        self,
+        contract_id: int,
+        start_ts: datetime,
+        end_ts: datetime,
+    ) -> list[OptionQuote]:
+        stmt: Select[tuple[OptionQuote]] = select(OptionQuote).where(
+            OptionQuote.contract_id == contract_id,
+            OptionQuote.quote_timestamp >= start_ts,
+            OptionQuote.quote_timestamp <= end_ts,
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def nearest_quote(
+        self,
+        contract_id: int,
+        as_of: datetime,
+        *,
+        exact_match: bool = False,
+    ) -> AsOfQueryResult[OptionQuote]:
+        condition = (
+            OptionQuote.quote_timestamp == as_of
+            if exact_match
+            else OptionQuote.quote_timestamp <= as_of
+        )
+        stmt: Select[tuple[OptionQuote]] = (
+            select(OptionQuote)
+            .where(OptionQuote.contract_id == contract_id, condition)
+            .order_by(OptionQuote.quote_timestamp.desc())
+        )
+        record = self.session.execute(stmt).scalars().first()
+        if record is None:
+            return AsOfQueryResult(record=None, exact_match=False, stale_age_seconds=None)
+
+        record_ts = _ensure_timezone_aware(record.quote_timestamp)
+        as_of_ts = _ensure_timezone_aware(as_of)
+
+        is_exact = record_ts == as_of_ts
+        stale_seconds = None
+        if not is_exact:
+            stale_seconds = max(0.0, (as_of_ts - record_ts).total_seconds())
+        return AsOfQueryResult(record=record, exact_match=is_exact, stale_age_seconds=stale_seconds)
+
+    def underlying_price_history(
+        self,
+        underlying_id: int,
+        start_ts: datetime,
+        end_ts: datetime,
+    ) -> list[UnderlyingPrice]:
+        stmt: Select[tuple[UnderlyingPrice]] = select(UnderlyingPrice).where(
+            UnderlyingPrice.underlying_id == underlying_id,
+            UnderlyingPrice.price_timestamp >= start_ts,
+            UnderlyingPrice.price_timestamp <= end_ts,
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def dividends_by_range(
+        self,
+        underlying_id: int,
+        start_date: date,
+        end_date: date,
+    ) -> list[Dividend]:
+        stmt: Select[tuple[Dividend]] = select(Dividend).where(
+            Dividend.underlying_id == underlying_id,
+            Dividend.ex_date >= start_date,
+            Dividend.ex_date <= end_date,
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def earnings_by_range(
+        self,
+        underlying_id: int,
+        start_date: date,
+        end_date: date,
+    ) -> list[EarningsEvent]:
+        stmt: Select[tuple[EarningsEvent]] = select(EarningsEvent).where(
+            EarningsEvent.underlying_id == underlying_id,
+            EarningsEvent.event_date >= start_date,
+            EarningsEvent.event_date <= end_date,
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def corporate_actions_by_symbol(self, symbol: str) -> list[CorporateAction]:
+        stmt: Select[tuple[CorporateAction]] = (
+            select(CorporateAction)
+            .join(Underlying, CorporateAction.underlying_id == Underlying.id)
+            .where(Underlying.symbol == symbol)
+            .order_by(CorporateAction.action_date.asc())
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def interest_rate_curve_by_date(
+        self,
+        as_of_date: date,
+        *,
+        nearest_prior: bool = False,
+    ) -> list[InterestRateCurve]:
+        if nearest_prior:
+            nearest_date_stmt: Select[tuple[date]] = (
+                select(InterestRateCurve.as_of_date)
+                .where(InterestRateCurve.as_of_date <= as_of_date)
+                .order_by(InterestRateCurve.as_of_date.desc())
+            )
+            nearest_date = self.session.execute(nearest_date_stmt).scalars().first()
+            if nearest_date is None:
+                return []
+            query_date = nearest_date
+        else:
+            query_date = as_of_date
+
+        stmt: Select[tuple[InterestRateCurve]] = select(InterestRateCurve).where(
+            InterestRateCurve.as_of_date == query_date
+        )
+        return list(self.session.execute(stmt).scalars())
+
+
+def utc_now() -> datetime:
+    return datetime.now(tz=UTC)
+
+
+def _ensure_timezone_aware(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value.replace(tzinfo=UTC)
+    return value

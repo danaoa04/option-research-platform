@@ -54,6 +54,16 @@ class ContractsRepository(RepositoryBase[OptionContract]):
             )
         )
 
+    def batch_insert_only(self, contracts: Sequence[dict[str, object]]) -> None:
+        if not contracts:
+            return
+        stmt = sqlite_insert(OptionContract).values(list(contracts))
+        self.session.execute(
+            stmt.on_conflict_do_nothing(
+                index_elements=[OptionContract.provider_id, OptionContract.provider_contract_id]
+            )
+        )
+
     def lookup_by_provider_contract(
         self, provider_id: int, provider_contract_id: str
     ) -> OptionContract | None:
@@ -112,6 +122,21 @@ class QuotesRepository(RepositoryBase[OptionQuote]):
             )
         )
 
+    def batch_insert_only(self, quotes: Sequence[dict[str, object]]) -> None:
+        if not quotes:
+            return
+        stmt = sqlite_insert(OptionQuote).values(list(quotes))
+        self.session.execute(
+            stmt.on_conflict_do_nothing(
+                index_elements=[
+                    OptionQuote.contract_id,
+                    OptionQuote.quote_timestamp,
+                    OptionQuote.provider_id,
+                    OptionQuote.manifest_id,
+                ]
+            )
+        )
+
     def query_range(
         self,
         contract_id: int,
@@ -124,6 +149,17 @@ class QuotesRepository(RepositoryBase[OptionQuote]):
             OptionQuote.quote_timestamp <= end_ts,
         )
         return list(self.session.execute(stmt).scalars())
+
+    def nearest_prior(self, contract_id: int, as_of: datetime) -> OptionQuote | None:
+        stmt: Select[tuple[OptionQuote]] = (
+            select(OptionQuote)
+            .where(
+                OptionQuote.contract_id == contract_id,
+                OptionQuote.quote_timestamp <= as_of,
+            )
+            .order_by(OptionQuote.quote_timestamp.desc())
+        )
+        return self.session.execute(stmt).scalars().first()
 
 
 class UnderlyingPricesRepository(RepositoryBase[UnderlyingPrice]):
@@ -158,6 +194,17 @@ class UnderlyingPricesRepository(RepositoryBase[UnderlyingPrice]):
         )
         return list(self.session.execute(stmt).scalars())
 
+    def nearest_prior(self, underlying_id: int, as_of: datetime) -> UnderlyingPrice | None:
+        stmt: Select[tuple[UnderlyingPrice]] = (
+            select(UnderlyingPrice)
+            .where(
+                UnderlyingPrice.underlying_id == underlying_id,
+                UnderlyingPrice.price_timestamp <= as_of,
+            )
+            .order_by(UnderlyingPrice.price_timestamp.desc())
+        )
+        return self.session.execute(stmt).scalars().first()
+
 
 class DividendsRepository(RepositoryBase[Dividend]):
     """Repository for dividend events."""
@@ -182,6 +229,19 @@ class DividendsRepository(RepositoryBase[Dividend]):
             )
         )
 
+    def query_range(
+        self,
+        underlying_id: int,
+        start_date: date,
+        end_date: date,
+    ) -> list[Dividend]:
+        stmt: Select[tuple[Dividend]] = select(Dividend).where(
+            Dividend.underlying_id == underlying_id,
+            Dividend.ex_date >= start_date,
+            Dividend.ex_date <= end_date,
+        )
+        return list(self.session.execute(stmt).scalars())
+
 
 class EarningsRepository(RepositoryBase[EarningsEvent]):
     """Repository for earnings events."""
@@ -204,6 +264,19 @@ class EarningsRepository(RepositoryBase[EarningsEvent]):
                 },
             )
         )
+
+    def query_range(
+        self,
+        underlying_id: int,
+        start_date: date,
+        end_date: date,
+    ) -> list[EarningsEvent]:
+        stmt: Select[tuple[EarningsEvent]] = select(EarningsEvent).where(
+            EarningsEvent.underlying_id == underlying_id,
+            EarningsEvent.event_date >= start_date,
+            EarningsEvent.event_date <= end_date,
+        )
+        return list(self.session.execute(stmt).scalars())
 
 
 class CorporateActionsRepository(RepositoryBase[CorporateAction]):
@@ -228,6 +301,12 @@ class CorporateActionsRepository(RepositoryBase[CorporateAction]):
                 },
             )
         )
+
+    def by_underlying(self, underlying_id: int) -> list[CorporateAction]:
+        stmt: Select[tuple[CorporateAction]] = select(CorporateAction).where(
+            CorporateAction.underlying_id == underlying_id
+        )
+        return list(self.session.execute(stmt).scalars())
 
 
 class InterestRatesRepository(RepositoryBase[InterestRateCurve]):
@@ -280,6 +359,20 @@ class ManifestsLineageRepository(RepositoryBase[DatasetManifest]):
                     "row_count": stmt.excluded.row_count,
                     "source_metadata": stmt.excluded.source_metadata,
                 },
+            )
+        )
+
+    def batch_insert_only_manifests(self, manifests: Sequence[dict[str, object]]) -> None:
+        if not manifests:
+            return
+        stmt = sqlite_insert(DatasetManifest).values(list(manifests))
+        self.session.execute(
+            stmt.on_conflict_do_nothing(
+                index_elements=[
+                    DatasetManifest.provider_id,
+                    DatasetManifest.dataset_name,
+                    DatasetManifest.dataset_version,
+                ]
             )
         )
 

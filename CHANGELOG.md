@@ -20,3 +20,7 @@ All notable changes to this project will be documented in this file.
 - Added a production-quality database foundation package in `backend/database` with SQLAlchemy 2.x configuration, engine/session management, typed models, repositories, and migration scaffolding.
 - Added an initial schema migration and deterministic offline database tests for constraints, relationships, rollback safety, duplicate handling, and nullable vendor data behavior.
 - Updated environment examples and documentation for Sprint 3 historical options database foundation.
+- Added Sprint 3B provider-neutral ingestion DTOs and batch ingestion services with explicit upsert policies, deterministic duplicate handling, and structured import results.
+- Added Sprint 3B historical query service with as-of exact/nearest-prior behavior, stale-age reporting, and no-look-ahead protections.
+- Added pre-persistence validation for ingestion mismatches and market-data integrity failures.
+- Added opt-in database ingestion/query benchmarks and deterministic offline tests for ingestion/query workflows.
