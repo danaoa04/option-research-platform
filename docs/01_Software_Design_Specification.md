@@ -65,6 +65,16 @@ Contango and backwardation classifications are research features and filter inpu
 - Modern GUI with dashboards, strategy builder, backtest runner, results explorer, option chain explorer, portfolio analysis, watchlists, saved research, and dark mode.
 - Research notebook / workspace and AI-assisted guidance.
 
+### 8. Frontend and Extensibility Architecture
+
+- React + TypeScript + Vite frontend foundation with Material UI component system.
+- Quantitative chart stack planned around Plotly and TradingView Lightweight Charts.
+- API state via TanStack Query and local UI state via Zustand.
+- Route composition via React Router and runtime API contract validation via Zod.
+- Feature-based module boundaries for dashboard, strategy builder, backtest runner, results explorer, option chain explorer, volatility lab, 3D surface viewer, term structure explorer, portfolio risk lab, research notebook, optimization workspace, saved research, settings, and AI assistant.
+- Plugin-ready registry for page, chart, strategy editor, result panel, provider settings, report exporter, and navigation item extensions.
+- Desktop deployment target is Tauri from the same frontend codebase as web deployment; Electron is excluded.
+
 ### 6. Validation and Governance
 
 - Validation framework for Greeks, pricing, assignment, margin, execution, and performance benchmarks.
@@ -74,6 +84,22 @@ Contango and backwardation classifications are research features and filter inpu
 
 - Clear service boundaries between data ingestion, calculations, orchestration, and presentation.
 - API and plugin contracts for providers, brokers, indicators, pricing models, risk models, and reports.
+
+### Frontend API Boundary Contracts
+
+Typed contracts are defined for:
+
+- health
+- pricing
+- Greeks
+- volatility surfaces
+- term structures
+- strategy definitions
+- backtest jobs
+- optimization jobs
+- research results
+
+Unimplemented backend endpoints remain typed TODO placeholders and are not called directly.
 
 ### Planned Public Interfaces for Volatility Term Structure Engine
 

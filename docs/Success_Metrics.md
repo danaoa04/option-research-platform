@@ -34,3 +34,8 @@ Success for the platform will be measured through engineering quality, research 
 - Clear and timely support for new data providers and strategies through the plugin architecture.
 - Strong usability of the GUI for strategy construction, execution modeling, and result exploration.
 - Adoption of documentation, standards, and workflows by contributors and research users.
+- Frontend feature modules can be added without coupling to backend database model types.
+- New pages and charts can be registered via plugin registry without editing core navigation logic.
+- Typed frontend API contracts remain versionable and validated before UI rendering.
+- Browser and Tauri desktop builds share a single frontend codebase without Electron dependencies.
+- Workspace usability targets are met for saved layouts, keyboard shortcuts, guided setup, accessibility, and reversible strategy configuration.

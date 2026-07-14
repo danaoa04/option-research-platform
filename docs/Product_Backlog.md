@@ -26,3 +26,8 @@ The product backlog is organized into epics that reflect the agreed scope of the
    - Support calendar/diagonal/double-calendar/double-diagonal spread analysis with call/put comparisons and ATM/OTM/delta strike selection.
    - Add entry/exit filter framework, probability engines, parameter optimizer, walk-forward validator, out-of-sample testing, and regime analysis.
    - Enforce no-look-ahead safeguards and realistic bid/ask, slippage, commission, and liquidity modelling.
+9. Frontend architecture and extensibility foundation
+   - Establish feature-based frontend structure and plugin registry contracts.
+   - Keep frontend independent from quantitative engines through typed API boundaries.
+   - Add UX foundations: responsive workspace, saved layouts, keyboard shortcuts, guided setup, progressive disclosure, accessibility, undo/reset, presets, and workspace import/export.
+   - Support browser and Tauri desktop deployment from the same frontend codebase.

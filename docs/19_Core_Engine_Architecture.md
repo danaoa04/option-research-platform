@@ -13,6 +13,14 @@ This document serves as the master architecture for the quantitative platform an
 - The platform supports both research and production workflows through the same engine boundaries.
 - Reproducibility, validation, and observability are first-class concerns.
 - The architecture is extensible for new data providers, pricing models, strategies, and reporting modules.
+- Frontend remains an independent client layer and never embeds quantitative engine logic.
+
+Frontend architecture references:
+
+- [10_GUI_Design.md](./10_GUI_Design.md)
+- [38_GUI_Architecture.md](./38_GUI_Architecture.md)
+- [45_Workspace.md](./45_Workspace.md)
+- [48_Plugins.md](./48_Plugins.md)
 
 ## High-Level Engine Topology
 

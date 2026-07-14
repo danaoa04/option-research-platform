@@ -36,3 +36,6 @@ All notable changes to this project will be documented in this file.
 - Added Sprint 4C provider-neutral implied-volatility engine in `backend/implied_volatility` with Newton-Raphson solving, bisection fallback, and Brent solver interface support.
 - Added convergence detection and configurable failure handling, plus smile/term-structure/surface interpolation and a volatility cube framework.
 - Added historical IV storage hooks, validation rules, deterministic unit tests, and implied-volatility documentation updates.
+- Added official frontend architecture foundation with feature-based module structure and plugin-ready registry contracts under `frontend/src`.
+- Added typed frontend API boundary contracts and placeholder client methods for health, pricing, Greeks, volatility surfaces, term structures, strategy definitions, backtest jobs, optimization jobs, and research results.
+- Added frontend UX/workspace architecture documentation, plugin architecture documentation, and Tauri-first desktop packaging decision (no Electron).
