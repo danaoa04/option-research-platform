@@ -31,3 +31,18 @@ The product backlog is organized into epics that reflect the agreed scope of the
    - Keep frontend independent from quantitative engines through typed API boundaries.
    - Add UX foundations: responsive workspace, saved layouts, keyboard shortcuts, guided setup, progressive disclosure, accessibility, undo/reset, presets, and workspace import/export.
    - Support browser and Tauri desktop deployment from the same frontend codebase.
+
+## Sprint 4F Delivered (Current)
+
+- Deterministic historical and model probability engines with explicit probability-type separation.
+- Expected value comparison engine with historical versus model-estimated outputs.
+- Research-only lifecycle policy engine with explainable trigger diagnostics.
+- Calibration diagnostics and regime-conditioned ranking.
+- Deterministic refinement and Pareto/constrained ranking utilities.
+- Probability-run reproducibility validation and no-look-ahead probability query helpers.
+
+## Explicitly Deferred Beyond Sprint 4F
+
+- Bayesian/TPE/genetic/ML optimizers.
+- Distributed optimization orchestration.
+- Hyperparameter walk-forward optimizer tuning frameworks.

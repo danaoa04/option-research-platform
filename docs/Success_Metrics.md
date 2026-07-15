@@ -71,3 +71,12 @@ Success for the platform will be measured through engineering quality, research 
 - Exhaustive parameter sweeps are deterministic, stable-ordered, and reproducible with fixed grids.
 - Research run persistence captures configuration, parameters, software version, manifest lineage, checksums, timestamps, quality scores, and summary metrics.
 - Research opportunity queries are no-look-ahead safe for all as-of ranking endpoints.
+- Historical and model-estimated probabilities are always emitted with distinct labels and never mislabeled.
+- Model probability simulation is deterministic for fixed seeds/configuration and includes reproducibility metadata.
+- Per-leg model routing is auditable and respects configured American models for American-style contracts.
+- No silent portfolio-wide fallback to Black-Scholes occurs when mixed contract styles are present.
+- Lifecycle policy evaluation emits deterministic trigger reason codes and diagnostics.
+- Calibration reports include reliability buckets, Brier score, and calibration-error summaries with sparse-bucket warnings.
+- Regime-conditioned ranking remains explainable through component contributions and effective weights.
+- Deterministic refinement outputs include constrained candidates, Pareto-front membership, and stable tie-breaking.
+- Probability-run persistence rejects missing reproducibility configuration/metadata fields before write.

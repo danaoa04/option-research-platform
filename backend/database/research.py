@@ -37,6 +37,41 @@ class ResearchPersistenceService:
             opp_repo.upsert_opportunities(opportunity_rows)
             return run_row_id
 
+    def store_probability_run(
+        self,
+        run: ResearchRunDTO,
+        opportunities: list[ResearchOpportunityDTO],
+    ) -> int:
+        required_configuration_keys = {
+            "strategy_definition",
+            "lifecycle_policies",
+            "probability_method",
+            "simulation_assumptions",
+            "pricing_models",
+            "tree_step_settings",
+            "volatility_surface_snapshot",
+            "regime_classification",
+            "data_quality_policy",
+            "dataset_manifests",
+            "parameter_set",
+        }
+        required_metadata_keys = {
+            "random_seed",
+            "software_git_commit",
+            "result_checksums",
+            "calibration_metadata",
+        }
+
+        missing_cfg = sorted(required_configuration_keys.difference(run.configuration))
+        missing_meta = sorted(required_metadata_keys.difference(run.metadata_json))
+        if missing_cfg or missing_meta:
+            raise ResearchMutationError(
+                "probability run is missing reproducibility metadata: "
+                f"configuration_missing={missing_cfg}, metadata_missing={missing_meta}"
+            )
+
+        return self.store_run(run, opportunities)
+
 
 def deterministic_research_checksum(
     *,

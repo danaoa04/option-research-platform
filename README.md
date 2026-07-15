@@ -85,6 +85,23 @@ Calendar and multi-expiry research foundation (Sprint 4E):
 - Research persistence stores run configuration/parameters/version/manifest/checksums/metrics and opportunity snapshots with no-look-ahead query methods.
 - Benchmarks remain opt-in and are disabled by default.
 
+Probability, lifecycle, calibration, and refinement foundation (Sprint 4F):
+
+- Historical and model-estimated probability engines are implemented as distinct, explicitly labeled outputs.
+- Model probability simulation is seeded and deterministic for fixed strategy/configuration inputs.
+- Per-leg repricing uses model-aware routing and respects configured American pricing models for American-style legs.
+- Historical-versus-model expected value comparison reports deterministic risk summaries.
+- Lifecycle policy evaluation emits auditable trigger reason codes and diagnostics.
+- Calibration diagnostics include reliability buckets, Brier score, and calibration error.
+- Deterministic refinement supports constrained filtering, Pareto-front discovery, and stable ranking.
+- Persistence enforces required reproducibility metadata for probability runs.
+
+Explicit boundary and non-goals:
+
+- No live API connectivity.
+- No broker connectivity.
+- No live order execution.
+
 Backtesting boundary:
 
 - Historical bid/ask quotes remain the source of truth for fill simulation.

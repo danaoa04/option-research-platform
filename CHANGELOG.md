@@ -71,3 +71,10 @@ All notable changes to this project will be documented in this file.
 - Added research persistence services and no-look-ahead research query methods for best opportunities, highest POP/EV/theta capture, highest quality, and regime-specific ranking.
 - Added deterministic Sprint 4E offline tests and opt-in benchmark coverage for research scoring and sweep generation.
 - Added Sprint 4E documentation set: `docs/34_Calendar_Research_Engine.md`, `docs/35_Strategy_Analytics.md`, and `docs/36_Research_Framework.md`.
+- Added Sprint 4F probability and calibration research stack in `backend/research` with `HistoricalProbabilityEngine`, `ModelProbabilityEngine`, `ExpectedValueEngine`, `LifecyclePolicyEngine`, `ScoreCalibrationEngine`, `RegimeConditionedRankingEngine`, and `DeterministicRefinementEngine`.
+- Added strict probability-type labeling for historical vs model outputs and deterministic seeded model simulation reproducibility metadata.
+- Added per-leg model-aware simulation repricing support with configured American model usage for American-style legs.
+- Added probability-run persistence validation requiring reproducibility configuration and metadata keys.
+- Added no-look-ahead query methods for highest model PoP and lowest tail-loss run retrieval.
+- Added deterministic Sprint 4F offline tests in `backend/tests/test_probability_lifecycle_calibration_engine.py`.
+- Updated Sprint 4 documentation/checklists and analytics/research/simulation references for Sprint 4F scope and deferred optimizer boundaries.

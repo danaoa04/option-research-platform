@@ -222,3 +222,36 @@ Units:
 
 - Full multi-expiry spread optimizer and walk-forward optimizer remain future scope.
 - Regime classification is rule-based and intentionally deterministic, not ML-based.
+
+## Sprint 4F Research Extensions
+
+Sprint 4F adds deterministic research engines in `backend/research` that integrate with term-structure analytics:
+
+- `HistoricalProbabilityEngine` for as-of constrained empirical probabilities.
+- `ModelProbabilityEngine` for seeded path-based probability estimates.
+- `ExpectedValueEngine` for side-by-side historical expected value and model-estimated expected value reporting.
+- `LifecyclePolicyEngine` for auditable policy trigger evaluation.
+- `ScoreCalibrationEngine` for reliability buckets, Brier score, and calibration-error diagnostics.
+- `RegimeConditionedRankingEngine` for explainable regime-aware ranking.
+- `DeterministicRefinementEngine` for constrained deterministic coarse-to-fine refinement.
+
+Probability label policy:
+
+- Historical probability metrics and model-estimated probability metrics are always emitted with distinct names and never merged.
+
+Model routing policy:
+
+- Leg valuation uses metadata-driven model selection through the pricing router.
+- American-style options must use configured American pricing models.
+- Silent all-legs Black-Scholes fallback is prohibited.
+
+## Deferred Optimizer Boundary
+
+The following capabilities are explicitly deferred beyond Sprint 4F:
+
+- Bayesian optimization
+- TPE-based optimization
+- Genetic/evolutionary optimizers
+- ML-driven parameter search
+- Distributed optimization orchestration
+- Hyperparameter walk-forward optimizer tuning

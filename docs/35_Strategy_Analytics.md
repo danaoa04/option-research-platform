@@ -61,3 +61,65 @@ Opportunity scoring reports per-component explainability:
 - feature-level details
 
 This enables deterministic audit trails for every ranked opportunity.
+
+## Sprint 4F Probability Labels
+
+Probability outputs are explicitly typed and never relabeled:
+
+- `historical_probability_of_profit`
+- `historical_target_profit_probability`
+- `historical_touch_target_probability`
+- `historical_expiration_profit_probability`
+- `historical_loss_threshold_breach_probability`
+- `model_probability_of_profit`
+- `model_target_profit_probability`
+- `model_touch_target_probability`
+- `model_expiration_profit_probability`
+- `model_loss_threshold_breach_probability`
+
+Historical and model-estimated probabilities must be interpreted independently.
+
+## Expected Value Separation
+
+Expected value reporting is split into:
+
+- `historical_expected_value`: empirical outcome estimate from historical samples
+- `model_estimated_expected_value`: path-simulated estimate under model assumptions
+
+Additional deterministic risk outputs include:
+
+- downside deviation
+- expected shortfall
+- tail percentiles
+- profit factor
+- skew and kurtosis
+
+## Calibration Metrics
+
+Given predicted probabilities $p_i$ and outcomes $y_i \in \{0,1\}$:
+
+- Brier score:
+  $$
+  	ext{Brier} = \frac{1}{n}\sum_{i=1}^{n}(p_i - y_i)^2
+  $$
+- Reliability error (bucketed absolute difference):
+  $$
+  	ext{Calibration Error} = \sum_b w_b\,|\hat p_b - \hat y_b|
+  $$
+
+where $w_b$ is bucket weight, $\hat p_b$ bucket mean prediction, and $\hat y_b$ bucket empirical success rate.
+
+## Lifecycle Trigger Analytics
+
+Lifecycle events are policy triggers over state paths:
+
+- profit target hit
+- loss limit hit
+- DTE threshold exit
+- delta threshold exit
+- IV change threshold exit
+- term-structure normalization exit
+- earnings-event exit
+- max holding period exit
+
+Each trigger records timestamp, reason code, and supporting diagnostics.

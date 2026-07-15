@@ -103,3 +103,23 @@
 - [x] Documentation updates
 - [x] Lint passing
 - [x] Tests passing
+
+## Sprint 4F - Probability, Expected Value, Lifecycle, and Calibration Engine
+
+- [x] Strictly separated historical and model-estimated probability labels
+- [x] Deterministic historical probability engine with confidence intervals and sparse-sample policy
+- [x] Deterministic model probability engine with seeded path simulation
+- [x] Per-leg model-aware pricing routing in simulation, including configured American models for American legs
+- [x] Explicit prohibition of silent all-legs Black-Scholes fallback behavior
+- [x] Historical-versus-model expected value comparison engine
+- [x] Research-only lifecycle policy engine with auditable trigger reasons
+- [x] Score calibration diagnostics (reliability buckets, Brier score, calibration error)
+- [x] Regime-conditioned explainable ranking engine
+- [x] Deterministic refinement engine (coarse-to-fine, constraints, Pareto front, stable ranking)
+- [x] Probability-run reproducibility metadata validation at persistence boundary
+- [x] No-look-ahead probability query endpoints for model PoP and tail-loss views
+- [x] Comprehensive deterministic offline test coverage
+- [x] Benchmarks remain opt-in and excluded from default tests
+- [x] Documentation updates
+- [x] Lint passing
+- [x] Tests passing

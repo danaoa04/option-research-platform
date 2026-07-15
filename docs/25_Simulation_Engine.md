@@ -87,3 +87,20 @@ flowchart LR
     Execution --> Portfolio[Portfolio Engine]
     Portfolio --> Analytics[Analytics Outputs]
 ```
+
+## Sprint 4F Additions: Probability and Lifecycle Simulation
+
+Sprint 4F extends simulation workflows for research-only probability and lifecycle policy evaluation.
+
+- Historical probability paths and model-estimated probability paths are reported as distinct labels.
+- Model-estimated paths are seeded and deterministic for fixed inputs and seed.
+- Per-leg repricing uses metadata-driven model routing; American-style legs use configured American models.
+- No silent global fallback to Black-Scholes is allowed for mixed-style portfolios.
+- Lifecycle trigger simulation is policy-driven and auditable (profit, loss, DTE, delta, IV change, term normalization, event timing, max holding period).
+
+### Explicit Boundaries
+
+- No live API connectivity.
+- No broker connectivity.
+- No live order execution.
+- Benchmarks remain opt-in and are excluded from default `make test` runs.

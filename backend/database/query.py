@@ -422,6 +422,34 @@ class HistoricalQueryService:
         )
         return list(self.session.execute(stmt).scalars())
 
+    def highest_model_pop_runs(
+        self,
+        *,
+        as_of: datetime,
+        limit: int = 25,
+    ) -> list[ResearchRun]:
+        stmt: Select[tuple[ResearchRun]] = (
+            select(ResearchRun)
+            .where(ResearchRun.run_timestamp <= as_of)
+            .order_by(ResearchRun.summary_metrics["model_pop"].desc())
+            .limit(limit)
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def lowest_tail_loss_runs(
+        self,
+        *,
+        as_of: datetime,
+        limit: int = 25,
+    ) -> list[ResearchRun]:
+        stmt: Select[tuple[ResearchRun]] = (
+            select(ResearchRun)
+            .where(ResearchRun.run_timestamp <= as_of)
+            .order_by(ResearchRun.summary_metrics["tail_loss_p95"].asc())
+            .limit(limit)
+        )
+        return list(self.session.execute(stmt).scalars())
+
     def best_theta_capture_runs(
         self,
         *,
