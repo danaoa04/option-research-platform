@@ -779,6 +779,221 @@ class BacktestMarginReproducibilityChecksumDTO:
 
 
 @dataclass(slots=True, frozen=True)
+class BacktestExecutionCalibrationDatasetDTO:
+    dataset_id: str
+    source_type: str
+    provider_manifest: str
+    broker_policy_version: str
+    sample_count: int
+    filters_json: dict[str, Any]
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionFillQualityObservationDTO:
+    observation_id: str
+    dataset_id: str
+    event_timestamp: datetime
+    symbol: str
+    contract_identifier: str
+    market_regime: str
+    liquidity_regime: str
+    volatility_regime: str
+    strategy_family: str
+    fill_ratio: Decimal
+    price_improvement: Decimal
+    price_disimprovement: Decimal
+    effective_spread: Decimal | None
+    realized_spread: Decimal | None
+    quoted_spread: Decimal | None
+    spread_capture: Decimal | None
+    slippage_vs_midpoint: Decimal | None
+    slippage_vs_arrival: Decimal | None
+    implementation_shortfall: Decimal | None
+    cancellation_rate: Decimal
+    timeout_rate: Decimal
+    partial_fill_rate: Decimal
+    delay_to_fill_seconds: Decimal
+    residual_quantity: int
+    legging_cost: Decimal
+    opportunity_cost: Decimal
+    execution_cost_bps: Decimal
+    execution_cost_dollars: Decimal
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionSlippageModelDTO:
+    model_id: str
+    dataset_id: str
+    model_name: str
+    calibrated_parameters: dict[str, Any]
+    confidence_intervals: dict[str, Any]
+    sample_size: int
+    fit_diagnostics: dict[str, Any]
+    residual_analysis: dict[str, Any]
+    regime_coverage: dict[str, Any]
+    warnings: list[str]
+    validity_status: str
+    calibrated_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionSpreadCaptureModelDTO:
+    model_id: str
+    dataset_id: str
+    model_name: str
+    calibrated_parameters: dict[str, Any]
+    confidence_intervals: dict[str, Any]
+    sample_size: int
+    fit_diagnostics: dict[str, Any]
+    residual_analysis: dict[str, Any]
+    regime_coverage: dict[str, Any]
+    warnings: list[str]
+    validity_status: str
+    calibrated_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionPartialFillModelDTO:
+    model_id: str
+    dataset_id: str
+    fill_probability: Decimal
+    expected_fill_ratio: Decimal
+    cancellation_probability: Decimal
+    timeout_probability: Decimal
+    retry_probability: Decimal
+    expected_residual_quantity: Decimal
+    multi_leg_completion_probability: Decimal
+    legging_exposure_duration_seconds: Decimal
+    conditioned_on: dict[str, Any]
+    warnings: list[str]
+    calibrated_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionTransactionCostPolicyDTO:
+    policy_id: str
+    policy_name: str
+    policy_version: str
+    policy_json: dict[str, Any]
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionBrokerPolicyVersionDTO:
+    policy_name: str
+    policy_version: str
+    effective_date: date
+    source_reference_metadata: dict[str, Any]
+    assumptions: list[str]
+    supported_instruments: list[str]
+    unsupported_instruments: list[str]
+    known_differences_from_official: list[str]
+    deprecated_versions: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionPolicyComparisonDTO:
+    comparison_id: str
+    event_timestamp: datetime
+    left_policy: str
+    right_policy: str
+    commissions_diff: Decimal
+    exchange_fees_diff: Decimal
+    exercise_assignment_fees_diff: Decimal
+    buying_power_effect_diff: Decimal
+    maintenance_requirement_diff: Decimal
+    interest_diff: Decimal
+    borrow_cost_diff: Decimal
+    total_transaction_cost_diff: Decimal
+    total_return_diff: Decimal
+    cagr_diff: Decimal
+    drawdown_diff: Decimal
+    rejected_trades_diff: int
+    margin_breaches_diff: int
+    liquidations_diff: int
+    net_performance_diff: Decimal
+    ambiguity_warnings: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionQualityScoreDTO:
+    score_id: str
+    event_timestamp: datetime
+    symbol: str
+    contract_identifier: str
+    total_score: Decimal
+    confidence: Decimal
+    component_scores: dict[str, Any]
+    component_weights: dict[str, Any]
+    warnings: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionRealVsSimulatedDTO:
+    comparison_id: str
+    event_timestamp: datetime
+    symbol: str
+    contract_identifier: str
+    simulated_fill_price: Decimal | None
+    real_fill_price: Decimal | None
+    expected_fill_distribution: list[float]
+    price_error: Decimal | None
+    cost_error: Decimal
+    timing_error_seconds: Decimal
+    partial_fill_error: Decimal
+    fee_error: Decimal
+    policy_mismatch: bool
+    warnings: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionValidationRunDTO:
+    validation_run_id: str
+    split_type: str
+    train_size: int
+    validation_size: int
+    error_distribution: dict[str, Any]
+    calibration_drift: Decimal
+    parameter_drift: Decimal
+    out_of_sample_cost_error: Decimal
+    overconfidence_score: Decimal
+    warnings: list[str]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionCalibrationDriftDTO:
+    drift_id: str
+    event_timestamp: datetime
+    model_name: str
+    calibration_drift: Decimal
+    parameter_drift: Decimal
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionStressTestResultDTO:
+    scenario_name: str
+    event_timestamp: datetime
+    total_cost_delta: Decimal
+    avg_fill_ratio: Decimal
+    avg_delay_seconds: Decimal
+    warnings: list[str]
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionCalibrationChecksumDTO:
+    checksum_key: str
+    checksum_value: str
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
 class BacktestRunDTO:
     run_id: str
     strategy_name: str

@@ -172,3 +172,18 @@ Backtesting Sprint 6A boundaries:
 - Added deterministic replay foundations with play/pause/step/jump controls, typed inspections, and persisted replay snapshots.
 - Added rich event taxonomy overlays and cross-strategy arbitration decision contracts for reproducible conflict handling.
 - Added backtesting analytics/replay persistence schema (`0010_backtest_analytics_replay_foundation`) and repository/service wiring.
+
+## Sprint 7C Update
+
+- Added deterministic execution calibration and broker-policy research adapters in `backend/backtesting/execution_calibration.py`.
+- Added fill-quality, slippage, spread-capture, partial-fill, validation, stress-test, and checksum workflows.
+- Added execution-calibration persistence schema and migration `0013_execution_calibration_policy_validation.py` with DTO/repository/service wiring in `backend/database`.
+- Added execution replay context extension and additive backtest configuration fields for execution policy and calibration metadata.
+- Added deterministic tests for execution calibration engines, persistence round-trip, migration upgrade/downgrade, and opt-in execution benchmarks.
+
+Sprint 7C boundaries:
+
+- No live broker connectivity.
+- No live order execution.
+- No official broker-fee or margin parity claims.
+- Market-impact modeling remains a research placeholder.

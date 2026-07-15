@@ -41,6 +41,7 @@ class ReplayInspection:
     volatility_surface: dict[str, Any]
     lifecycle_decisions: tuple[dict[str, Any], ...]
     portfolio_state: dict[str, Any]
+    execution_context: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
@@ -113,6 +114,7 @@ class BacktestReplayEngine:
         volatility_surface: dict[str, Any],
         lifecycle_decisions: tuple[dict[str, Any], ...],
         portfolio_state: dict[str, Any],
+        execution_context: dict[str, Any] | None = None,
     ) -> ReplayInspection | None:
         if not self.events or self.cursor >= len(self.events):
             return None
@@ -125,6 +127,7 @@ class BacktestReplayEngine:
             volatility_surface=volatility_surface,
             lifecycle_decisions=lifecycle_decisions,
             portfolio_state=portfolio_state,
+            execution_context=execution_context or {},
         )
 
     def create_snapshot(

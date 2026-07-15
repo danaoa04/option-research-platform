@@ -254,6 +254,11 @@ class BacktestConfiguration:
     random_seed: int | None
     software_git_commit: str
     schema_version: str
+    partial_fill_policy: dict[str, Any] = field(default_factory=dict)
+    fee_policy: dict[str, Any] = field(default_factory=dict)
+    broker_policy: dict[str, Any] = field(default_factory=dict)
+    calibration_version: str | None = None
+    fallback_policy: dict[str, Any] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
 
 

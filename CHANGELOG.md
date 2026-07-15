@@ -96,6 +96,12 @@ All notable changes to this project will be documented in this file.
 - Added backtesting persistence service and DTO contracts in `backend/database` plus deterministic run checksum utilities.
 - Added deterministic backtesting tests for clock ordering, no-look-ahead enforcement, fill/valuation behavior, event-loop failure isolation, scenario-template coverage, persistence round-trip, and migration upgrade/downgrade paths for `0007` and `0008`.
 - Added opt-in backtesting benchmark runner and scenario-library expansion for research-only stress templates.
+- Added Sprint 7C execution calibration subsystem in `backend/backtesting/execution_calibration.py`, including fill-quality analysis, slippage/spread/partial-fill calibration, broker-policy adapters, policy comparison, execution quality scoring, real-vs-simulated comparison, validation, stress testing, and deterministic checksums.
+- Added execution calibration persistence and query services in `backend/database/execution_calibration.py` plus repository support in `backend/database/repositories/execution_calibration.py`.
+- Added execution calibration ORM entities, DTOs, and migration `0013_execution_calibration_policy_validation.py` for normalized storage of datasets, observations, models, policy versions/comparisons, quality scores, validation runs, drift events, stress results, and checksums.
+- Added additive replay and backtesting configuration extensions for execution context and calibration policy metadata.
+- Added deterministic Sprint 7C tests: `backend/tests/test_execution_calibration_engine.py`, `backend/tests/test_execution_calibration_persistence.py`, `backend/tests/test_execution_calibration_migrations.py`, and opt-in `backend/tests/test_execution_benchmarks_opt_in.py`.
+- Added Sprint 7 documentation: `docs/Sprint_7_Checklist.md` and `docs/43_Execution_Calibration_and_Broker_Policy.md`.
 
 ## Sprint 6B Update
 - Added deterministic strategy state-machine support for multi-leg historical orchestration.
