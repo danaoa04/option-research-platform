@@ -165,7 +165,20 @@ Sprint 4C now provides a model-aware implied-volatility solver foundation in `ba
 - Solving is routed by contract metadata and compatible pricing model.
 - Structured outcomes and diagnostics are suitable for downstream surface-quality workflows.
 - Quote-source policy metadata is preserved for stale/crossed/wide-market diagnostics.
+- Batch outputs preserve deterministic ordering across mixed contract sets and repeated timestamps.
+- Result metadata now carries method-attempt diagnostics and model capabilities required for future stale-surface indicators.
 
 The term-structure and surface engine itself remains deferred and is not implemented in this sprint.
 
 This subsystem is a roadmap item and not part of Sprint 3C implementation scope.
+
+## Sprint 4C Integration Readiness Notes
+
+The downstream term-structure engine can rely on current IV result contracts for:
+
+- smile and tenor point construction keyed by selected quote source
+- quality gating from structured outcomes (success, approximate, invalid market, non-convergence, unsupported)
+- explicit failure reasons for data-quality dashboards
+- American-model diagnostics to separate model-risk from data-quality risk
+
+Forward volatility, historical surface persistence, and contango/backwardation classification remain intentionally out of scope for Sprint 4C.

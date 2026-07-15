@@ -61,8 +61,10 @@ US-listed compatibility details:
 Implied-volatility foundation:
 
 - Model-aware inversion routes to Black-Scholes, Black-76, or configured American pricing models by contract metadata.
-- Solver stack supports Newton-Raphson, bisection, and Brent-style fallback with structured convergence diagnostics.
-- Batch solving preserves deterministic ordering and isolates per-contract failures.
+- Solver stack supports Newton-Raphson, bisection, and Brent-style fallback, including an internal Brent-style hybrid when no external adapter is configured.
+- Quote-source policies support bid/ask/mid/last/mark selection with explicit diagnostics for stale, crossed, zero-bid, missing-ask, wide-spread, and out-of-bounds quotes.
+- Batch APIs cover scalar, chain, and multi-expiration workflows; outputs preserve deterministic ordering and isolate per-contract failures.
+- American inversion returns tree-resolution sensitivity and model-setting metadata and never silently falls back to Black-Scholes.
 
 Backtesting boundary:
 

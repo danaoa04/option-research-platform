@@ -6,11 +6,16 @@ from datetime import date, datetime, timedelta
 import pytest
 
 from backend.implied_volatility import (
+    BatchParallelismMode,
+    ExpirationBatchRequest,
     FailureReason,
+    ImpliedVolatilityChainRequest,
     ImpliedVolatilityEngine,
     ImpliedVolatilityRequest,
     InMemoryHistoricalIVStorage,
     MarketPriceSource,
+    MultiExpirationBatchRequest,
+    QuoteIssuePolicy,
     QuotePolicy,
     SmileInterpolator,
     SolverConfig,
@@ -450,3 +455,156 @@ def test_historical_iv_storage_hooks() -> None:
     )
 
     assert len(rows) == 2
+
+
+def test_brent_hybrid_solver_without_interface_converges() -> None:
+    pricing_engine = PricingEngine()
+    req = _pricing_request(volatility=0.31)
+    market_price = pricing_engine.price(req).option_value
+
+    engine = ImpliedVolatilityEngine(brent_solver=None)
+    cfg = SolverConfig(
+        fallback_sequence=(SolverMethod.BRENT,),
+        brent_max_iterations=200,
+    )
+    result = engine.solve(
+        ImpliedVolatilityRequest(market_price=market_price, pricing_request=req),
+        cfg,
+    )
+
+    assert result.converged is True
+    assert result.method == SolverMethod.BRENT
+    assert result.implied_volatility == pytest.approx(0.31, abs=5e-5)
+
+
+def test_extreme_moneyness_and_near_expiry_cases() -> None:
+    pricing_engine = PricingEngine()
+    deep_otm = _pricing_request(spot=80.0, strike=120.0, volatility=0.5)
+    deep_itm = _pricing_request(spot=140.0, strike=90.0, volatility=0.12)
+    near_expiry = PricingRequest(
+        spot=100.0,
+        strike=100.0,
+        expiry=date(2026, 1, 2),
+        volatility=0.4,
+        risk_free_rate=0.05,
+        dividend_yield=0.0,
+        option_type=OptionType.CALL,
+        exercise_style=ExerciseStyle.EUROPEAN,
+        multiplier=1.0,
+        valuation_date=date(2026, 1, 1),
+    )
+
+    engine = ImpliedVolatilityEngine()
+    for req, expected_iv in ((deep_otm, 0.5), (deep_itm, 0.12), (near_expiry, 0.4)):
+        px = pricing_engine.price(req).option_value
+        solved = engine.solve(ImpliedVolatilityRequest(market_price=px, pricing_request=req))
+        assert solved.converged is True
+        assert solved.implied_volatility == pytest.approx(expected_iv, abs=2e-3)
+
+
+def test_quote_policies_for_crossed_zero_bid_stale_and_out_of_bounds() -> None:
+    req = _pricing_request(volatility=0.2)
+    fair = PricingEngine().price(req).option_value
+    engine = ImpliedVolatilityEngine()
+
+    strict_crossed = engine.solve(
+        ImpliedVolatilityRequest(
+            market_price=fair,
+            bid=2.1,
+            ask=2.0,
+            pricing_request=req,
+            quote_policy=QuotePolicy.STRICT,
+        )
+    )
+    assert strict_crossed.converged is False
+
+    clip_out_of_bounds = engine.solve(
+        ImpliedVolatilityRequest(
+            market_price=0.01,
+            mark_price=0.01,
+            pricing_request=_pricing_request(spot=120.0, strike=100.0, volatility=0.2),
+            market_price_source=MarketPriceSource.MARK,
+        ),
+        SolverConfig(out_of_bounds_price_policy=QuoteIssuePolicy.CLIP),
+    )
+    assert clip_out_of_bounds.outcome != SolverOutcome.INVALID_MARKET_PRICE
+
+    stale_rejected = engine.solve(
+        ImpliedVolatilityRequest(
+            market_price=fair,
+            mark_price=fair,
+            quote_is_stale=True,
+            pricing_request=req,
+        ),
+        SolverConfig(stale_quote_policy=QuoteIssuePolicy.REJECT),
+    )
+    assert stale_rejected.converged is False
+    assert stale_rejected.failure_reason == FailureReason.INVALID_INPUT
+
+
+def test_chain_and_multi_expiration_batch_apis() -> None:
+    pricing_engine = PricingEngine()
+    req1 = _pricing_request(volatility=0.14, option_type=OptionType.CALL)
+    req2 = _pricing_request(volatility=0.2, option_type=OptionType.PUT)
+    req3 = _pricing_request(
+        volatility=0.27,
+        underlying_type=UnderlyingType.FUTURES,
+        settlement_type=SettlementType.CASH,
+        futures_price=100.0,
+    )
+
+    iv_requests = tuple(
+        ImpliedVolatilityRequest(
+            market_price=pricing_engine.price(r).option_value,
+            pricing_request=r,
+        )
+        for r in (req1, req2, req3)
+    )
+    engine = ImpliedVolatilityEngine()
+
+    chain = engine.solve_chain(
+        ImpliedVolatilityChainRequest(contracts=iv_requests, chain_id="SPY-2026-01-01")
+    )
+    assert len(chain.results) == 3
+    assert chain.calculation_metadata["chain_id"] == "SPY-2026-01-01"
+
+    multi = engine.solve_multi_expiration(
+        MultiExpirationBatchRequest(
+            expirations=(
+                ExpirationBatchRequest(
+                    expiry=req1.expiry,
+                    contracts=(iv_requests[0], iv_requests[1]),
+                ),
+                ExpirationBatchRequest(expiry=req3.expiry, contracts=(iv_requests[2],)),
+            )
+        )
+    )
+    assert len(multi.results) == 3
+    assert len(multi.calculation_metadata["expiry_buckets"]) == 2
+
+
+def test_threaded_batch_keeps_deterministic_order() -> None:
+    pricing_engine = PricingEngine()
+    requests = [
+        _pricing_request(volatility=0.11),
+        _pricing_request(volatility=0.19),
+        _pricing_request(volatility=0.26),
+        _pricing_request(volatility=0.33),
+    ]
+    iv_requests = [
+        ImpliedVolatilityRequest(
+            market_price=pricing_engine.price(req).option_value,
+            pricing_request=req,
+        )
+        for req in requests
+    ]
+
+    engine = ImpliedVolatilityEngine()
+    cfg = SolverConfig(batch_parallelism=2, batch_parallelism_mode=BatchParallelismMode.THREADED)
+    threaded = engine.solve_batch(iv_requests, config=cfg)
+    serial = engine.solve_batch(iv_requests)
+
+    assert [item.implied_volatility for item in threaded.results] == pytest.approx(
+        [item.implied_volatility for item in serial.results], abs=1e-12
+    )
+    assert threaded.calculation_metadata["deterministic_ordering"] is True

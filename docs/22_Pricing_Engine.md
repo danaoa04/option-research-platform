@@ -131,6 +131,7 @@ Implemented capabilities:
 
 - IV solving routed by contract metadata and pricing-model compatibility
 - Newton-Raphson, bisection, and Brent-style fallback sequencing
+- internal Brent-style hybrid fallback when no external Brent adapter is configured
 - convergence diagnostics and structured failure outcomes
 - quote-source policy support for bid/ask/mid/last/mark inputs
 - no silent Black-Scholes fallback for American contracts
@@ -139,6 +140,23 @@ Implemented capabilities:
 - historical IV storage hooks
 
 See [Volatility Engine](./32_Volatility_Engine.md).
+
+### Sprint 4C Validation and Bound Policy
+
+Model-aware implied-volatility inversion validates observed prices against intrinsic and theoretical bounds before solving.
+
+- Below-intrinsic and above-upper-bound observations produce structured failures by default.
+- Optional clipping policy is available for historical research workflows that must keep processing low-quality quotes.
+- Validation also checks settlement, exercise, underlying, date, and dividend compatibility for the selected model.
+
+### Sprint 4C American Inversion Metadata
+
+American inversion runs against the configured American model and returns:
+
+- model capability metadata
+- tree-step settings
+- tree-resolution sensitivity diagnostics
+- method-attempt diagnostics across solver fallback sequence
 
 No live API integrations are used in this sprint.
 

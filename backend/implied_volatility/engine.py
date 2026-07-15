@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 
 from backend.pricing import PricingEngine, PricingRequest
@@ -18,14 +19,19 @@ from .exceptions import (
 )
 from .interfaces import BrentSolverInterface
 from .models import (
+    BatchParallelismMode,
+    ConvergenceDiagnostics,
     FailureReason,
     ImpliedVolatilityBatchResult,
+    ImpliedVolatilityChainRequest,
     ImpliedVolatilityRequest,
     ImpliedVolatilityResult,
+    MultiExpirationBatchRequest,
     SolverConfig,
     SolverMethod,
     SolverOutcome,
 )
+from .numerical_methods import solve_bisection, solve_brent_hybrid, solve_newton_raphson
 from .validation import select_market_price, validate_request
 
 
@@ -47,7 +53,9 @@ class ImpliedVolatilityEngine:
     ) -> ImpliedVolatilityResult:
         cfg = config or SolverConfig()
 
+        quote_warnings: list[str] = []
         try:
+            _, quote_warnings = select_market_price(request, cfg)
             resolved_model = self.adapter.resolve_model(
                 request.pricing_request,
                 request.model_name,
@@ -61,15 +69,24 @@ class ImpliedVolatilityEngine:
                 config=cfg,
                 outcome=SolverOutcome.UNSUPPORTED_CONTRACT,
             )
+        except ImpliedVolatilityValidationError as exc:
+            reason = _reason_from_message(str(exc))
+            outcome = (
+                SolverOutcome.INVALID_MARKET_PRICE
+                if reason in {FailureReason.BELOW_INTRINSIC, FailureReason.ABOVE_THEORETICAL_BOUND}
+                else SolverOutcome.UNSUPPORTED_CONTRACT
+            )
+            return self._failure_result(
+                request=request,
+                model_name=request.model_name,
+                reason=reason,
+                message=str(exc),
+                config=cfg,
+                outcome=outcome,
+            )
 
         try:
             diagnostics = validate_request(request, cfg, resolved_model)
-            selected_price, quote_warnings = select_market_price(request)
-            diagnostics = diagnostics.__class__(
-                market_price=selected_price,
-                intrinsic_lower_bound=diagnostics.intrinsic_lower_bound,
-                theoretical_upper_bound=diagnostics.theoretical_upper_bound,
-            )
         except ImpliedVolatilityValidationError as exc:
             reason = _reason_from_message(str(exc))
             outcome = (
@@ -93,6 +110,7 @@ class ImpliedVolatilityEngine:
                 message=str(exc),
                 config=cfg,
                 outcome=outcome,
+                warnings=quote_warnings,
             )
 
         target_price = diagnostics.market_price
@@ -103,10 +121,41 @@ class ImpliedVolatilityEngine:
             return model_price - target_price
 
         solver_warnings = list(quote_warnings)
+        attempted_methods: list[SolverMethod] = []
+        failure_reasons: list[FailureReason] = []
         lower = cfg.vol_lower_bound
         upper = cfg.vol_upper_bound
-        f_low = objective(lower)
-        f_high = objective(upper)
+
+        try:
+            f_low = objective(lower)
+            f_high = objective(upper)
+        except Exception:
+            return self._failure_result(
+                request=request,
+                model_name=resolved_model,
+                reason=FailureReason.NUMERICAL_INSTABILITY,
+                message="objective function failed inside configured bounds",
+                config=cfg,
+                outcome=SolverOutcome.NON_CONVERGENCE,
+                lower=lower,
+                upper=upper,
+                warnings=solver_warnings,
+            )
+
+        if not _is_finite(f_low) or not _is_finite(f_high):
+            return self._failure_result(
+                request=request,
+                model_name=resolved_model,
+                reason=FailureReason.NUMERICAL_INSTABILITY,
+                message="objective function produced non-finite values",
+                config=cfg,
+                outcome=SolverOutcome.NON_CONVERGENCE,
+                lower=lower,
+                upper=upper,
+                warnings=solver_warnings,
+            )
+
+        bracketed = f_low * f_high <= 0.0
         if f_low * f_high > 0.0:
             return self._failure_result(
                 request=request,
@@ -118,14 +167,23 @@ class ImpliedVolatilityEngine:
                 lower=lower,
                 upper=upper,
                 warnings=solver_warnings,
+                diagnostics=ConvergenceDiagnostics(
+                    method_attempt_order=cfg.fallback_sequence,
+                    attempted_methods=(),
+                    method_failure_reasons=(FailureReason.NO_BRACKETED_SOLUTION,),
+                    bracket_lower_price_error=f_low,
+                    bracket_upper_price_error=f_high,
+                    stable_bracket_found=False,
+                ),
             )
 
         last_failure_reason = FailureReason.STALLED
         for method in cfg.fallback_sequence:
+            attempted_methods.append(method)
             if method == SolverMethod.NEWTON_RAPHSON:
-                attempted = self._newton_raphson(objective, cfg)
+                attempted = solve_newton_raphson(objective, cfg)
             elif method == SolverMethod.BISECTION:
-                attempted = self._bisection(objective, cfg)
+                attempted = solve_bisection(objective, cfg)
             elif method == SolverMethod.BRENT:
                 attempted = self._brent_interface(objective, cfg)
             else:
@@ -139,6 +197,7 @@ class ImpliedVolatilityEngine:
                         "price_source": request.market_price_source.value,
                         "intrinsic_lower_bound": diagnostics.intrinsic_lower_bound,
                         "theoretical_upper_bound": diagnostics.theoretical_upper_bound,
+                        "selected_market_price": target_price,
                         "capabilities": self.adapter.capabilities(resolved_model),
                     }
                 )
@@ -153,12 +212,22 @@ class ImpliedVolatilityEngine:
                         attempted.implied_volatility,
                     )
 
+                metadata.setdefault("model_settings", {})
+                metadata["model_settings"].update(
+                    {
+                        "tree_steps": request.pricing_request.tree_steps,
+                        "settlement_type": request.pricing_request.settlement_type.value,
+                        "exercise_style": request.pricing_request.exercise_style.value,
+                    }
+                )
+
                 return ImpliedVolatilityResult(
                     implied_volatility=attempted.implied_volatility,
                     method=attempted.method,
                     iterations=attempted.iterations,
                     converged=True,
                     residual=attempted.residual,
+                    final_pricing_error=attempted.final_pricing_error,
                     outcome=(
                         SolverOutcome.SUCCESS
                         if abs(attempted.residual) <= cfg.price_tolerance
@@ -168,11 +237,20 @@ class ImpliedVolatilityEngine:
                     pricing_model_used=resolved_model,
                     lower_bound=lower,
                     upper_bound=upper,
+                    convergence_diagnostics=ConvergenceDiagnostics(
+                        method_attempt_order=cfg.fallback_sequence,
+                        attempted_methods=tuple(attempted_methods),
+                        method_failure_reasons=tuple(failure_reasons),
+                        bracket_lower_price_error=f_low,
+                        bracket_upper_price_error=f_high,
+                        stable_bracket_found=bracketed,
+                    ),
                     calculation_metadata=metadata,
                     warnings=solver_warnings + list(attempted.warnings),
                 )
 
             last_failure_reason = attempted.failure_reason
+            failure_reasons.append(attempted.failure_reason)
             solver_warnings.extend(attempted.warnings)
 
         message = "implied-volatility solver did not converge"
@@ -189,6 +267,14 @@ class ImpliedVolatilityEngine:
             lower=lower,
             upper=upper,
             warnings=solver_warnings,
+            diagnostics=ConvergenceDiagnostics(
+                method_attempt_order=cfg.fallback_sequence,
+                attempted_methods=tuple(attempted_methods),
+                method_failure_reasons=tuple(failure_reasons),
+                bracket_lower_price_error=f_low,
+                bracket_upper_price_error=f_high,
+                stable_bracket_found=bracketed,
+            ),
         )
 
     def solve_batch(
@@ -197,252 +283,109 @@ class ImpliedVolatilityEngine:
         config: SolverConfig | None = None,
     ) -> ImpliedVolatilityBatchResult:
         cfg = config or SolverConfig()
-        ordered_results: list[ImpliedVolatilityResult] = []
-        for request in requests:
-            try:
-                ordered_results.append(self.solve(request, config=cfg))
-            except (
-                ImpliedVolatilityValidationError,
-                ImpliedVolatilityInvalidMarketPriceError,
-                ImpliedVolatilityUnsupportedContractError,
-            ) as exc:
-                reason = _reason_from_message(str(exc))
-                outcome = (
-                    SolverOutcome.INVALID_MARKET_PRICE
-                    if reason
-                    in {
-                        FailureReason.BELOW_INTRINSIC,
-                        FailureReason.ABOVE_THEORETICAL_BOUND,
-                    }
-                    else SolverOutcome.UNSUPPORTED_CONTRACT
-                )
-                ordered_results.append(
-                    self._failure_result(
-                        request=request,
-                        model_name=request.model_name,
-                        reason=reason,
-                        message=str(exc),
-                        config=cfg,
-                        outcome=outcome,
-                    )
-                )
+        if not requests:
+            return ImpliedVolatilityBatchResult(results=[], calculation_metadata={"batch_size": 0})
+
+        ordered_results: list[ImpliedVolatilityResult] = [
+            self._failure_result(
+                request=req,
+                model_name=req.model_name,
+                reason=FailureReason.INVALID_INPUT,
+                message="uninitialized",
+                config=cfg,
+                outcome=SolverOutcome.NON_CONVERGENCE,
+            )
+            for req in requests
+        ]
+
+        if (
+            cfg.batch_parallelism_mode == BatchParallelismMode.THREADED
+            and cfg.batch_parallelism > 1
+            and len(requests) > 1
+        ):
+            with ThreadPoolExecutor(max_workers=cfg.batch_parallelism) as executor:
+                futures = {
+                    executor.submit(self._solve_with_batch_error_capture, req, cfg): idx
+                    for idx, req in enumerate(requests)
+                }
+                for future, idx in futures.items():
+                    ordered_results[idx] = future.result()
+        else:
+            for idx, request in enumerate(requests):
+                ordered_results[idx] = self._solve_with_batch_error_capture(request, cfg)
 
         return ImpliedVolatilityBatchResult(
             results=ordered_results,
             calculation_metadata={
                 "batch_size": len(requests),
                 "deterministic_ordering": True,
-                "parallelism_hook": "not_enabled",
+                "parallelism_hook": cfg.batch_parallelism_mode.value,
+                "configured_parallelism": cfg.batch_parallelism,
             },
         )
 
-    def _newton_raphson(
+    def solve_chain(
         self,
-        objective: Callable[[float], float],
-        config: SolverConfig,
-    ) -> ImpliedVolatilityResult:
-        max_iterations = (
-            config.newton_max_iterations
-            if config.newton_max_iterations is not None
-            else config.max_iterations
+        chain_request: ImpliedVolatilityChainRequest,
+        config: SolverConfig | None = None,
+    ) -> ImpliedVolatilityBatchResult:
+        batch = self.solve_batch(list(chain_request.contracts), config=config)
+        metadata = dict(batch.calculation_metadata)
+        metadata.update(
+            {
+                "chain_id": chain_request.chain_id,
+                "as_of": chain_request.as_of.isoformat() if chain_request.as_of else None,
+            }
         )
-        vol = min(max(config.initial_guess, config.vol_lower_bound), config.vol_upper_bound)
-        residual = objective(vol)
-        stalled_count = 0
+        return ImpliedVolatilityBatchResult(results=batch.results, calculation_metadata=metadata)
 
-        for iteration in range(1, max_iterations + 1):
-            if abs(residual) <= config.price_tolerance:
-                return ImpliedVolatilityResult(
-                    implied_volatility=vol,
-                    method=SolverMethod.NEWTON_RAPHSON,
-                    iterations=iteration,
-                    converged=True,
-                    residual=residual,
-                    outcome=SolverOutcome.SUCCESS,
-                    failure_reason=FailureReason.NONE,
-                    lower_bound=config.vol_lower_bound,
-                    upper_bound=config.vol_upper_bound,
-                    calculation_metadata={"solver": "newton_raphson"},
-                )
-
-            bumped = min(vol + config.finite_difference_bump, config.vol_upper_bound)
-            deriv = (objective(bumped) - residual) / max(bumped - vol, 1e-12)
-            if abs(deriv) < config.min_vega:
-                return ImpliedVolatilityResult(
-                    implied_volatility=None,
-                    method=SolverMethod.NEWTON_RAPHSON,
-                    iterations=iteration,
-                    converged=False,
-                    residual=residual,
-                    outcome=SolverOutcome.NON_CONVERGENCE,
-                    failure_reason=FailureReason.LOW_VEGA,
-                    lower_bound=config.vol_lower_bound,
-                    upper_bound=config.vol_upper_bound,
-                    calculation_metadata={"solver": "newton_raphson"},
-                    warnings=["newton_raphson vega too small"],
-                )
-
-            step = residual / deriv
-            candidate = vol - step
-            if candidate <= config.vol_lower_bound or candidate >= config.vol_upper_bound:
-                return ImpliedVolatilityResult(
-                    implied_volatility=None,
-                    method=SolverMethod.NEWTON_RAPHSON,
-                    iterations=iteration,
-                    converged=False,
-                    residual=residual,
-                    outcome=SolverOutcome.NON_CONVERGENCE,
-                    failure_reason=FailureReason.OUT_OF_BOUNDS_UPDATE,
-                    lower_bound=config.vol_lower_bound,
-                    upper_bound=config.vol_upper_bound,
-                    calculation_metadata={"solver": "newton_raphson"},
-                    warnings=["newton_raphson update exited volatility bounds"],
-                )
-
-            prev_residual = residual
-            vol = candidate
-            residual = objective(vol)
-
-            if abs(prev_residual - residual) <= config.price_tolerance:
-                stalled_count += 1
-            else:
-                stalled_count = 0
-
-            if stalled_count >= config.max_stalled_iterations:
-                return ImpliedVolatilityResult(
-                    implied_volatility=None,
-                    method=SolverMethod.NEWTON_RAPHSON,
-                    iterations=iteration,
-                    converged=False,
-                    residual=residual,
-                    outcome=SolverOutcome.NON_CONVERGENCE,
-                    failure_reason=FailureReason.STALLED,
-                    lower_bound=config.vol_lower_bound,
-                    upper_bound=config.vol_upper_bound,
-                    calculation_metadata={"solver": "newton_raphson"},
-                    warnings=["newton_raphson stalled"],
-                )
-
-            if abs(step) <= config.volatility_tolerance:
-                return ImpliedVolatilityResult(
-                    implied_volatility=vol,
-                    method=SolverMethod.NEWTON_RAPHSON,
-                    iterations=iteration,
-                    converged=True,
-                    residual=residual,
-                    outcome=SolverOutcome.APPROXIMATE,
-                    failure_reason=FailureReason.NONE,
-                    lower_bound=config.vol_lower_bound,
-                    upper_bound=config.vol_upper_bound,
-                    calculation_metadata={"solver": "newton_raphson", "approximate": True},
-                    warnings=["newton_raphson reached volatility tolerance before price tolerance"],
-                )
-
-        return ImpliedVolatilityResult(
-            implied_volatility=None,
-            method=SolverMethod.NEWTON_RAPHSON,
-            iterations=max_iterations,
-            converged=False,
-            residual=residual,
-            outcome=SolverOutcome.NON_CONVERGENCE,
-            failure_reason=FailureReason.STALLED,
-            lower_bound=config.vol_lower_bound,
-            upper_bound=config.vol_upper_bound,
-            calculation_metadata={"solver": "newton_raphson"},
-            warnings=["newton_raphson did not converge"],
-        )
-
-    def _bisection(
+    def solve_multi_expiration(
         self,
-        objective: Callable[[float], float],
-        config: SolverConfig,
+        batch_request: MultiExpirationBatchRequest,
+        config: SolverConfig | None = None,
+    ) -> ImpliedVolatilityBatchResult:
+        flattened: list[ImpliedVolatilityRequest] = []
+        expiry_markers: list[str] = []
+        for expiry_batch in batch_request.expirations:
+            expiry_markers.append(expiry_batch.expiry.isoformat())
+            flattened.extend(list(expiry_batch.contracts))
+
+        batch = self.solve_batch(flattened, config=config)
+        metadata = dict(batch.calculation_metadata)
+        metadata.update(
+            {
+                "expiry_buckets": expiry_markers,
+                "as_of": batch_request.as_of.isoformat() if batch_request.as_of else None,
+            }
+        )
+        return ImpliedVolatilityBatchResult(results=batch.results, calculation_metadata=metadata)
+
+    def _solve_with_batch_error_capture(
+        self,
+        request: ImpliedVolatilityRequest,
+        cfg: SolverConfig,
     ) -> ImpliedVolatilityResult:
-        max_iterations = (
-            config.bisection_max_iterations
-            if config.bisection_max_iterations is not None
-            else config.max_iterations
-        )
-        low = config.vol_lower_bound
-        high = config.vol_upper_bound
-        f_low = objective(low)
-        f_high = objective(high)
-
-        if f_low == 0.0:
-            return ImpliedVolatilityResult(
-                implied_volatility=low,
-                method=SolverMethod.BISECTION,
-                iterations=0,
-                converged=True,
-                residual=0.0,
-                outcome=SolverOutcome.SUCCESS,
-                failure_reason=FailureReason.NONE,
-                lower_bound=low,
-                upper_bound=high,
-                calculation_metadata={"solver": "bisection"},
+        try:
+            return self.solve(request, config=cfg)
+        except (
+            ImpliedVolatilityValidationError,
+            ImpliedVolatilityInvalidMarketPriceError,
+            ImpliedVolatilityUnsupportedContractError,
+        ) as exc:
+            reason = _reason_from_message(str(exc))
+            outcome = (
+                SolverOutcome.INVALID_MARKET_PRICE
+                if reason in {FailureReason.BELOW_INTRINSIC, FailureReason.ABOVE_THEORETICAL_BOUND}
+                else SolverOutcome.UNSUPPORTED_CONTRACT
             )
-
-        if f_low * f_high > 0.0:
-            return ImpliedVolatilityResult(
-                implied_volatility=None,
-                method=SolverMethod.BISECTION,
-                iterations=0,
-                converged=False,
-                residual=min(abs(f_low), abs(f_high)),
-                outcome=SolverOutcome.NON_CONVERGENCE,
-                failure_reason=FailureReason.NO_BRACKETED_SOLUTION,
-                lower_bound=low,
-                upper_bound=high,
-                calculation_metadata={"solver": "bisection"},
-                warnings=["bisection root not bracketed"],
+            return self._failure_result(
+                request=request,
+                model_name=request.model_name,
+                reason=reason,
+                message=str(exc),
+                config=cfg,
+                outcome=outcome,
             )
-
-        mid = low
-        f_mid = f_low
-        for iteration in range(1, max_iterations + 1):
-            mid = 0.5 * (low + high)
-            f_mid = objective(mid)
-
-            if (
-                abs(f_mid) <= config.price_tolerance
-                or abs(high - low) <= config.volatility_tolerance
-            ):
-                return ImpliedVolatilityResult(
-                    implied_volatility=mid,
-                    method=SolverMethod.BISECTION,
-                    iterations=iteration,
-                    converged=True,
-                    residual=f_mid,
-                    outcome=(
-                        SolverOutcome.SUCCESS
-                        if abs(f_mid) <= config.price_tolerance
-                        else SolverOutcome.APPROXIMATE
-                    ),
-                    failure_reason=FailureReason.NONE,
-                    lower_bound=config.vol_lower_bound,
-                    upper_bound=config.vol_upper_bound,
-                    calculation_metadata={"solver": "bisection"},
-                )
-
-            if f_low * f_mid < 0.0:
-                high = mid
-                f_high = f_mid
-            else:
-                low = mid
-                f_low = f_mid
-
-        return ImpliedVolatilityResult(
-            implied_volatility=None,
-            method=SolverMethod.BISECTION,
-            iterations=max_iterations,
-            converged=False,
-            residual=f_mid,
-            outcome=SolverOutcome.NON_CONVERGENCE,
-            failure_reason=FailureReason.STALLED,
-            lower_bound=config.vol_lower_bound,
-            upper_bound=config.vol_upper_bound,
-            calculation_metadata={"solver": "bisection"},
-            warnings=["bisection did not converge"],
-        )
 
     def _brent_interface(
         self,
@@ -450,19 +393,7 @@ class ImpliedVolatilityEngine:
         config: SolverConfig,
     ) -> ImpliedVolatilityResult:
         if self.brent_solver is None:
-            return ImpliedVolatilityResult(
-                implied_volatility=None,
-                method=SolverMethod.BRENT,
-                iterations=0,
-                converged=False,
-                residual=float("inf"),
-                outcome=SolverOutcome.NON_CONVERGENCE,
-                failure_reason=FailureReason.NUMERICAL_INSTABILITY,
-                lower_bound=config.vol_lower_bound,
-                upper_bound=config.vol_upper_bound,
-                calculation_metadata={"solver": "brent"},
-                warnings=["brent solver interface is not configured"],
-            )
+            return solve_brent_hybrid(objective, config)
 
         max_iterations = (
             config.brent_max_iterations
@@ -476,6 +407,8 @@ class ImpliedVolatilityEngine:
             tolerance=config.price_tolerance,
             max_iterations=max_iterations,
         )
+        if (not converged) and config.use_brent_interface_on_failure:
+            return solve_brent_hybrid(objective, config)
 
         return ImpliedVolatilityResult(
             implied_volatility=root if converged else None,
@@ -483,6 +416,7 @@ class ImpliedVolatilityEngine:
             iterations=iterations,
             converged=converged,
             residual=residual,
+            final_pricing_error=residual,
             outcome=SolverOutcome.SUCCESS if converged else SolverOutcome.NON_CONVERGENCE,
             failure_reason=FailureReason.NONE if converged else FailureReason.STALLED,
             lower_bound=config.vol_lower_bound,
@@ -538,21 +472,29 @@ class ImpliedVolatilityEngine:
         lower: float | None = None,
         upper: float | None = None,
         warnings: list[str] | None = None,
+        diagnostics: ConvergenceDiagnostics | None = None,
     ) -> ImpliedVolatilityResult:
+        capabilities: dict[str, object] = {}
+        if model_name is not None:
+            capabilities = self.adapter.capabilities(model_name)
+
         return ImpliedVolatilityResult(
             implied_volatility=None,
             method=SolverMethod.NONE,
             iterations=config.max_iterations,
             converged=False,
             residual=float("inf"),
+            final_pricing_error=None,
             outcome=outcome,
             failure_reason=reason,
             pricing_model_used=model_name,
             lower_bound=lower if lower is not None else config.vol_lower_bound,
             upper_bound=upper if upper is not None else config.vol_upper_bound,
+            convergence_diagnostics=diagnostics,
             calculation_metadata={
                 "pricing_model_used": model_name.value if model_name is not None else "unresolved",
                 "price_source": request.market_price_source.value,
+                "capabilities": capabilities,
             },
             warnings=(warnings or []) + [message],
         )
@@ -593,3 +535,7 @@ def _with_volatility(request: PricingRequest, volatility: float) -> PricingReque
         tree_steps=request.tree_steps,
         contract_symbol=request.contract_symbol,
     )
+
+
+def _is_finite(value: float) -> bool:
+    return value == value and value != float("inf") and value != float("-inf")

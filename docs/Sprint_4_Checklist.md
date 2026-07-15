@@ -34,12 +34,16 @@
 
 - [x] Model-aware IV inversion by contract metadata and pricing-model routing
 - [x] Newton-Raphson, bisection, and Brent-style fallback sequencing
+- [x] Built-in stable Brent-style equivalent path when external Brent adapter is absent
 - [x] Configurable bounds, tolerances, initial guess, and iteration limits
 - [x] Structured convergence diagnostics and failure classification
 - [x] Arbitrage-bound and metadata validation before solving
 - [x] American-style inversion via configured American model
+- [x] American tree-resolution sensitivity and model-settings diagnostics
 - [x] Batch solving with deterministic ordering and per-contract failures
+- [x] Typed chain and multi-expiration batch APIs
 - [x] Quote-source policies and diagnostics for bid/ask/mid/last/mark workflows
+- [x] Policy controls for crossed, stale, zero-bid, missing-ask, wide-spread, and out-of-bounds quotes
 - [x] Surface-readiness result metadata (without implementing surface engine)
 - [x] Interpolation and cube scaffolding retained
 - [x] Historical IV storage hooks retained

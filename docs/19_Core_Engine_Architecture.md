@@ -235,6 +235,18 @@ Price options and related instruments under a variety of market assumptions and 
 #### Implied-volatility inversion boundary
 - Implied volatility is solved by inverting the model selected for each contract metadata profile.
 - American contracts are inverted against configured American models and never silently downgraded to Black-Scholes.
+- Solver outcomes are structured for downstream volatility-surface quality workflows (success, approximate, invalid, non-converged, unsupported).
+- Batch inversion preserves deterministic ordering with per-contract failure isolation.
+
+#### Sprint 4C Diagnostics Contract
+
+IV solver results include:
+
+- selected solver method and pricing model
+- iteration count and final pricing error
+- search bounds and bracket diagnostics
+- capability metadata from the routed pricing model
+- warnings and structured failure reasons
 
 #### Error handling
 - Invalid model inputs should fail early with clear diagnostics.

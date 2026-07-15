@@ -54,3 +54,9 @@ All notable changes to this project will be documented in this file.
 - Added structured solver outcomes and failure reasons, quote-source policy handling, arbitrage-bound validation, and no-silent-Black-Scholes fallback behavior.
 - Added typed batch IV solving with stable ordering and per-contract error isolation.
 - Added volatility engine documentation in `docs/32_Volatility_Engine.md` for solver methods, fallback order, convergence criteria, and known failure modes.
+- Added dedicated numerical-method module for implied-volatility inversion with Newton-Raphson, bisection, and stable Brent-style hybrid methods.
+- Added fallback diagnostics payloads capturing attempted methods, bracket status, and method-level failure reasons.
+- Added typed chain and multi-expiration batch APIs with configurable serial/threaded execution hooks and deterministic ordering guarantees.
+- Added policy-driven quote handling for crossed, stale, zero-bid, missing-ask, wide-spread, and out-of-bounds market prices.
+- Extended American inversion metadata with tree-step settings and tree-resolution sensitivity reporting.
+- Expanded deterministic offline tests for near-expiry and extreme-moneyness scenarios, internal Brent-style path, policy controls, and threaded batch consistency.

@@ -54,6 +54,18 @@ class QuotePolicy(StrEnum):
     CLIP_TO_BOUNDS = "clip_to_bounds"
 
 
+class QuoteIssuePolicy(StrEnum):
+    REJECT = "reject"
+    WARN = "warn"
+    CLIP = "clip"
+
+
+class BatchParallelismMode(StrEnum):
+    SERIAL = "serial"
+    THREADED = "threaded"
+    VECTORIZED_HOOK = "vectorized_hook"
+
+
 @dataclass(slots=True, frozen=True)
 class ImpliedVolatilityRequest:
     market_price: float
@@ -91,6 +103,25 @@ class SolverConfig:
     max_stalled_iterations: int = 4
     use_brent_interface_on_failure: bool = True
     raise_on_failure: bool = False
+    crossed_market_policy: QuoteIssuePolicy = QuoteIssuePolicy.REJECT
+    zero_bid_policy: QuoteIssuePolicy = QuoteIssuePolicy.WARN
+    stale_quote_policy: QuoteIssuePolicy = QuoteIssuePolicy.WARN
+    missing_ask_policy: QuoteIssuePolicy = QuoteIssuePolicy.REJECT
+    wide_spread_policy: QuoteIssuePolicy = QuoteIssuePolicy.WARN
+    out_of_bounds_price_policy: QuoteIssuePolicy = QuoteIssuePolicy.REJECT
+    max_relative_spread: float = 0.2
+    batch_parallelism: int = 1
+    batch_parallelism_mode: BatchParallelismMode = BatchParallelismMode.SERIAL
+
+
+@dataclass(slots=True, frozen=True)
+class ConvergenceDiagnostics:
+    method_attempt_order: tuple[SolverMethod, ...]
+    attempted_methods: tuple[SolverMethod, ...]
+    method_failure_reasons: tuple[FailureReason, ...]
+    bracket_lower_price_error: float | None = None
+    bracket_upper_price_error: float | None = None
+    stable_bracket_found: bool = False
 
 
 @dataclass(slots=True, frozen=True)
@@ -100,13 +131,34 @@ class ImpliedVolatilityResult:
     iterations: int
     converged: bool
     residual: float
+    final_pricing_error: float | None = None
     outcome: SolverOutcome = SolverOutcome.NON_CONVERGENCE
     failure_reason: FailureReason = FailureReason.NONE
     pricing_model_used: PricingModelName | None = None
     lower_bound: float = 0.0
     upper_bound: float = 0.0
+    convergence_diagnostics: ConvergenceDiagnostics | None = None
     calculation_metadata: dict[str, Any] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
+
+
+@dataclass(slots=True, frozen=True)
+class ImpliedVolatilityChainRequest:
+    contracts: tuple[ImpliedVolatilityRequest, ...]
+    chain_id: str | None = None
+    as_of: datetime | None = None
+
+
+@dataclass(slots=True, frozen=True)
+class ExpirationBatchRequest:
+    expiry: date
+    contracts: tuple[ImpliedVolatilityRequest, ...]
+
+
+@dataclass(slots=True, frozen=True)
+class MultiExpirationBatchRequest:
+    expirations: tuple[ExpirationBatchRequest, ...]
+    as_of: datetime | None = None
 
 
 @dataclass(slots=True, frozen=True)

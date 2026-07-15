@@ -12,6 +12,7 @@ Implemented in backend/implied_volatility:
 - typed request and result contracts
 - model-aware pricing adapter and router integration
 - Newton-Raphson, bisection, and Brent-interface fallback
+- internal Brent-style hybrid fallback when no external Brent adapter is configured
 - convergence diagnostics and failure classification
 - typed batch solving with stable ordering
 - quote-source and quote-policy support
@@ -36,6 +37,8 @@ Default fallback sequence:
 2. Bisection
 3. Brent-style adapter
 
+If the adapter is unavailable or does not converge, the solver uses a stable Brent-style hybrid implementation with safeguarded interpolation and bisection steps.
+
 Fallback triggers include:
 
 - low vega
@@ -52,6 +55,8 @@ Pre-solve validation enforces:
 - contract/date/input validity
 - dividend schedule validity
 - model routing compatibility
+- settlement and underlying compatibility with the selected model
+- policy-driven handling for crossed, stale, wide, zero-bid, and missing-ask quotes
 
 Structured outcomes distinguish:
 
@@ -60,6 +65,15 @@ Structured outcomes distinguish:
 - invalid market price
 - non-convergence
 - unsupported contract
+
+Result payload includes:
+
+- implied volatility and final pricing error
+- method used and pricing model used
+- iteration count and search bounds
+- convergence diagnostics (attempt order, attempted methods, bracket status, failure reasons)
+- model capability metadata
+- warnings and structured failure reason
 
 ## Quote Source Policy
 
@@ -73,11 +87,42 @@ Supported observed sources:
 
 Policies cover crossed markets, stale flags, zero bids, missing ask, and wide spreads with warning diagnostics.
 
+Out-of-bounds observed prices can be rejected or clipped by policy before root search. Rejection is the default behavior.
+
 ## American-Style Notes
 
 - Inversion uses the selected American pricing model; no silent Black-Scholes fallback.
 - First-order American sensitivity behavior is numerical and model-dependent.
 - Tree-resolution sensitivity diagnostics are included for lattice-based models.
+- Tree-step settings are echoed in model metadata for auditability.
+
+## Batch APIs
+
+Typed batch interfaces include:
+
+- scalar solve
+- chain solve
+- multi-expiration solve
+- list batch solve
+
+Batch requirements implemented:
+
+- deterministic output ordering
+- per-contract failure isolation
+- configurable serial or threaded parallel execution mode
+- no mandatory benchmark overhead in default workflows
+
+## Known Limitations
+
+- American inversion quality depends on tree resolution and may require larger step counts for extreme contracts.
+- Discrete-dividend handling in CRR remains approximation-based at this stage.
+- Surface construction and term-structure analytics remain deferred to the next sprint.
+
+## Performance Targets
+
+- Deterministic results for identical inputs and solver config.
+- Stable chain-scale batch solves under serial mode.
+- Optional threaded batch mode for higher-throughput offline research.
 
 ## Volatility-Surface Readiness
 

@@ -52,3 +52,8 @@ Success for the platform will be measured through engineering quality, research 
 - Solver fallback sequence and convergence diagnostics are reproducible under fixed config.
 - Invalid observed prices and unsupported contracts produce explicit structured failure states.
 - Batch solving preserves input ordering and isolates per-contract failures without aborting full chains.
+- Solver method fallback behavior is deterministic and auditable via method-attempt diagnostics metadata.
+- American inversion outputs include tree-resolution sensitivity and model-setting metadata for model-risk monitoring.
+- Quote-policy behavior for crossed, stale, zero-bid, missing-ask, wide-spread, and out-of-bounds quotes is explicit and test-covered.
+- No silent fallback from American inversion paths to Black-Scholes is allowed.
+- Volatility-surface readiness metadata supports deferred smile/term/surface quality labeling without enabling live-surface construction yet.

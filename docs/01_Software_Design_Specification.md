@@ -99,8 +99,26 @@ Contango and backwardation classifications are research features and filter inpu
 - Implied-volatility inversion uses the selected pricing model per contract metadata.
 - Supported inversion paths include European spot (Black-Scholes), European futures (Black-76), and American equity/ETF contracts through configured American models.
 - Solver supports Newton-Raphson, bisection, and Brent-style fallback with convergence diagnostics.
+- Built-in stable Brent-style hybrid logic is available when no external Brent adapter is configured.
 - Validation enforces arbitrage bounds and contract metadata constraints before inversion.
 - Historical quote source metadata (bid/ask/mid/last/mark) is preserved for diagnostics.
+
+Implementation architecture includes:
+
+- public solver interface
+- request/result contracts
+- model-aware pricing adapter
+- numerical-method module
+- validation and bound checks
+- typed batch APIs for chains and multi-expiration sets
+- structured exception hierarchy
+- capability metadata on results
+
+Out of scope for this sprint:
+
+- live API integration
+- volatility surface engine implementation
+- strategy backtesting implementation
 
 ### 10. Historical Execution Boundary
 
