@@ -26,3 +26,19 @@
 - [x] Keep future optimizer interfaces deferred (Bayesian/TPE/GP/evolutionary/distributed/ML)
 - [x] Lint passing
 - [x] Tests passing
+
+## Sprint 5B - Advanced Optimization and Walk-Forward Orchestration
+
+- [x] Add stable optimizer adapter contracts and registry
+- [x] Add optional Bayesian/TPE/genetic adapters with dependency guards
+- [x] Add calibration-aware constraint presets
+- [x] Add checksum reconciliation helpers for runs and candidates
+- [x] Add serial, thread-pool, and process-pool execution adapters
+- [x] Add fold-aware walk-forward orchestration and aggregation
+- [x] Add checkpoint and resume contracts
+- [x] Add distributed execution boundary contract
+- [x] Add production migration for optimization persistence
+- [x] Add deterministic offline tests for Sprint 5B
+- [x] Update required documentation files
+- [x] Lint passing
+- [x] Tests passing

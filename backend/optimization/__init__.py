@@ -1,7 +1,38 @@
 """Optimization engine foundation package."""
 
+from .adapters import (
+    ADAPTER_REGISTRY,
+    BayesianOptimizationAdapter,
+    GeneticOptimizationAdapter,
+    OptimizerAdapter,
+    OptimizerDependencyUnavailableError,
+    SingleObjectiveSearchAdapter,
+    TreeStructuredParzenEstimatorAdapter,
+    get_optimizer_adapter,
+    register_optimizer_adapter,
+)
 from .benchmarks import OptimizationBenchmarkResult, OptimizationBenchmarkRunner
+from .checksums import (
+    candidate_input_checksum,
+    candidate_result_checksum,
+    optimization_problem_checksum,
+    reconcile_checksums,
+)
 from .constraints import ConstraintEngine
+from .contracts import (
+    DistributedExecutionContract,
+    ExecutionDiagnostics,
+    ExecutionMode,
+    FoldResult,
+    FoldSelectionReason,
+    OptimizerAdapterContract,
+    OptimizerCheckpoint,
+    OptimizerDeterminism,
+    OptimizerMode,
+    OptimizerTrialRecord,
+    ReproducibilityChecksumBundle,
+    WalkForwardAggregationResult,
+)
 from .engine import OptimizationEngine
 from .evaluation import CandidateEvaluationService
 from .exceptions import (
@@ -11,6 +42,13 @@ from .exceptions import (
     OptimizationError,
     OptimizationValidationError,
     WalkForwardSplitError,
+)
+from .execution import (
+    ExecutionResultBundle,
+    ProcessPoolExecutionAdapter,
+    SerialExecutionAdapter,
+    SerializationError,
+    ThreadPoolExecutionAdapter,
 )
 from .models import (
     BooleanParameter,
@@ -41,8 +79,24 @@ from .models import (
     WalkForwardSplit,
 )
 from .objectives import ObjectiveEngine
+from .orchestration import WalkForwardOrchestrator
 from .parameter_space import ParameterSpaceGenerator
 from .pareto import ParetoEngine
+from .presets import (
+    CalibrationConstraintPreset,
+    low_quality_data_penalty,
+    maximum_brier_score,
+    maximum_calibration_error,
+    maximum_confidence_interval_width,
+    minimum_lower_confidence_bound,
+    minimum_out_of_sample_fold_count,
+    minimum_regime_coverage,
+    minimum_sample_size,
+    overconfidence_penalty,
+    sparse_regime_penalty,
+    underconfidence_penalty,
+)
+from .selection import SelectionEngine, SelectionPolicy, SelectionPolicyType
 from .walk_forward import WalkForwardEngine
 
 __all__ = [
@@ -85,6 +139,55 @@ __all__ = [
     "WalkForwardConfig",
     "WalkForwardEngine",
     "WalkForwardMode",
+    "WalkForwardSplit",
+    "WalkForwardSplitError",
+    "ADAPTER_REGISTRY",
+    "BayesianOptimizationAdapter",
+    "candidate_input_checksum",
+    "candidate_result_checksum",
+    "CalibrationConstraintPreset",
+    "DistributedExecutionContract",
+    "ExecutionDiagnostics",
+    "ExecutionMode",
+    "ExecutionResultBundle",
+    "FoldResult",
+    "FoldSelectionReason",
+    "GeneticOptimizationAdapter",
+    "minimum_sample_size",
+    "minimum_regime_coverage",
+    "minimum_lower_confidence_bound",
+    "maximum_brier_score",
+    "maximum_calibration_error",
+    "maximum_confidence_interval_width",
+    "low_quality_data_penalty",
+    "overconfidence_penalty",
+    "sparse_regime_penalty",
+    "underconfidence_penalty",
+    "optimization_problem_checksum",
+    "OptimizerAdapterContract",
+    "OptimizerCheckpoint",
+    "OptimizerDeterminism",
+    "OptimizerMode",
+    "OptimizerTrialRecord",
+    "OptimizerAdapter",
+    "OptimizerDependencyUnavailableError",
+    "ProcessPoolExecutionAdapter",
+    "ReproducibilityChecksumBundle",
+    "reconcile_checksums",
+    "SingleObjectiveSearchAdapter",
+    "TreeStructuredParzenEstimatorAdapter",
+    "get_optimizer_adapter",
+    "register_optimizer_adapter",
+    "SelectionEngine",
+    "SelectionPolicy",
+    "SelectionPolicyType",
+    "SerializationError",
+    "SerialExecutionAdapter",
+    "SingleObjectiveSearchAdapter",
+    "ThreadPoolExecutionAdapter",
+    "WalkForwardAggregationResult",
+    "WalkForwardOrchestrator",
+    "minimum_out_of_sample_fold_count",
     "WalkForwardSplit",
     "WalkForwardSplitError",
 ]

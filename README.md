@@ -112,6 +112,13 @@ Optimization foundation (Sprint 5A):
 - Walk-forward hooks support anchored/rolling/expanding splits with purge/embargo controls and no-look-ahead validation.
 - Persistence captures optimization runs, candidate outputs, Pareto IDs, winners, diagnostics, and checksums.
 
+Optimization orchestration (Sprint 5B):
+
+- Stable optimizer adapter contracts support optional Bayesian, TPE, and genetic backends without hard dependencies.
+- Fold-aware walk-forward orchestration evaluates train, validation, and test windows with explicit selection policies.
+- Calibration-aware presets and execution adapters support serial, thread-pool, and process-pool modes with checksum reconciliation.
+- Checkpoints, resume hooks, and distributed execution boundaries are defined explicitly so future runtimes can plug in without changing the core contract.
+
 Deferred optimization capabilities:
 
 - Bayesian/TPE/GP methods

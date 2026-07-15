@@ -22,6 +22,19 @@ Implemented in Sprint 5A:
 - serial and deterministic thread-pool execution modes
 - optimization run persistence contracts and reproducibility metadata
 
+## Sprint 5B Advanced Orchestration
+
+Sprint 5B extends the optimization subsystem with optional advanced adapters and explicit walk-forward orchestration boundaries.
+
+Implemented in Sprint 5B:
+
+- stable optimizer adapter contracts with dependency-guarded backend loading
+- optional Bayesian, TPE, and genetic adapters built on a shared single-objective contract
+- calibration-aware preset builders for sample size, calibration error, Brier score, and regime coverage
+- serial, thread-pool, and process-pool execution adapters with checksum reconciliation
+- fold-aware walk-forward orchestration with selection policies and aggregated diagnostics
+- checkpoint, resume, and distributed execution boundary contracts
+
 ## Deterministic Refinement Flow
 
 ```mermaid

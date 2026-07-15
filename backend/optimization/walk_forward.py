@@ -77,10 +77,7 @@ class WalkForwardEngine:
 
     def _validate_no_look_ahead(self, split: WalkForwardSplit) -> None:
         if not (
-            split.train_start
-            <= split.train_end
-            < split.validation_start
-            <= split.validation_end
+            split.train_start <= split.train_end < split.validation_start <= split.validation_end
         ):
             raise WalkForwardSplitError("invalid train/validation chronology")
         if not (split.validation_end < split.test_start <= split.test_end):

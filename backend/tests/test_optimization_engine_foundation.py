@@ -344,7 +344,6 @@ def test_pareto_dominance_and_front_extraction() -> None:
     assert all(item.status == CandidateStatus.SUCCEEDED for item in pareto.front)
 
 
-
 def test_serial_and_thread_pool_consistency() -> None:
     engine = OptimizationEngine.default()
     serial = engine.run(problem=_problem(), evaluator=_evaluator, execution_mode="serial")

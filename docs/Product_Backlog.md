@@ -58,6 +58,15 @@ The product backlog is organized into epics that reflect the agreed scope of the
 - Optimization persistence layer and no-look-ahead query endpoints.
 - Deterministic serial and thread-pool execution modes with preserved output order.
 
+## Sprint 5B Delivered (Current)
+
+- Stable optimizer adapter contracts with optional backend loading and dependency guards.
+- Optional Bayesian, TPE, and genetic adapters that preserve deterministic failure isolation.
+- Calibration-aware constraint presets for sample size, calibration error, Brier score, and regime coverage.
+- Fold-aware walk-forward orchestration with explicit train, validation, and test selection boundaries.
+- Deterministic process-pool execution with checksum reconciliation and serialization checks.
+- Checkpoint, resume, and distributed execution boundary contracts for future runtime integration.
+
 ## Explicitly Deferred Beyond Sprint 5A
 
 - Bayesian, TPE, and Gaussian-process optimization algorithms.

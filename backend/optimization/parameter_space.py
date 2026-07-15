@@ -140,8 +140,7 @@ class ParameterSpaceGenerator:
         if isinstance(param, FloatRangeParameter):
             steps = int(round((param.maximum - param.minimum) / param.step))
             values = [
-                round(param.minimum + (i * param.step), param.precision)
-                for i in range(steps + 1)
+                round(param.minimum + (i * param.step), param.precision) for i in range(steps + 1)
             ]
             return tuple(values)
         if isinstance(param, CategoricalParameter):
