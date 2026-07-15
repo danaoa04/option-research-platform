@@ -837,3 +837,12 @@ Every engine should support:
 ## Conclusion
 
 The platform architecture is defined as a set of independent engines with clear responsibilities, interfaces, dependencies, and validation requirements. This design enables modular development, flexible extension, and robust quantitative research workflows while preserving a coherent user experience.
+
+## Sprint 5D Architecture Extension
+
+The core architecture now includes a portfolio allocation and strategy-selection subsystem (`backend/portfolio`) and a matching persistence foundation (`backend/database`).
+
+- Portfolio layer consumes validated strategy candidates and deterministic analytics features.
+- Outputs include allocation plans, constraint/risk diagnostics, scenario summaries, and rebalance plans.
+- Reproducibility is enforced via deterministic checksums and persisted run metadata.
+- The live-trading boundary remains strict: research-only, no broker/live API/live execution integration.

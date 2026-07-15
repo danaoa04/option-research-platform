@@ -42,3 +42,17 @@
 - [x] Update required documentation files
 - [x] Lint passing
 - [x] Tests passing
+
+## Sprint 5D - Portfolio Allocation and Strategy Selection Engine
+
+- [x] Add `backend/portfolio` typed contracts and orchestration entrypoint
+- [x] Add eligibility, exposure, correlation, clustering, sizing, constraints, risk, scenarios, rebalancing, analytics, and reporting engines
+- [x] Add deterministic no-look-ahead guard in allocation construction
+- [x] Add portfolio persistence DTOs, ORM entities, repositories, and service
+- [x] Add migration `0007_portfolio_selection_foundation`
+- [x] Add deterministic portfolio checksum helper for persistence reconciliation
+- [x] Add deterministic offline portfolio engine tests
+- [x] Add deterministic offline portfolio persistence tests
+- [x] Add opt-in portfolio benchmark tests
+- [x] Lint passing
+- [x] Tests passing

@@ -643,6 +643,188 @@ class ValidationFold(Base):
     run: Mapped[ValidationRun] = relationship(back_populates="folds")
 
 
+class PortfolioRun(Base):
+    __tablename__ = "portfolio_runs"
+    __table_args__ = (
+        UniqueConstraint("run_id"),
+        Index("ix_portfolio_runs_strategy_ts", "strategy_name", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    problem_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    strategy_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    allocation_problem: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    objectives_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    constraints_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    correlation_policy: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    sizing_policy: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    rebalance_policy: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    eligible_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    rejected_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    allocation_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    reserve_cash: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    available_capital: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    checksums: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    software_git_commit: Mapped[str] = mapped_column(String(64), nullable=False)
+    schema_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    random_seed: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    dataset_manifests: Mapped[list[int]] = mapped_column(JSON, nullable=False, default=list)
+    warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    failures: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class PortfolioEligibleCandidateRecord(Base):
+    __tablename__ = "portfolio_eligible_candidates"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "candidate_id"),
+        Index("ix_portfolio_eligible_run", "run_row_id", "candidate_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("portfolio_runs.id"), nullable=False)
+    candidate_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    validation_snapshot: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    exposure_snapshot: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    stats_snapshot: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    returns: Mapped[list[float]] = mapped_column(JSON, nullable=False, default=list)
+    pnl: Mapped[list[float]] = mapped_column(JSON, nullable=False, default=list)
+
+
+class PortfolioRejectedCandidateRecord(Base):
+    __tablename__ = "portfolio_rejected_candidates"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "candidate_id"),
+        Index("ix_portfolio_rejected_run", "run_row_id", "candidate_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("portfolio_runs.id"), nullable=False)
+    candidate_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    rejection_reasons: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+
+
+class PortfolioAllocationRecord(Base):
+    __tablename__ = "portfolio_allocations"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "candidate_id"),
+        Index("ix_portfolio_allocations_run", "run_row_id", "candidate_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("portfolio_runs.id"), nullable=False)
+    candidate_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    weight: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    capital: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    contracts: Mapped[int] = mapped_column(Integer, nullable=False)
+    score: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+
+
+class PortfolioConstraintRecord(Base):
+    __tablename__ = "portfolio_constraint_outcomes"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "constraint_name", "candidate_id"),
+        Index("ix_portfolio_constraints_run", "run_row_id", "constraint_name"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("portfolio_runs.id"), nullable=False)
+    constraint_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    severity: Mapped[str] = mapped_column(String(16), nullable=False)
+    observed: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    threshold: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    passed: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    candidate_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+
+
+class PortfolioCorrelationRecord(Base):
+    __tablename__ = "portfolio_correlations"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "left_id", "right_id", "kind"),
+        Index("ix_portfolio_correlations_run", "run_row_id", "kind"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("portfolio_runs.id"), nullable=False)
+    left_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    right_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    kind: Mapped[str] = mapped_column(String(64), nullable=False)
+    value: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    uncertainty: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    effective_sample_size: Mapped[int] = mapped_column(Integer, nullable=False)
+    sparse_warning: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
+
+class PortfolioClusterRecord(Base):
+    __tablename__ = "portfolio_clusters"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "candidate_id"),
+        Index("ix_portfolio_clusters_run", "run_row_id", "cluster_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("portfolio_runs.id"), nullable=False)
+    candidate_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    cluster_id: Mapped[str] = mapped_column(String(256), nullable=False)
+    confidence: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    reasons: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+
+
+class PortfolioRiskContributionRecord(Base):
+    __tablename__ = "portfolio_risk_contributions"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "candidate_id"),
+        Index("ix_portfolio_risk_contrib_run", "run_row_id", "candidate_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("portfolio_runs.id"), nullable=False)
+    candidate_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    contribution_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class PortfolioScenarioRecord(Base):
+    __tablename__ = "portfolio_scenarios"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "scenario_name"),
+        Index("ix_portfolio_scenarios_run", "run_row_id", "scenario_name"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("portfolio_runs.id"), nullable=False)
+    scenario_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    portfolio_return: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    portfolio_drawdown: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    expected_shortfall: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+
+
+class PortfolioRebalancePlanRecord(Base):
+    __tablename__ = "portfolio_rebalance_plans"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "candidate_id"),
+        Index("ix_portfolio_rebalance_run", "run_row_id", "as_of_date"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("portfolio_runs.id"), nullable=False)
+    candidate_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    previous_weight: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    target_weight: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    delta_weight: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    reason_codes: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    trigger: Mapped[str] = mapped_column(String(64), nullable=False)
+    as_of_date: Mapped[date] = mapped_column(Date, nullable=False)
+
+
 class DataLineageRecord(Base):
     __tablename__ = "data_lineage_records"
     __table_args__ = (

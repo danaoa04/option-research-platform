@@ -202,3 +202,19 @@ Explicitly deferred in Sprint 5A:
 - ML-driven ranking policies
 - advanced multi-objective algorithms
 - walk-forward hyperparameter optimization
+
+## Sprint 5D Portfolio Allocation and Strategy Selection
+
+Sprint 5D adds a deterministic portfolio engine with:
+
+- eligibility gating from strategy validation snapshots
+- correlation estimation with sparse-sample uncertainty signaling
+- cluster-aware diversification diagnostics
+- policy-driven sizing and constrained greedy allocation interfaces
+- marginal risk contribution, scenarios, rebalance plans, and reporting
+- persistence foundation for portfolio runs and normalized child artifacts
+
+Boundaries remain unchanged:
+
+- no live API/broker connections
+- no live execution paths

@@ -108,3 +108,14 @@ Multi-objective diagnostics include:
 - dominated-candidate tracking (`dominated_by`)
 - deterministic tie-breaking by score and candidate ID
 - crowding-distance hook placeholder for future algorithms
+
+## Sprint 5D Portfolio Analytics Extension
+
+Portfolio analytics now include deterministic allocation-level aggregates:
+
+- concentration diagnostics (HHI, effective positions, top bucket weights)
+- risk-factor contributions (delta/gamma/vega/theta)
+- regime contribution decomposition
+- scenario and rebalance outputs attached to selection reports
+
+These analytics are research outputs and remain offline-only.

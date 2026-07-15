@@ -113,3 +113,10 @@ Simulation and optimization integration now follows a strict boundary:
 - optimization orchestrates candidate ordering, constraints, objectives, and ranking
 - failed candidate evaluations are isolated and retained as structured results
 - no-look-ahead walk-forward split generation is handled by optimization hooks, not by live execution services
+
+## Sprint 5D Portfolio Relationship
+
+Simulation continues to provide historical performance and risk inputs consumed by portfolio allocation.
+
+- Portfolio construction does not modify simulation assumptions.
+- Portfolio scenarios are deterministic stress transforms on simulation-derived metrics.

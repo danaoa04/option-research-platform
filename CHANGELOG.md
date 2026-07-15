@@ -84,3 +84,10 @@ All notable changes to this project will be documented in this file.
 - Added no-look-ahead optimization query methods in historical query service.
 - Added deterministic Sprint 5A test suite in `backend/tests/test_optimization_engine_foundation.py` and opt-in benchmarks in `backend/tests/test_optimization_benchmarks_opt_in.py`.
 - Added Sprint 5A documentation updates and checklist, including future optimizer boundaries (Bayesian/TPE/GP/evolutionary/distributed/ML) explicitly deferred.
+- Added Sprint 5D portfolio allocation and strategy-selection subsystem in `backend/portfolio` with typed contracts and deterministic orchestration.
+- Added eligibility, exposure, correlation, clustering, sizing, constraints, risk-contribution, scenario, rebalance, analytics, reporting, and checksum modules for portfolio research workflows.
+- Added strict no-look-ahead guard in portfolio construction for future-dated candidate timestamps.
+- Added portfolio persistence foundation in `backend/database` with new portfolio DTOs, ORM entities, repositories, and persistence service.
+- Added migration `0007_portfolio_selection_foundation.py` with normalized portfolio run, allocation, correlation, cluster, scenario, and rebalance tables.
+- Added deterministic offline tests in `backend/tests/test_portfolio_engine_foundation.py` and `backend/tests/test_portfolio_persistence.py`.
+- Added opt-in portfolio benchmark test in `backend/tests/test_portfolio_benchmarks_opt_in.py`.

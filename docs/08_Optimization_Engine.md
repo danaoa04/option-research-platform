@@ -145,3 +145,11 @@ The following interfaces are intentionally deferred to later sprints:
 - Constraints must be deterministic and auditable.
 - Ranking tie-breaks must be stable for identical metric inputs.
 - Refinement outputs must include source-case lineage and selected objective policy.
+
+## Sprint 5D Portfolio Integration
+
+Optimization and validation outputs now feed a downstream portfolio allocation stage.
+
+- Promoted and robust candidates become portfolio eligibility inputs.
+- Deterministic objective and constraint metadata are persisted alongside portfolio runs.
+- Portfolio selection remains a research boundary and does not connect to brokers or live execution.

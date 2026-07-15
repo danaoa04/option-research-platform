@@ -130,3 +130,16 @@ Backtesting boundary:
 
 - Historical bid/ask quotes remain the source of truth for fill simulation.
 - Theoretical model outputs are analytics inputs and do not overwrite historical quote data.
+
+Portfolio allocation and strategy-selection foundation (Sprint 5D):
+
+- Deterministic portfolio engine in `backend/portfolio` composes eligibility, correlation, clustering, sizing, constraints, risk, scenarios, rebalance, analytics, and reporting modules.
+- Portfolio construction enforces strict no-look-ahead when `as_of_timestamp` is provided.
+- Persistence foundation in `backend/database` stores normalized portfolio runs, allocations, constraints, correlations, clusters, risk contributions, scenarios, and rebalance plans.
+- Portfolio benchmarks are opt-in and disabled by default.
+
+Portfolio boundary:
+
+- No live API connectivity.
+- No broker connectivity.
+- No live execution pathways.

@@ -132,3 +132,11 @@ flowchart TD
     DB --> Runs[Research Runs]
     DB --> Meta[Metadata and Config]
 ```
+
+## Sprint 5D Portfolio Storage Layer
+
+Portfolio allocation runs are now persisted as normalized run artifacts.
+
+- DTOs, ORM entities, repositories, and persistence service are implemented under `backend/database`.
+- Migration `0007_portfolio_selection_foundation` defines the portfolio schema foundation.
+- Run-level metadata validation prevents incomplete reproducibility records from being committed.

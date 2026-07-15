@@ -88,3 +88,8 @@ Success for the platform will be measured through engineering quality, research 
 - Walk-forward split generation enforces no-look-ahead chronology and deterministic purge/embargo handling.
 - Serial and thread-pool evaluation modes return consistent winner sets and preserved ordering under deterministic evaluators.
 - Optimization benchmarks remain opt-in and excluded from normal test execution.
+- Portfolio eligibility filtering emits explicit deterministic rejection reasons.
+- Portfolio construction rejects future-dated candidate timestamps when an as-of timestamp is provided.
+- Portfolio run persistence requires reproducibility metadata and writes normalized run artifacts deterministically.
+- Portfolio checksum reconciliation is order-stable for allocation rows.
+- Portfolio benchmark suite remains opt-in and excluded from default test execution.

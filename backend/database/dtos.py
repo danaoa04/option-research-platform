@@ -419,3 +419,111 @@ class ValidationFoldDTO:
     selection_json: dict[str, Any]
     result_json: dict[str, Any]
     warnings: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class PortfolioRunDTO:
+    run_id: str
+    problem_id: str
+    strategy_name: str
+    allocation_problem: dict[str, Any]
+    objective_definitions: dict[str, Any]
+    constraint_definitions: dict[str, Any]
+    correlation_policy: dict[str, Any]
+    sizing_policy: dict[str, Any]
+    rebalance_policy: dict[str, Any]
+    eligible_count: int
+    rejected_count: int
+    allocation_count: int
+    reserve_cash: Decimal
+    available_capital: Decimal
+    checksums: dict[str, Any]
+    software_git_commit: str
+    schema_version: str
+    random_seed: int | None
+    dataset_manifests: list[int]
+    warnings: list[str]
+    failures: list[str]
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class PortfolioEligibleCandidateDTO:
+    candidate_id: str
+    validation_snapshot: dict[str, Any]
+    exposure_snapshot: dict[str, Any]
+    stats_snapshot: dict[str, Any]
+    returns: list[float]
+    pnl: list[float]
+
+
+@dataclass(slots=True, frozen=True)
+class PortfolioRejectedCandidateDTO:
+    candidate_id: str
+    rejection_reasons: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class PortfolioAllocationDTO:
+    candidate_id: str
+    weight: Decimal
+    capital: Decimal
+    contracts: int
+    score: Decimal
+
+
+@dataclass(slots=True, frozen=True)
+class PortfolioConstraintOutcomeDTO:
+    constraint_name: str
+    severity: str
+    observed: Decimal
+    threshold: Decimal
+    passed: bool
+    reason: str
+    candidate_id: str | None
+
+
+@dataclass(slots=True, frozen=True)
+class PortfolioCorrelationDTO:
+    left_id: str
+    right_id: str
+    kind: str
+    value: Decimal
+    uncertainty: Decimal
+    effective_sample_size: int
+    sparse_warning: bool
+
+
+@dataclass(slots=True, frozen=True)
+class PortfolioClusterDTO:
+    candidate_id: str
+    cluster_id: str
+    confidence: Decimal
+    reasons: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class PortfolioRiskContributionDTO:
+    candidate_id: str
+    contribution_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class PortfolioScenarioDTO:
+    scenario_name: str
+    portfolio_return: Decimal
+    portfolio_drawdown: Decimal
+    expected_shortfall: Decimal
+    warnings: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class PortfolioRebalancePlanDTO:
+    candidate_id: str
+    previous_weight: Decimal
+    target_weight: Decimal
+    delta_weight: Decimal
+    reason_codes: list[str]
+    trigger: str
+    as_of_date: date

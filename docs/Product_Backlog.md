@@ -67,6 +67,14 @@ The product backlog is organized into epics that reflect the agreed scope of the
 - Deterministic process-pool execution with checksum reconciliation and serialization checks.
 - Checkpoint, resume, and distributed execution boundary contracts for future runtime integration.
 
+## Sprint 5D Delivered (Current)
+
+- Added deterministic portfolio allocation and strategy-selection subsystem in `backend/portfolio`.
+- Added eligibility, correlation, clustering, sizing, constraints, risk contribution, scenario, rebalance, analytics, and reporting engines.
+- Added portfolio persistence stack (DTOs, ORM entities, repositories, service, migration `0007_portfolio_selection_foundation`).
+- Added deterministic no-look-ahead enforcement in portfolio construction.
+- Added deterministic offline tests and opt-in benchmark entrypoint for portfolio workflows.
+
 ## Explicitly Deferred Beyond Sprint 5A
 
 - Bayesian, TPE, and Gaussian-process optimization algorithms.

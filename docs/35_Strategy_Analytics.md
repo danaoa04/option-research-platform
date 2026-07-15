@@ -139,3 +139,12 @@ where $s_j$ is direction-adjusted objective value and $w_j$ is objective weight.
 Lexicographic ranking uses ordered objective tuples with deterministic candidate-ID tie-breaking.
 
 Pareto analysis uses deterministic dominance with explicit dominated-candidate diagnostics.
+
+## Sprint 5D Portfolio Selection Analytics
+
+Strategy analytics are now consumed by the portfolio selection layer to produce:
+
+- eligibility decisions with explicit rejection reasons
+- cluster-aware diversification diagnostics
+- marginal risk contribution deltas per selected strategy
+- deterministic scenario stress summaries

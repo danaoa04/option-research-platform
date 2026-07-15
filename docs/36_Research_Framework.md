@@ -145,3 +145,11 @@ flowchart LR
 ```
 
 This boundary keeps optimization independent from GUI, brokers, live APIs, and live execution.
+
+## Sprint 5D Extension
+
+Portfolio allocation and strategy-selection are added as a downstream deterministic research stage.
+
+- Inputs are validated candidate outputs and historical analytics features.
+- Outputs are reproducible allocation plans, diagnostics, and persisted run artifacts.
+- No live brokerage or execution system integration is introduced.

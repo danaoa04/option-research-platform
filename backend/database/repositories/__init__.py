@@ -11,6 +11,18 @@ from .market_data import (
     UnderlyingPricesRepository,
 )
 from .optimization import OptimizationCandidateResultRepository, OptimizationRunRepository
+from .portfolio import (
+    PortfolioAllocationRepository,
+    PortfolioClusterRepository,
+    PortfolioConstraintRepository,
+    PortfolioCorrelationRepository,
+    PortfolioEligibleCandidateRepository,
+    PortfolioRebalancePlanRepository,
+    PortfolioRejectedCandidateRepository,
+    PortfolioRiskContributionRepository,
+    PortfolioRunRepository,
+    PortfolioScenarioRepository,
+)
 from .reproducibility import (
     AuditRepository,
     CorporateActionNormalizationRepository,
@@ -32,6 +44,16 @@ __all__ = [
     "InterestRatesRepository",
     "OptimizationCandidateResultRepository",
     "OptimizationRunRepository",
+    "PortfolioAllocationRepository",
+    "PortfolioClusterRepository",
+    "PortfolioConstraintRepository",
+    "PortfolioCorrelationRepository",
+    "PortfolioEligibleCandidateRepository",
+    "PortfolioRebalancePlanRepository",
+    "PortfolioRejectedCandidateRepository",
+    "PortfolioRiskContributionRepository",
+    "PortfolioRunRepository",
+    "PortfolioScenarioRepository",
     "ValidationCandidateResultRepository",
     "ValidationFoldRepository",
     "ValidationRunRepository",

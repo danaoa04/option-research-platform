@@ -144,3 +144,24 @@ Design rules:
 - `VolatilityTimeSliceNode` rows are keyed by `(slice_id, tenor_days, x, node_kind)` for deterministic updates before finalization.
 - Deterministic slice checksums are stored in slice metadata for reproducibility verification.
 - Nearest-prior finalized-surface retrieval is enforced for no-look-ahead historical querying.
+
+## Sprint 5D Portfolio Persistence Extension
+
+Added tables:
+
+- `portfolio_runs`
+- `portfolio_eligible_candidates`
+- `portfolio_rejected_candidates`
+- `portfolio_allocations`
+- `portfolio_constraint_outcomes`
+- `portfolio_correlations`
+- `portfolio_clusters`
+- `portfolio_risk_contributions`
+- `portfolio_scenarios`
+- `portfolio_rebalance_plans`
+
+Design rules:
+
+- Each table uses deterministic run-scoped uniqueness constraints.
+- Run writes require reproducibility metadata (`allocation_problem`, objectives, constraints, policies, manifests).
+- Order-stable portfolio checksum helpers support persistence reconciliation.
