@@ -232,6 +232,10 @@ Price options and related instruments under a variety of market assumptions and 
 - Black-76 is used for European futures options.
 - American equity/ETF options default to CRR with node-wise early-exercise checks.
 
+#### Implied-volatility inversion boundary
+- Implied volatility is solved by inverting the model selected for each contract metadata profile.
+- American contracts are inverted against configured American models and never silently downgraded to Black-Scholes.
+
 #### Error handling
 - Invalid model inputs should fail early with clear diagnostics.
 - Unsupported model configurations should be rejected explicitly.
@@ -255,6 +259,10 @@ Price options and related instruments under a variety of market assumptions and 
 Compute option Greeks and related sensitivities for risk analysis and strategy evaluation.
 
 Implementation details are documented in [Greeks Engine](./33_Greeks_Engine.md).
+
+### 5. Volatility Engine (Implied Volatility Solver)
+
+Implementation details are documented in [Volatility Engine](./32_Volatility_Engine.md).
 
 #### Responsibilities
 - Calculate delta, gamma, vega, theta, rho, and related measures.

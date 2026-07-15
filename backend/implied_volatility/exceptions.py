@@ -13,3 +13,11 @@ class ImpliedVolatilityValidationError(ImpliedVolatilityError):
 
 class ImpliedVolatilityConvergenceError(ImpliedVolatilityError):
     """Raised when no solver reaches convergence under configured bounds."""
+
+
+class ImpliedVolatilityUnsupportedContractError(ImpliedVolatilityError):
+    """Raised when contract metadata or model combination is unsupported."""
+
+
+class ImpliedVolatilityInvalidMarketPriceError(ImpliedVolatilityError):
+    """Raised when observed market price violates arbitrage/model bounds."""

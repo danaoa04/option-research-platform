@@ -94,6 +94,14 @@ Contango and backwardation classifications are research features and filter inpu
 	- American equity/ETF -> Cox-Ross-Rubinstein
 - American approximation interfaces (Barone-Adesi-Whaley, Bjerksund-Stensland) are declared for extension.
 
+### 11. Model-Aware Implied Volatility Solver
+
+- Implied-volatility inversion uses the selected pricing model per contract metadata.
+- Supported inversion paths include European spot (Black-Scholes), European futures (Black-76), and American equity/ETF contracts through configured American models.
+- Solver supports Newton-Raphson, bisection, and Brent-style fallback with convergence diagnostics.
+- Validation enforces arbitrage bounds and contract metadata constraints before inversion.
+- Historical quote source metadata (bid/ask/mid/last/mark) is preserved for diagnostics.
+
 ### 10. Historical Execution Boundary
 
 - Historical bid/ask quotes remain authoritative for backtest fills.

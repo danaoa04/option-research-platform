@@ -58,6 +58,12 @@ US-listed compatibility details:
 - American first-order Greeks are computed numerically and reported with explicit higher-order capability limits.
 - Early-exercise advisory signals are available for dividend and deep-ITM contexts (assignment simulation deferred).
 
+Implied-volatility foundation:
+
+- Model-aware inversion routes to Black-Scholes, Black-76, or configured American pricing models by contract metadata.
+- Solver stack supports Newton-Raphson, bisection, and Brent-style fallback with structured convergence diagnostics.
+- Batch solving preserves deterministic ordering and isolates per-contract failures.
+
 Backtesting boundary:
 
 - Historical bid/ask quotes remain the source of truth for fill simulation.

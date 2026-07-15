@@ -32,11 +32,17 @@
 
 ## Sprint 4C - Implied Volatility Engine
 
-- [x] Newton-Raphson with robust fallback behavior
-- [x] Bisection and Brent integration interfaces
-- [x] Convergence diagnostics and deterministic controls
-- [x] Surface and cube interpolation scaffolding
-- [x] Historical IV storage hooks
+- [x] Model-aware IV inversion by contract metadata and pricing-model routing
+- [x] Newton-Raphson, bisection, and Brent-style fallback sequencing
+- [x] Configurable bounds, tolerances, initial guess, and iteration limits
+- [x] Structured convergence diagnostics and failure classification
+- [x] Arbitrage-bound and metadata validation before solving
+- [x] American-style inversion via configured American model
+- [x] Batch solving with deterministic ordering and per-contract failures
+- [x] Quote-source policies and diagnostics for bid/ask/mid/last/mark workflows
+- [x] Surface-readiness result metadata (without implementing surface engine)
+- [x] Interpolation and cube scaffolding retained
+- [x] Historical IV storage hooks retained
 - [x] Deterministic tests
 - [x] Documentation updates
 - [x] Lint passing

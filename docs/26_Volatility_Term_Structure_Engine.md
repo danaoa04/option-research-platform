@@ -158,4 +158,14 @@ Planned for a future phase after:
 2. Pricing Engine core capabilities are complete.
 3. Greeks Engine core capabilities are complete.
 
+## Dependency Note: Sprint 4C Solver Foundation
+
+Sprint 4C now provides a model-aware implied-volatility solver foundation in `backend/implied_volatility`.
+
+- Solving is routed by contract metadata and compatible pricing model.
+- Structured outcomes and diagnostics are suitable for downstream surface-quality workflows.
+- Quote-source policy metadata is preserved for stale/crossed/wide-market diagnostics.
+
+The term-structure and surface engine itself remains deferred and is not implemented in this sprint.
+
 This subsystem is a roadmap item and not part of Sprint 3C implementation scope.

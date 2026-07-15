@@ -50,3 +50,7 @@ All notable changes to this project will be documented in this file.
 - Extended `backend/greeks` with Black-76 first-order support and American numerical first-order Greeks plus explicit unsupported higher-order capability reporting.
 - Added advisory early-exercise analysis service for dividend-capture call scenarios, deep-ITM put signals, missing dividend data, and special-dividend uncertainty.
 - Added deterministic tests for routing by contract metadata, American-versus-European valuation relationships, CRR convergence, Black-76 references, American numerical Greeks, and dividend edge handling.
+- Upgraded Sprint 4C implied-volatility subsystem to model-aware inversion using contract metadata and pricing router integration.
+- Added structured solver outcomes and failure reasons, quote-source policy handling, arbitrage-bound validation, and no-silent-Black-Scholes fallback behavior.
+- Added typed batch IV solving with stable ordering and per-contract error isolation.
+- Added volatility engine documentation in `docs/32_Volatility_Engine.md` for solver methods, fallback order, convergence criteria, and known failure modes.

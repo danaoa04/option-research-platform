@@ -48,3 +48,7 @@ Success for the platform will be measured through engineering quality, research 
 - Black-76 futures-option pricing and first-order Greeks remain reproducible against published references.
 - American-style Greeks expose first-order numerical sensitivities and explicit unsupported higher-order capabilities.
 - Historical execution workflows preserve bid/ask as source-of-truth and never overwrite quote history with theoretical values.
+- Implied-volatility inversion routes by contract metadata and selected pricing model with deterministic outcomes.
+- Solver fallback sequence and convergence diagnostics are reproducible under fixed config.
+- Invalid observed prices and unsupported contracts produce explicit structured failure states.
+- Batch solving preserves input ordering and isolates per-contract failures without aborting full chains.

@@ -125,19 +125,20 @@ See [Greeks Engine](./33_Greeks_Engine.md).
 
 ## Sprint 4C Extension
 
-The pricing framework is now extended with a provider-neutral implied-volatility subsystem in `backend/implied_volatility`.
+The pricing framework is now extended with a model-aware implied-volatility subsystem in `backend/implied_volatility`.
 
 Implemented capabilities:
 
-- IV solving via Newton-Raphson
-- bisection fallback when Newton does not converge
-- Brent solver adapter interface for pluggable root-finding integration
-- convergence and failure-handling controls
+- IV solving routed by contract metadata and pricing-model compatibility
+- Newton-Raphson, bisection, and Brent-style fallback sequencing
+- convergence diagnostics and structured failure outcomes
+- quote-source policy support for bid/ask/mid/last/mark inputs
+- no silent Black-Scholes fallback for American contracts
 - smile, term-structure, and surface interpolation
 - volatility cube framework
 - historical IV storage hooks
 
-See [Implied Volatility Engine](./28_Implied_Volatility_Engine.md).
+See [Volatility Engine](./32_Volatility_Engine.md).
 
 No live API integrations are used in this sprint.
 
