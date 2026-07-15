@@ -37,3 +37,9 @@ The loop is strategy-agnostic and only calls the stable lifecycle interface:
 - Historical bid/ask remain the source of truth.
 - Theoretical pricing is only a fallback for valuation and never overwrites historical prices.
 - Baseline fills are deterministic placeholders, not production execution realism.
+
+## Sprint 6B Update
+- Added deterministic strategy state-machine support for multi-leg historical orchestration.
+- Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
+- Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
+- Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.

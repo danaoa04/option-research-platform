@@ -159,3 +159,66 @@ def test_asof_queries_nearest_prior_and_comparisons() -> None:
         ),
     )
     assert len(constraints) == 1
+
+
+def test_strategy_query_helpers_nearest_prior() -> None:
+    service = BacktestAsOfQueryService(guard=NoLookAheadGuard())
+    as_of = datetime(2026, 6, 1, 15, 30, tzinfo=UTC)
+    strategy_state = service.strategy_state_as_of(
+        as_of=as_of,
+        strategy_instance_id="si-1",
+        strategy_states=(
+            {
+                "strategy_instance_id": "si-1",
+                "lifecycle_state": "open",
+                "as_of_timestamp": datetime(2026, 6, 1, 15, 0, tzinfo=UTC),
+            },
+            {
+                "strategy_instance_id": "si-1",
+                "lifecycle_state": "exit_pending",
+                "as_of_timestamp": datetime(2026, 6, 1, 16, 0, tzinfo=UTC),
+            },
+        ),
+    )
+    assert strategy_state.value is not None
+    assert strategy_state.value["lifecycle_state"] == "open"
+
+    leg_state = service.leg_state_as_of(
+        as_of=as_of,
+        position_instance_id="pi-1",
+        leg_label="short_call",
+        leg_states=(
+            {
+                "position_instance_id": "pi-1",
+                "leg_label": "short_call",
+                "remaining_quantity": 1,
+                "as_of_timestamp": datetime(2026, 6, 1, 15, 5, tzinfo=UTC),
+            },
+            {
+                "position_instance_id": "pi-1",
+                "leg_label": "short_call",
+                "remaining_quantity": 0,
+                "as_of_timestamp": datetime(2026, 6, 1, 16, 5, tzinfo=UTC),
+            },
+        ),
+    )
+    assert leg_state.value is not None
+    assert leg_state.value["remaining_quantity"] == 1
+
+    unresolved = service.unresolved_failures(
+        integrity_failures=(
+            {"failure_key": "f-1", "reason_code": "cash_ledger_not_reconciled"},
+            {"failure_key": "f-2", "reason_code": "position_closed_with_open_legs"},
+        ),
+        resolved_failure_keys=("f-1",),
+    )
+    assert len(unresolved) == 1
+    assert unresolved[0]["failure_key"] == "f-2"
+
+    residual = service.residual_exposure_after_expiration(
+        expiration_history=(
+            {"residual_exposure_detected": False},
+            {"residual_exposure_detected": True, "position_instance_id": "pi-1"},
+        )
+    )
+    assert len(residual) == 1

@@ -147,6 +147,14 @@ class BacktestingEngine:
 
 		if event.event_type is EventType.LIFECYCLE_EVALUATION:
 			self._handle_lifecycle(state=state, strategy=strategy, context=context)
+		elif event.event_type in {
+			EventType.ENTRY_EVALUATION,
+			EventType.MANAGEMENT_EVALUATION,
+			EventType.EXIT_EVALUATION,
+			EventType.ROLL_EVALUATION,
+			EventType.FILL_EVENT,
+		}:
+			self._handle_lifecycle(state=state, strategy=strategy, context=context)
 		elif event.event_type is EventType.VALUATION:
 			state.snapshots.append(snapshot)
 			state.greeks_history.append((event.timestamp, dict(snapshot.portfolio_greeks)))
@@ -155,6 +163,17 @@ class BacktestingEngine:
 			self._handle_expiration(state=state, strategy=strategy, context=context)
 		elif event.event_type is EventType.CORPORATE_ACTION:
 			self._handle_corporate_action(state=state, strategy=strategy, context=context)
+		elif event.event_type is EventType.RISK_EVENT:
+			state.warnings.append(
+				BacktestWarning(
+					timestamp=event.timestamp,
+					strategy_id=strategy.strategy_id,
+					position_id=None,
+					reason_code="risk_event",
+					message="risk event processed",
+					metadata=dict(event.payload),
+				)
+			)
 
 		state.position_history.extend(state.open_positions)
 

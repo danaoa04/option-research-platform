@@ -167,6 +167,133 @@ class BacktestAsOfQueryService:
             if _ensure_aware(item.get("timestamp")) <= as_of_ts
         )
 
+    def strategy_state_as_of(
+        self,
+        *,
+        as_of: datetime,
+        strategy_states: tuple[dict[str, Any], ...],
+        strategy_instance_id: str,
+    ) -> AsOfResult[dict[str, Any]]:
+        relevant = tuple(
+            row
+            for row in strategy_states
+            if str(row.get("strategy_instance_id")) == strategy_instance_id
+        )
+        return self._nearest(
+            as_of=as_of,
+            rows=relevant,
+            timestamp_getter=lambda row: row.get("as_of_timestamp"),
+        )
+
+    def leg_state_as_of(
+        self,
+        *,
+        as_of: datetime,
+        leg_states: tuple[dict[str, Any], ...],
+        position_instance_id: str,
+        leg_label: str,
+    ) -> AsOfResult[dict[str, Any]]:
+        relevant = tuple(
+            row
+            for row in leg_states
+            if str(row.get("position_instance_id")) == position_instance_id
+            and str(row.get("leg_label")) == leg_label
+        )
+        return self._nearest(
+            as_of=as_of,
+            rows=relevant,
+            timestamp_getter=lambda row: row.get("as_of_timestamp"),
+        )
+
+    def transition_history(
+        self,
+        *,
+        transitions: tuple[dict[str, Any], ...],
+        strategy_instance_id: str,
+    ) -> tuple[dict[str, Any], ...]:
+        relevant = [
+            row
+            for row in transitions
+            if str(row.get("strategy_instance_id")) == strategy_instance_id
+        ]
+        return tuple(sorted(relevant, key=lambda row: int(row.get("sequence_number", 0))))
+
+    def roll_history(
+        self,
+        *,
+        rolls: tuple[dict[str, Any], ...],
+        strategy_instance_id: str,
+    ) -> tuple[dict[str, Any], ...]:
+        relevant = [
+            row
+            for row in rolls
+            if str(row.get("strategy_instance_id")) == strategy_instance_id
+        ]
+        return tuple(sorted(relevant, key=lambda row: _ensure_aware(row.get("created_at"))))
+
+    def lifecycle_trigger_history(
+        self,
+        *,
+        triggers: tuple[dict[str, Any], ...],
+        strategy_instance_id: str,
+    ) -> tuple[dict[str, Any], ...]:
+        relevant = [
+            row
+            for row in triggers
+            if str(row.get("strategy_instance_id", row.get("strategy_id", "")))
+            == strategy_instance_id
+        ]
+        return tuple(
+            sorted(relevant, key=lambda row: _ensure_aware(row.get("trigger_timestamp")))
+        )
+
+    def open_and_closed_strategy_instances(
+        self,
+        *,
+        strategy_states: tuple[dict[str, Any], ...],
+    ) -> tuple[dict[str, Any], ...]:
+        latest_by_instance: dict[str, dict[str, Any]] = {}
+        for row in strategy_states:
+            instance_id = str(row.get("strategy_instance_id"))
+            current = latest_by_instance.get(instance_id)
+            if current is None:
+                latest_by_instance[instance_id] = row
+                continue
+            if _ensure_aware(row.get("as_of_timestamp")) >= _ensure_aware(
+                current.get("as_of_timestamp")
+            ):
+                latest_by_instance[instance_id] = row
+        return tuple(
+            sorted(
+                latest_by_instance.values(),
+                key=lambda row: str(row.get("strategy_instance_id")),
+            )
+        )
+
+    def unresolved_failures(
+        self,
+        *,
+        integrity_failures: tuple[dict[str, Any], ...],
+        resolved_failure_keys: tuple[str, ...],
+    ) -> tuple[dict[str, Any], ...]:
+        resolved = set(resolved_failure_keys)
+        return tuple(
+            item
+            for item in integrity_failures
+            if str(item.get("failure_key", "")) not in resolved
+        )
+
+    def residual_exposure_after_expiration(
+        self,
+        *,
+        expiration_history: tuple[dict[str, Any], ...],
+    ) -> tuple[dict[str, Any], ...]:
+        return tuple(
+            item
+            for item in expiration_history
+            if bool(item.get("residual_exposure_detected", False))
+        )
+
     def _nearest[T](
         self,
         *,

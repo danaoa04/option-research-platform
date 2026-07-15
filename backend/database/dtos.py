@@ -691,3 +691,135 @@ class BacktestReproducibilityChecksumDTO:
     checksum_key: str
     checksum_value: str
     metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestStrategyDefinitionDTO:
+    definition_id: str
+    strategy_name: str
+    definition_json: dict[str, Any]
+    validation_json: dict[str, Any]
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestStrategyTemplateDTO:
+    strategy_instance_id: str
+    template_name: str
+    template_version: str | None
+    compiled_definition_id: str
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestStrategyInstanceDTO:
+    strategy_instance_id: str
+    strategy_id: str
+    definition_id: str
+    lifecycle_state: str
+    state_reason: str | None
+    as_of_timestamp: datetime
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestPositionInstanceDTO:
+    strategy_instance_id: str
+    position_instance_id: str
+    lifecycle_state: str
+    opened_at: datetime
+    closed_at: datetime | None
+    as_of_timestamp: datetime
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestStateTransitionDTO:
+    strategy_instance_id: str
+    position_instance_id: str
+    sequence_number: int
+    transition_timestamp: datetime
+    prior_state: str
+    next_state: str
+    trigger: str
+    action_plan: dict[str, Any]
+    data_snapshot_reference: str
+    software_git_commit: str
+    warnings: list[str]
+    failures: list[str]
+    checksum_metadata: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestTransitionGuardDTO:
+    transition_row_id: int
+    guard_name: str
+    passed: bool
+    reason_code: str
+    details_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestRollPlanDTO:
+    plan_id: str
+    strategy_instance_id: str
+    source_position_id: str
+    roll_kind: str
+    policy_trigger: str
+    target_specification: dict[str, Any]
+    estimated_credit_or_debit: Decimal | None
+    diagnostics: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestRollRelationshipDTO:
+    plan_id: str
+    relationship_type: str
+    leg_label: str
+    source_position_id: str | None
+    target_position_id: str | None
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestPartialFillDTO:
+    strategy_instance_id: str
+    position_instance_id: str
+    leg_label: str
+    original_quantity: int
+    filled_quantity: int
+    remaining_quantity: int
+    average_entry_price: Decimal | None
+    fill_timestamp: datetime
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestReconciliationEventDTO:
+    strategy_instance_id: str
+    position_instance_id: str
+    event_timestamp: datetime
+    strategy_fill_ratio: Decimal
+    retry_eligible: bool
+    cancelled: bool
+    timed_out: bool
+    failure_escalated: bool
+    diagnostics: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestIntegrityFailureDTO:
+    strategy_instance_id: str
+    position_instance_id: str
+    failure_timestamp: datetime
+    reason_code: str
+    details_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestStrategyHistoryDTO:
+    strategy_instance_id: str
+    history_timestamp: datetime
+    history_kind: str
+    payload_json: dict[str, Any]
+    checksum_metadata: dict[str, Any]

@@ -8,31 +8,55 @@ from hashlib import sha256
 from backend.database.dtos import (
 	BacktestCashLedgerEntryDTO,
 	BacktestEventDTO,
+	BacktestIntegrityFailureDTO,
 	BacktestLifecycleTriggerDTO,
 	BacktestOrderIntentDTO,
+	BacktestPartialFillDTO,
 	BacktestPortfolioSnapshotDTO,
 	BacktestPositionDTO,
+	BacktestPositionInstanceDTO,
 	BacktestPositionLegDTO,
+	BacktestReconciliationEventDTO,
 	BacktestReproducibilityChecksumDTO,
 	BacktestResearchFillDTO,
+	BacktestRollPlanDTO,
+	BacktestRollRelationshipDTO,
 	BacktestRunComparisonDTO,
 	BacktestRunDTO,
 	BacktestScenarioResultDTO,
+	BacktestStateTransitionDTO,
+	BacktestStrategyDefinitionDTO,
+	BacktestStrategyHistoryDTO,
+	BacktestStrategyInstanceDTO,
+	BacktestStrategyTemplateDTO,
+	BacktestTransitionGuardDTO,
 	BacktestValuationDTO,
 )
 from backend.database.repositories.backtesting import (
 	BacktestCashLedgerRepository,
 	BacktestEventRepository,
+	BacktestIntegrityFailureRepository,
 	BacktestLifecycleTriggerRepository,
 	BacktestOrderIntentRepository,
+	BacktestPartialFillRepository,
 	BacktestPortfolioSnapshotRepository,
+	BacktestPositionInstanceRepository,
 	BacktestPositionLegRepository,
 	BacktestPositionRepository,
+	BacktestReconciliationEventRepository,
 	BacktestReproducibilityChecksumRepository,
 	BacktestResearchFillRepository,
+	BacktestRollPlanRepository,
+	BacktestRollRelationshipRepository,
 	BacktestRunComparisonRepository,
 	BacktestRunRepository,
 	BacktestScenarioResultRepository,
+	BacktestStateTransitionRepository,
+	BacktestStrategyDefinitionRepository,
+	BacktestStrategyHistoryRepository,
+	BacktestStrategyInstanceRepository,
+	BacktestStrategyTemplateRepository,
+	BacktestTransitionGuardRepository,
 	BacktestValuationRepository,
 )
 from backend.database.session import DatabaseSessionManager
@@ -62,7 +86,32 @@ class BacktestPersistenceService:
 		run_comparisons: list[BacktestRunComparisonDTO],
 		scenarios: list[BacktestScenarioResultDTO],
 		reproducibility_checksums: list[BacktestReproducibilityChecksumDTO],
+		strategy_definitions: list[BacktestStrategyDefinitionDTO] | None = None,
+		strategy_templates: list[BacktestStrategyTemplateDTO] | None = None,
+		strategy_instances: list[BacktestStrategyInstanceDTO] | None = None,
+		position_instances: list[BacktestPositionInstanceDTO] | None = None,
+		state_transitions: list[BacktestStateTransitionDTO] | None = None,
+		transition_guards: list[BacktestTransitionGuardDTO] | None = None,
+		roll_plans: list[BacktestRollPlanDTO] | None = None,
+		roll_relationships: list[BacktestRollRelationshipDTO] | None = None,
+		partial_fills: list[BacktestPartialFillDTO] | None = None,
+		reconciliation_events: list[BacktestReconciliationEventDTO] | None = None,
+		integrity_failures: list[BacktestIntegrityFailureDTO] | None = None,
+		strategy_histories: list[BacktestStrategyHistoryDTO] | None = None,
 	) -> int:
+		strategy_definitions = strategy_definitions or []
+		strategy_templates = strategy_templates or []
+		strategy_instances = strategy_instances or []
+		position_instances = position_instances or []
+		state_transitions = state_transitions or []
+		transition_guards = transition_guards or []
+		roll_plans = roll_plans or []
+		roll_relationships = roll_relationships or []
+		partial_fills = partial_fills or []
+		reconciliation_events = reconciliation_events or []
+		integrity_failures = integrity_failures or []
+		strategy_histories = strategy_histories or []
+
 		self._validate_run(run)
 		payload = {
 			"run_id": run.run_id,
@@ -146,6 +195,139 @@ class BacktestPersistenceService:
 						**{k.replace("_json", ""): v for k, v in asdict(item).items()},
 					}
 					for item in reproducibility_checksums
+				]
+			)
+			BacktestStrategyDefinitionRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{
+							key: value
+							for key, value in asdict(item).items()
+							if key != "metadata_json"
+						},
+						"metadata": item.metadata_json,
+					}
+					for item in strategy_definitions
+				]
+			)
+			BacktestStrategyTemplateRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{
+							key: value
+							for key, value in asdict(item).items()
+							if key != "metadata_json"
+						},
+						"metadata": item.metadata_json,
+					}
+					for item in strategy_templates
+				]
+			)
+			BacktestStrategyInstanceRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{
+							key: value
+							for key, value in asdict(item).items()
+							if key != "metadata_json"
+						},
+						"metadata": item.metadata_json,
+					}
+					for item in strategy_instances
+				]
+			)
+			BacktestPositionInstanceRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{
+							key: value
+							for key, value in asdict(item).items()
+							if key != "metadata_json"
+						},
+						"metadata": item.metadata_json,
+					}
+					for item in position_instances
+				]
+			)
+			BacktestStateTransitionRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in state_transitions
+				]
+			)
+			BacktestTransitionGuardRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{k.replace("_json", ""): v for k, v in asdict(item).items()},
+					}
+					for item in transition_guards
+				]
+			)
+			BacktestRollPlanRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in roll_plans
+				]
+			)
+			BacktestRollRelationshipRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in roll_relationships
+				]
+			)
+			BacktestPartialFillRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{
+							key: value
+							for key, value in asdict(item).items()
+							if key != "metadata_json"
+						},
+						"metadata": item.metadata_json,
+					}
+					for item in partial_fills
+				]
+			)
+			BacktestReconciliationEventRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in reconciliation_events
+				]
+			)
+			BacktestIntegrityFailureRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in integrity_failures
+				]
+			)
+			BacktestStrategyHistoryRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in strategy_histories
 				]
 			)
 			return run_row_id

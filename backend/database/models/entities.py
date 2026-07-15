@@ -1113,6 +1113,268 @@ class BacktestReproducibilityChecksumRecord(Base):
     )
 
 
+class BacktestStrategyDefinitionRecord(Base):
+    __tablename__ = "backtest_strategy_definitions"
+    __table_args__ = (
+        UniqueConstraint("definition_id"),
+        Index("ix_backtest_strategy_definitions_name", "strategy_name"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    definition_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    strategy_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    definition_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    validation_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+
+class BacktestStrategyTemplateRecord(Base):
+    __tablename__ = "backtest_strategy_templates"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "template_name", "strategy_instance_id"),
+        Index("ix_backtest_strategy_templates_run", "run_row_id", "template_name"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    template_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    template_version: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    compiled_definition_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+
+class BacktestStrategyInstanceRecord(Base):
+    __tablename__ = "backtest_strategy_instances"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "strategy_instance_id", "as_of_timestamp"),
+        Index("ix_backtest_strategy_instances_run_ts", "run_row_id", "as_of_timestamp"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    strategy_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    definition_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    lifecycle_state: Mapped[str] = mapped_column(String(64), nullable=False)
+    state_reason: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    as_of_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+
+class BacktestPositionInstanceRecord(Base):
+    __tablename__ = "backtest_position_instances"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "position_instance_id", "as_of_timestamp"),
+        Index("ix_backtest_position_instances_run_ts", "run_row_id", "as_of_timestamp"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    position_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    lifecycle_state: Mapped[str] = mapped_column(String(64), nullable=False)
+    opened_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    as_of_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+
+class BacktestStateTransitionRecord(Base):
+    __tablename__ = "backtest_state_transitions"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "strategy_instance_id", "sequence_number"),
+        Index("ix_backtest_state_transitions_run_ts", "run_row_id", "transition_timestamp"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    position_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    sequence_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    transition_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    prior_state: Mapped[str] = mapped_column(String(64), nullable=False)
+    next_state: Mapped[str] = mapped_column(String(64), nullable=False)
+    trigger: Mapped[str] = mapped_column(String(128), nullable=False)
+    action_plan: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    data_snapshot_reference: Mapped[str] = mapped_column(String(256), nullable=False)
+    software_git_commit: Mapped[str] = mapped_column(String(64), nullable=False)
+    warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    failures: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    checksum_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestTransitionGuardRecord(Base):
+    __tablename__ = "backtest_transition_guards"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "transition_row_id", "guard_name"),
+        Index("ix_backtest_transition_guards_run", "run_row_id", "guard_name"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    transition_row_id: Mapped[int] = mapped_column(
+        ForeignKey("backtest_state_transitions.id"),
+        nullable=False,
+    )
+    guard_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    passed: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    reason_code: Mapped[str] = mapped_column(String(128), nullable=False)
+    details_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestRollPlanRecord(Base):
+    __tablename__ = "backtest_roll_plans"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "plan_id"),
+        Index("ix_backtest_roll_plans_run_ts", "run_row_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    plan_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    source_position_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    roll_kind: Mapped[str] = mapped_column(String(64), nullable=False)
+    policy_trigger: Mapped[str] = mapped_column(String(128), nullable=False)
+    target_specification: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    estimated_credit_or_debit: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    diagnostics: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class BacktestRollRelationshipRecord(Base):
+    __tablename__ = "backtest_roll_relationships"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "plan_id", "relationship_type", "leg_label"),
+        Index("ix_backtest_roll_relationships_run", "run_row_id", "plan_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    plan_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    relationship_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    leg_label: Mapped[str] = mapped_column(String(128), nullable=False)
+    source_position_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    target_position_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+
+
+class BacktestPartialFillRecord(Base):
+    __tablename__ = "backtest_partial_fills"
+    __table_args__ = (
+        UniqueConstraint(
+            "run_row_id",
+            "strategy_instance_id",
+            "position_instance_id",
+            "leg_label",
+            "fill_timestamp",
+        ),
+        Index("ix_backtest_partial_fills_run_ts", "run_row_id", "fill_timestamp"),
+        CheckConstraint("filled_quantity >= 0", name="backtest_partial_fills_non_negative"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    position_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    leg_label: Mapped[str] = mapped_column(String(128), nullable=False)
+    original_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+    filled_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+    remaining_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+    average_entry_price: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    fill_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+
+class BacktestReconciliationEventRecord(Base):
+    __tablename__ = "backtest_reconciliation_events"
+    __table_args__ = (
+        UniqueConstraint(
+            "run_row_id",
+            "strategy_instance_id",
+            "position_instance_id",
+            "event_timestamp",
+        ),
+        Index("ix_backtest_reconciliation_events_run_ts", "run_row_id", "event_timestamp"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    position_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    event_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    strategy_fill_ratio: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    retry_eligible: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    cancelled: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    timed_out: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    failure_escalated: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    diagnostics: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestIntegrityFailureRecord(Base):
+    __tablename__ = "backtest_integrity_failures"
+    __table_args__ = (
+        UniqueConstraint(
+            "run_row_id",
+            "strategy_instance_id",
+            "position_instance_id",
+            "failure_timestamp",
+            "reason_code",
+        ),
+        Index("ix_backtest_integrity_failures_run_ts", "run_row_id", "failure_timestamp"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    position_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    failure_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    reason_code: Mapped[str] = mapped_column(String(128), nullable=False)
+    details_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestStrategyHistoryRecord(Base):
+    __tablename__ = "backtest_strategy_histories"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "strategy_instance_id", "history_timestamp", "history_kind"),
+        Index("ix_backtest_strategy_histories_run_ts", "run_row_id", "history_timestamp"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    history_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    history_kind: Mapped[str] = mapped_column(String(64), nullable=False)
+    payload_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    checksum_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
 class DataLineageRecord(Base):
     __tablename__ = "data_lineage_records"
     __table_args__ = (

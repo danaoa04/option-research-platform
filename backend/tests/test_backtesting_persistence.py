@@ -172,6 +172,28 @@ def test_alembic_upgrade_and_downgrade_for_0007_and_0008(tmp_path: Path) -> None
 
 	command.downgrade(cfg, "0007_portfolio_selection_foundation")
 
+	command.stamp(cfg, "0008_backtesting_event_loop_foundation")
+	command.upgrade(cfg, "0009_strategy_state_machine_foundation")
+
+	engine_s6b = create_engine(f"sqlite+pysqlite:///{db_path}", future=True)
+	with engine_s6b.connect() as conn:
+		row_count = conn.exec_driver_sql(
+			"SELECT COUNT(*) FROM backtest_strategy_instances"
+		).scalar_one()
+		assert row_count == 0
+	engine_s6b.dispose()
+
+	command.downgrade(cfg, "0008_backtesting_event_loop_foundation")
+
+	engine_after_s6b = create_engine(f"sqlite+pysqlite:///{db_path}", future=True)
+	with engine_after_s6b.connect() as conn:
+		rows_s6b = conn.exec_driver_sql(
+			"SELECT name FROM sqlite_master WHERE type='table' "
+			"AND name='backtest_strategy_instances'"
+		).fetchall()
+	engine_after_s6b.dispose()
+	assert rows_s6b == []
+
 	engine_after = create_engine(f"sqlite+pysqlite:///{db_path}", future=True)
 	with engine_after.connect() as conn:
 		rows = conn.exec_driver_sql(

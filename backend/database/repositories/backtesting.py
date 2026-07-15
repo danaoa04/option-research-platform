@@ -12,16 +12,28 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from backend.database.models import (
     BacktestCashLedgerEntryRecord,
     BacktestEventRecord,
+    BacktestIntegrityFailureRecord,
     BacktestLifecycleTriggerRecord,
     BacktestOrderIntentRecord,
+    BacktestPartialFillRecord,
     BacktestPortfolioSnapshotRecord,
+    BacktestPositionInstanceRecord,
     BacktestPositionLegRecord,
     BacktestPositionRecord,
+    BacktestReconciliationEventRecord,
     BacktestReproducibilityChecksumRecord,
     BacktestResearchFillRecord,
+    BacktestRollPlanRecord,
+    BacktestRollRelationshipRecord,
     BacktestRun,
     BacktestRunComparisonRecord,
     BacktestScenarioResultRecord,
+    BacktestStateTransitionRecord,
+    BacktestStrategyDefinitionRecord,
+    BacktestStrategyHistoryRecord,
+    BacktestStrategyInstanceRecord,
+    BacktestStrategyTemplateRecord,
+    BacktestTransitionGuardRecord,
     BacktestValuationRecord,
 )
 
@@ -149,3 +161,158 @@ class BacktestScenarioResultRepository(_BulkImmutableRepository):
 class BacktestReproducibilityChecksumRepository(_BulkImmutableRepository):
     model = BacktestReproducibilityChecksumRecord
     conflict_columns = ("run_row_id", "checksum_key")
+
+
+class BacktestStrategyDefinitionRepository(_BulkImmutableRepository):
+    model = BacktestStrategyDefinitionRecord
+    conflict_columns = ("definition_id",)
+
+
+class BacktestStrategyTemplateRepository(_BulkImmutableRepository):
+    model = BacktestStrategyTemplateRecord
+    conflict_columns = ("run_row_id", "template_name", "strategy_instance_id")
+
+
+class BacktestStrategyInstanceRepository(_BulkImmutableRepository):
+    model = BacktestStrategyInstanceRecord
+    conflict_columns = ("run_row_id", "strategy_instance_id", "as_of_timestamp")
+
+    def state_as_of(
+        self,
+        *,
+        run_row_id: int,
+        strategy_instance_id: str,
+        as_of: datetime,
+    ) -> BacktestStrategyInstanceRecord | None:
+        stmt: Select[tuple[BacktestStrategyInstanceRecord]] = (
+            select(BacktestStrategyInstanceRecord)
+            .where(
+                BacktestStrategyInstanceRecord.run_row_id == run_row_id,
+                BacktestStrategyInstanceRecord.strategy_instance_id
+                == strategy_instance_id,
+                BacktestStrategyInstanceRecord.as_of_timestamp <= as_of,
+            )
+            .order_by(BacktestStrategyInstanceRecord.as_of_timestamp.desc())
+            .limit(1)
+        )
+        return self.session.execute(stmt).scalars().first()
+
+
+class BacktestPositionInstanceRepository(_BulkImmutableRepository):
+    model = BacktestPositionInstanceRecord
+    conflict_columns = ("run_row_id", "position_instance_id", "as_of_timestamp")
+
+    def state_as_of(
+        self,
+        *,
+        run_row_id: int,
+        position_instance_id: str,
+        as_of: datetime,
+    ) -> BacktestPositionInstanceRecord | None:
+        stmt: Select[tuple[BacktestPositionInstanceRecord]] = (
+            select(BacktestPositionInstanceRecord)
+            .where(
+                BacktestPositionInstanceRecord.run_row_id == run_row_id,
+                BacktestPositionInstanceRecord.position_instance_id
+                == position_instance_id,
+                BacktestPositionInstanceRecord.as_of_timestamp <= as_of,
+            )
+            .order_by(BacktestPositionInstanceRecord.as_of_timestamp.desc())
+            .limit(1)
+        )
+        return self.session.execute(stmt).scalars().first()
+
+
+class BacktestStateTransitionRepository(_BulkImmutableRepository):
+    model = BacktestStateTransitionRecord
+    conflict_columns = ("run_row_id", "strategy_instance_id", "sequence_number")
+
+    def history(
+        self,
+        *,
+        run_row_id: int,
+        strategy_instance_id: str,
+    ) -> list[BacktestStateTransitionRecord]:
+        stmt: Select[tuple[BacktestStateTransitionRecord]] = (
+            select(BacktestStateTransitionRecord)
+            .where(
+                BacktestStateTransitionRecord.run_row_id == run_row_id,
+                BacktestStateTransitionRecord.strategy_instance_id
+                == strategy_instance_id,
+            )
+            .order_by(BacktestStateTransitionRecord.sequence_number.asc())
+        )
+        return list(self.session.execute(stmt).scalars())
+
+
+class BacktestTransitionGuardRepository(_BulkImmutableRepository):
+    model = BacktestTransitionGuardRecord
+    conflict_columns = ("run_row_id", "transition_row_id", "guard_name")
+
+
+class BacktestRollPlanRepository(_BulkImmutableRepository):
+    model = BacktestRollPlanRecord
+    conflict_columns = ("run_row_id", "plan_id")
+
+    def history(
+        self,
+        *,
+        run_row_id: int,
+        strategy_instance_id: str,
+    ) -> list[BacktestRollPlanRecord]:
+        stmt: Select[tuple[BacktestRollPlanRecord]] = (
+            select(BacktestRollPlanRecord)
+            .where(
+                BacktestRollPlanRecord.run_row_id == run_row_id,
+                BacktestRollPlanRecord.strategy_instance_id == strategy_instance_id,
+            )
+            .order_by(BacktestRollPlanRecord.created_at.asc())
+        )
+        return list(self.session.execute(stmt).scalars())
+
+
+class BacktestRollRelationshipRepository(_BulkImmutableRepository):
+    model = BacktestRollRelationshipRecord
+    conflict_columns = ("run_row_id", "plan_id", "relationship_type", "leg_label")
+
+
+class BacktestPartialFillRepository(_BulkImmutableRepository):
+    model = BacktestPartialFillRecord
+    conflict_columns = (
+        "run_row_id",
+        "strategy_instance_id",
+        "position_instance_id",
+        "leg_label",
+        "fill_timestamp",
+    )
+
+
+class BacktestReconciliationEventRepository(_BulkImmutableRepository):
+    model = BacktestReconciliationEventRecord
+    conflict_columns = (
+        "run_row_id",
+        "strategy_instance_id",
+        "position_instance_id",
+        "event_timestamp",
+    )
+
+
+class BacktestIntegrityFailureRepository(_BulkImmutableRepository):
+    model = BacktestIntegrityFailureRecord
+    conflict_columns = (
+        "run_row_id",
+        "strategy_instance_id",
+        "position_instance_id",
+        "failure_timestamp",
+        "reason_code",
+    )
+
+
+class BacktestStrategyHistoryRepository(_BulkImmutableRepository):
+    model = BacktestStrategyHistoryRecord
+    conflict_columns = (
+        "run_row_id",
+        "strategy_instance_id",
+        "history_timestamp",
+        "history_kind",
+    )
