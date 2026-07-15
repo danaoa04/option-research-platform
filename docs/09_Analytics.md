@@ -70,3 +70,41 @@ Ranking is explainable and deterministic:
 - Dataset manifests and software commit metadata are persisted.
 - Result checksums are captured at run persistence.
 - Query retrieval remains no-look-ahead safe via as-of filtering.
+
+## Sprint 5A Optimization Analytics
+
+Optimization candidate analytics include:
+
+- objective metrics
+- constraint results
+- lifecycle outcomes
+- regime metadata
+- calibration metadata
+- data-quality metrics
+- sample size
+- runtime
+- status and failure reason
+- reproducibility metadata
+
+Objective examples supported in Sprint 5A:
+
+- maximize: historical/model PoP, expected value, median return, Sharpe, Sortino, profit factor, theta capture, liquidity, quality
+- minimize: drawdown, expected shortfall, tail loss, gamma exposure, vega exposure, capital usage, turnover, Brier score, calibration error
+
+Constraint examples supported in Sprint 5A:
+
+- long DTE greater than short DTE
+- minimum liquidity and quality
+- minimum sample size
+- maximum tail loss
+- exercise compatibility policies
+- allowed regime filters
+
+## Pareto and Dominance Diagnostics
+
+Multi-objective diagnostics include:
+
+- deterministic Pareto-front extraction
+- dominated-candidate tracking (`dominated_by`)
+- deterministic tie-breaking by score and candidate ID
+- crowding-distance hook placeholder for future algorithms

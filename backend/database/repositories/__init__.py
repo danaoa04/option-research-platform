@@ -10,6 +10,7 @@ from .market_data import (
     QuotesRepository,
     UnderlyingPricesRepository,
 )
+from .optimization import OptimizationCandidateResultRepository, OptimizationRunRepository
 from .reproducibility import (
     AuditRepository,
     CorporateActionNormalizationRepository,
@@ -24,6 +25,8 @@ __all__ = [
     "DividendsRepository",
     "EarningsRepository",
     "InterestRatesRepository",
+    "OptimizationCandidateResultRepository",
+    "OptimizationRunRepository",
     "ManifestsLineageRepository",
     "QuotesRepository",
     "UnderlyingPricesRepository",

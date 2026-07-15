@@ -124,3 +124,24 @@ Sprint 4F query helpers for probability analytics enforce as-of boundaries:
 - lowest tail-loss runs as of timestamp
 
 No query may include runs with `run_timestamp > as_of`.
+
+## Sprint 5A Optimization Integration
+
+The optimization subsystem is layered on top of existing research outputs and does not replace research analytics interfaces.
+
+```mermaid
+flowchart LR
+    STRAT[Strategy Definition] --> STATE[Research State/Features]
+    STATE --> PROB[Probability and EV Engines]
+    PROB --> OPTPROB[OptimizationProblem]
+    OPTPROB --> GEN[ParameterSpaceGenerator]
+    GEN --> EVAL[CandidateEvaluationService]
+    EVAL --> OBJ[ObjectiveEngine]
+    EVAL --> CST[ConstraintEngine]
+    OBJ --> PARETO[ParetoEngine]
+    CST --> PARETO
+    PARETO --> ORESULT[OptimizationResult]
+    ORESULT --> OPDB[(optimization_runs + optimization_candidate_results)]
+```
+
+This boundary keeps optimization independent from GUI, brokers, live APIs, and live execution.

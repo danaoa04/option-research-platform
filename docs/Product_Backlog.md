@@ -46,3 +46,23 @@ The product backlog is organized into epics that reflect the agreed scope of the
 - Bayesian/TPE/genetic/ML optimizers.
 - Distributed optimization orchestration.
 - Hyperparameter walk-forward optimizer tuning frameworks.
+
+## Sprint 5A Delivered (Current)
+
+- Dedicated deterministic optimization subsystem in `backend/optimization`.
+- Typed optimization problem contracts with reproducibility metadata.
+- Typed parameter-space generation with conditional, dependent, and forbidden-combination semantics.
+- Hard/soft constraints with explicit candidate rejection reasons.
+- Weighted/lexicographic objective scoring and deterministic Pareto analysis.
+- Walk-forward split generation hooks with purge/embargo and no-look-ahead enforcement.
+- Optimization persistence layer and no-look-ahead query endpoints.
+- Deterministic serial and thread-pool execution modes with preserved output order.
+
+## Explicitly Deferred Beyond Sprint 5A
+
+- Bayesian, TPE, and Gaussian-process optimization algorithms.
+- Genetic/evolutionary optimization algorithms.
+- Distributed optimizer execution orchestration.
+- Machine-learning ranking/search policies.
+- Advanced multi-objective algorithms beyond current deterministic Pareto baseline.
+- Walk-forward hyperparameter optimization across folds.

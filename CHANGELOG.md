@@ -78,3 +78,9 @@ All notable changes to this project will be documented in this file.
 - Added no-look-ahead query methods for highest model PoP and lowest tail-loss run retrieval.
 - Added deterministic Sprint 4F offline tests in `backend/tests/test_probability_lifecycle_calibration_engine.py`.
 - Updated Sprint 4 documentation/checklists and analytics/research/simulation references for Sprint 4F scope and deferred optimizer boundaries.
+- Added Sprint 5A optimization foundation in `backend/optimization` with typed problem/parameter/objective/constraint contracts, deterministic candidate generation, provider-neutral candidate evaluation, weighted and lexicographic ranking, deterministic Pareto analysis, and walk-forward split hooks.
+- Added deterministic serial and thread-pool execution modes with preserved output ordering.
+- Added optimization persistence contracts in `backend/database` with `OptimizationRunDTO`, `OptimizationCandidateResultDTO`, ORM entities (`optimization_runs`, `optimization_candidate_results`), repositories, and persistence service.
+- Added no-look-ahead optimization query methods in historical query service.
+- Added deterministic Sprint 5A test suite in `backend/tests/test_optimization_engine_foundation.py` and opt-in benchmarks in `backend/tests/test_optimization_benchmarks_opt_in.py`.
+- Added Sprint 5A documentation updates and checklist, including future optimizer boundaries (Bayesian/TPE/GP/evolutionary/distributed/ML) explicitly deferred.

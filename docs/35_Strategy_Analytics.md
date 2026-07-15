@@ -123,3 +123,19 @@ Lifecycle events are policy triggers over state paths:
 - max holding period exit
 
 Each trigger records timestamp, reason code, and supporting diagnostics.
+
+## Sprint 5A Optimization Scoring
+
+Optimization ranking uses deterministic objective composition with explicit direction metadata.
+
+Weighted scalar score (after optional normalization):
+
+$$
+	ext{Score} = \frac{\sum_j w_j s_j}{\sum_j w_j} - \text{soft-constraint-penalty}
+$$
+
+where $s_j$ is direction-adjusted objective value and $w_j$ is objective weight.
+
+Lexicographic ranking uses ordered objective tuples with deterministic candidate-ID tie-breaking.
+
+Pareto analysis uses deterministic dominance with explicit dominated-candidate diagnostics.

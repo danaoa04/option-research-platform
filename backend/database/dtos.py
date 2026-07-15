@@ -319,3 +319,52 @@ class ResearchOpportunityDTO:
     term_structure_regime: str | None
     diagnostics: dict[str, Any]
     warnings: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class OptimizationRunDTO:
+    run_id: str
+    problem_id: str
+    strategy_type: str
+    symbol_universe: list[str]
+    historical_start_date: date
+    historical_end_date: date
+    optimization_problem: dict[str, Any]
+    parameter_space: dict[str, Any]
+    objective_definitions: dict[str, Any]
+    constraints: dict[str, Any]
+    candidate_ordering: list[str]
+    pareto_front_ids: list[str]
+    winner_ids: list[str]
+    dataset_manifests: list[int]
+    volatility_surface_snapshots: list[str]
+    lifecycle_policies: dict[str, Any]
+    pricing_model_policies: dict[str, Any]
+    random_seed: int | None
+    software_git_commit: str
+    checksums: dict[str, Any]
+    status: str
+    runtime_seconds: Decimal
+    diagnostics: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class OptimizationCandidateResultDTO:
+    candidate_id: str
+    parameters: dict[str, Any]
+    objective_metrics: dict[str, Any]
+    constraint_results: list[dict[str, Any]]
+    warnings: list[str]
+    lifecycle_outcomes: dict[str, Any]
+    regime_metadata: dict[str, Any]
+    calibration_metadata: dict[str, Any]
+    data_quality_metrics: dict[str, Any]
+    sample_size: int
+    runtime_seconds: Decimal
+    status: str
+    failure_reason: str | None
+    score: Decimal | None
+    lexicographic_tuple: list[float]
+    dominated_by: list[str]
+    reproducibility_metadata: dict[str, Any]

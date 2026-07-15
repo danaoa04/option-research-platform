@@ -177,3 +177,28 @@ Future scope retained:
 
 - multi-expiry spread optimization engine
 - walk-forward optimizer orchestration and PoP optimization workflows
+
+### 13. Sprint 5A Optimization Engine Foundation
+
+Implemented in `backend/optimization`:
+
+- typed optimization problem model
+- typed parameter-space model (integer, float, categorical, boolean, ordered discrete)
+- dependency, conditional, and forbidden-combination support
+- deterministic exhaustive and coarse-to-fine candidate generation
+- deterministic low-discrepancy placeholder interface
+- hard/soft constraint framework with structured rejection reasons
+- weighted and lexicographic objective scoring
+- deterministic Pareto-front extraction and dominance diagnostics
+- walk-forward split generation hooks with purge/embargo/no-look-ahead validation
+- serial and deterministic thread-pool execution modes
+- persistence contracts for optimization runs and candidate results
+
+Explicitly deferred in Sprint 5A:
+
+- Bayesian/TPE/GP optimization
+- genetic and evolutionary search
+- distributed optimization orchestration
+- ML-driven ranking policies
+- advanced multi-objective algorithms
+- walk-forward hyperparameter optimization

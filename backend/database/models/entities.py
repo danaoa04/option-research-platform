@@ -456,6 +456,96 @@ class ResearchOpportunity(Base):
     run: Mapped[ResearchRun] = relationship()
 
 
+class OptimizationRun(Base):
+    __tablename__ = "optimization_runs"
+    __table_args__ = (
+        UniqueConstraint("run_id"),
+        Index("ix_optimization_runs_problem_ts", "problem_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    problem_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    strategy_type: Mapped[str] = mapped_column(String(48), nullable=False)
+    symbol_universe: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    historical_start_date: Mapped[date] = mapped_column(Date, nullable=False)
+    historical_end_date: Mapped[date] = mapped_column(Date, nullable=False)
+    optimization_problem: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    parameter_space: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    objective_definitions: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    constraints: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    candidate_ordering: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    pareto_front_ids: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    winner_ids: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    dataset_manifests: Mapped[list[int]] = mapped_column(JSON, nullable=False, default=list)
+    volatility_surface_snapshots: Mapped[list[str]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    lifecycle_policies: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    pricing_model_policies: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    random_seed: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    software_git_commit: Mapped[str] = mapped_column(String(64), nullable=False)
+    checksums: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    runtime_seconds: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    diagnostics: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    candidate_results: Mapped[list[OptimizationCandidateResult]] = relationship(
+        "OptimizationCandidateResult",
+        back_populates="run",
+    )
+
+
+class OptimizationCandidateResult(Base):
+    __tablename__ = "optimization_candidate_results"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "candidate_id"),
+        Index("ix_opt_candidate_results_run", "run_row_id", "candidate_id"),
+        Index("ix_opt_candidate_results_status", "status"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("optimization_runs.id"), nullable=False)
+    candidate_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    parameters: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    objective_metrics: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    constraint_results: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    lifecycle_outcomes: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    regime_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    calibration_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    data_quality_metrics: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    sample_size: Mapped[int] = mapped_column(Integer, nullable=False)
+    runtime_seconds: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    failure_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    score: Mapped[Decimal | None] = mapped_column(Numeric(20, 10), nullable=True)
+    lexicographic_tuple: Mapped[list[float]] = mapped_column(JSON, nullable=False, default=list)
+    dominated_by: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    reproducibility_metadata: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+    run: Mapped[OptimizationRun] = relationship(back_populates="candidate_results")
+
+
 class DataLineageRecord(Base):
     __tablename__ = "data_lineage_records"
     __table_args__ = (

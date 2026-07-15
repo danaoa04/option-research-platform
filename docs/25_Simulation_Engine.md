@@ -104,3 +104,12 @@ Sprint 4F extends simulation workflows for research-only probability and lifecyc
 - No broker connectivity.
 - No live order execution.
 - Benchmarks remain opt-in and are excluded from default `make test` runs.
+
+## Sprint 5A Integration Notes
+
+Simulation and optimization integration now follows a strict boundary:
+
+- simulation remains the source of candidate metrics
+- optimization orchestrates candidate ordering, constraints, objectives, and ranking
+- failed candidate evaluations are isolated and retained as structured results
+- no-look-ahead walk-forward split generation is handled by optimization hooks, not by live execution services

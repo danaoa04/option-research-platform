@@ -1,0 +1,90 @@
+"""Optimization engine foundation package."""
+
+from .benchmarks import OptimizationBenchmarkResult, OptimizationBenchmarkRunner
+from .constraints import ConstraintEngine
+from .engine import OptimizationEngine
+from .evaluation import CandidateEvaluationService
+from .exceptions import (
+    CandidateEvaluationError,
+    CandidateGenerationError,
+    ConstraintEvaluationError,
+    OptimizationError,
+    OptimizationValidationError,
+    WalkForwardSplitError,
+)
+from .models import (
+    BooleanParameter,
+    Candidate,
+    CandidateEvaluation,
+    CandidateStatus,
+    CategoricalParameter,
+    ConditionalParameterRule,
+    ConstraintDefinition,
+    ConstraintResult,
+    ConstraintSeverity,
+    CustomValidationRule,
+    DependentParameterRule,
+    FloatRangeParameter,
+    ForbiddenParameterCombination,
+    IntegerRangeParameter,
+    MissingMetricPolicy,
+    NormalizationPolicy,
+    ObjectiveDefinition,
+    ObjectiveDirection,
+    OptimizationProblem,
+    OptimizationResult,
+    OrderedDiscreteParameter,
+    ParameterSpace,
+    ParetoFrontResult,
+    WalkForwardConfig,
+    WalkForwardMode,
+    WalkForwardSplit,
+)
+from .objectives import ObjectiveEngine
+from .parameter_space import ParameterSpaceGenerator
+from .pareto import ParetoEngine
+from .walk_forward import WalkForwardEngine
+
+__all__ = [
+    "BooleanParameter",
+    "Candidate",
+    "CandidateEvaluation",
+    "CandidateEvaluationError",
+    "CandidateEvaluationService",
+    "CandidateGenerationError",
+    "CandidateStatus",
+    "CategoricalParameter",
+    "ConditionalParameterRule",
+    "ConstraintDefinition",
+    "ConstraintEngine",
+    "ConstraintEvaluationError",
+    "ConstraintResult",
+    "ConstraintSeverity",
+    "CustomValidationRule",
+    "DependentParameterRule",
+    "FloatRangeParameter",
+    "ForbiddenParameterCombination",
+    "IntegerRangeParameter",
+    "MissingMetricPolicy",
+    "NormalizationPolicy",
+    "ObjectiveDefinition",
+    "ObjectiveDirection",
+    "ObjectiveEngine",
+    "OptimizationBenchmarkResult",
+    "OptimizationBenchmarkRunner",
+    "OptimizationEngine",
+    "OptimizationError",
+    "OptimizationProblem",
+    "OptimizationResult",
+    "OptimizationValidationError",
+    "OrderedDiscreteParameter",
+    "ParameterSpace",
+    "ParameterSpaceGenerator",
+    "ParetoEngine",
+    "ParetoFrontResult",
+    "WalkForwardConfig",
+    "WalkForwardEngine",
+    "WalkForwardMode",
+    "WalkForwardSplit",
+    "WalkForwardSplitError",
+]

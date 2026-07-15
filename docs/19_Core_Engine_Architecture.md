@@ -263,6 +263,37 @@ IV solver results include:
 - Sensitivity and stress tests.
 - Benchmark tests against reference implementations.
 
+### 6. Optimization Engine (Sprint 5A Foundation)
+
+#### Purpose
+Provide deterministic, extensible optimization orchestration for strategy research.
+
+#### Responsibilities
+- Define optimization problems with explicit objectives and constraints.
+- Generate deterministic candidate parameter sets.
+- Evaluate candidates through provider-neutral research callbacks.
+- Preserve failed and rejected candidate diagnostics.
+- Produce ranked and Pareto outputs for downstream analysis.
+- Persist reproducible optimization runs and candidate results.
+
+#### Public interfaces
+- `run(problem, evaluator, execution_mode)`
+- `refine_run(problem, prior_result, evaluator, top_k, refinement_width)`
+- `generate_splits(start_date, end_date, config)`
+
+#### Boundaries
+- No broker connectivity.
+- No live order execution.
+- No live API integration.
+- No silent dropping of failed or rejected candidates.
+
+#### Future extension interfaces (deferred)
+- Bayesian optimization adapters
+- TPE and Gaussian-process adapters
+- evolutionary/genetic adapter interfaces
+- distributed execution backends
+- advanced Pareto ranking algorithms
+
 ---
 
 ### 4. Greeks Engine

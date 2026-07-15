@@ -102,6 +102,23 @@ Explicit boundary and non-goals:
 - No broker connectivity.
 - No live order execution.
 
+Optimization foundation (Sprint 5A):
+
+- A dedicated optimization subsystem is implemented in `backend/optimization`.
+- Typed optimization problems include strategy, parameter space, objectives, constraints, date windows, manifests, lifecycle/pacing policies, and reproducibility metadata.
+- Deterministic search currently supports exhaustive generation, coarse-to-fine refinement, and a deterministic low-discrepancy placeholder interface.
+- Constraints are explicit hard/soft checks with structured rejection reasons; failed candidates are isolated and persisted.
+- Ranking supports weighted scalar, lexicographic ordering, and deterministic Pareto front extraction.
+- Walk-forward hooks support anchored/rolling/expanding splits with purge/embargo controls and no-look-ahead validation.
+- Persistence captures optimization runs, candidate outputs, Pareto IDs, winners, diagnostics, and checksums.
+
+Deferred optimization capabilities:
+
+- Bayesian/TPE/GP methods
+- Genetic/evolutionary methods
+- Distributed optimization orchestration
+- ML-driven ranking/search
+
 Backtesting boundary:
 
 - Historical bid/ask quotes remain the source of truth for fill simulation.

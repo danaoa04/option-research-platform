@@ -13,6 +13,7 @@ from backend.database.models import (
     Dividend,
     EarningsEvent,
     InterestRateCurve,
+    OptimizationRun,
     OptionContract,
     OptionQuote,
     ResearchOpportunity,
@@ -510,6 +511,37 @@ class HistoricalQueryService:
                 ResearchOpportunity.confidence.desc(),
                 ResearchOpportunity.opportunity_score.desc(),
             )
+            .limit(limit)
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def latest_optimization_runs(
+        self,
+        *,
+        as_of: datetime,
+        limit: int = 25,
+    ) -> list[OptimizationRun]:
+        stmt: Select[tuple[OptimizationRun]] = (
+            select(OptimizationRun)
+            .where(OptimizationRun.created_at <= as_of)
+            .order_by(OptimizationRun.created_at.desc())
+            .limit(limit)
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def fastest_successful_optimization_runs(
+        self,
+        *,
+        as_of: datetime,
+        limit: int = 25,
+    ) -> list[OptimizationRun]:
+        stmt: Select[tuple[OptimizationRun]] = (
+            select(OptimizationRun)
+            .where(
+                OptimizationRun.created_at <= as_of,
+                OptimizationRun.status == "completed",
+            )
+            .order_by(OptimizationRun.runtime_seconds.asc())
             .limit(limit)
         )
         return list(self.session.execute(stmt).scalars())

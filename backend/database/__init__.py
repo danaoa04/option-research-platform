@@ -20,6 +20,8 @@ from .dtos import (
     EarningsEventDTO,
     InterestRateCurveDTO,
     NormalizedCorporateActionDTO,
+    OptimizationCandidateResultDTO,
+    OptimizationRunDTO,
     OptionContractDTO,
     OptionQuoteDTO,
     RawVendorRecordDTO,
@@ -33,6 +35,11 @@ from .dtos import (
 )
 from .engine import create_database_engine
 from .ingestion import BulkIngestionService, ImportResult, IngestionConfig, UpsertPolicy
+from .optimization import (
+    OptimizationMutationError,
+    OptimizationPersistenceService,
+    deterministic_optimization_checksum,
+)
 from .query import AsOfQueryResult, HistoricalQueryService
 from .research import (
     ResearchMutationError,
@@ -65,6 +72,10 @@ __all__ = [
     "IngestionConfig",
     "InterestRateCurveDTO",
     "OptionContractDTO",
+    "OptimizationCandidateResultDTO",
+    "OptimizationMutationError",
+    "OptimizationPersistenceService",
+    "OptimizationRunDTO",
     "OptionQuoteDTO",
     "RawVendorRecordDTO",
     "ResearchOpportunityDTO",
@@ -95,5 +106,6 @@ __all__ = [
     "CorporateActionService",
     "NormalizedCorporateActionDTO",
     "deterministic_slice_checksum",
+    "deterministic_optimization_checksum",
     "deterministic_research_checksum",
 ]

@@ -80,3 +80,11 @@ Success for the platform will be measured through engineering quality, research 
 - Regime-conditioned ranking remains explainable through component contributions and effective weights.
 - Deterministic refinement outputs include constrained candidates, Pareto-front membership, and stable tie-breaking.
 - Probability-run persistence rejects missing reproducibility configuration/metadata fields before write.
+- Optimization problem definitions are fully reproducible with persisted parameter spaces, objectives, constraints, candidate ordering, and checksums.
+- Candidate generation remains deterministic across exhaustive, coarse-to-fine, and low-discrepancy placeholder modes for fixed inputs.
+- Hard and soft constraints emit explicit structured outcomes with no silent candidate drops.
+- Failed candidate evaluations are isolated and persisted without aborting entire optimization runs.
+- Weighted, lexicographic, and Pareto rankings are deterministic with stable tie-breaking.
+- Walk-forward split generation enforces no-look-ahead chronology and deterministic purge/embargo handling.
+- Serial and thread-pool evaluation modes return consistent winner sets and preserved ordering under deterministic evaluators.
+- Optimization benchmarks remain opt-in and excluded from normal test execution.
