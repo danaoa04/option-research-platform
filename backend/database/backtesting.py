@@ -6,17 +6,26 @@ from dataclasses import asdict
 from hashlib import sha256
 
 from backend.database.dtos import (
+	BacktestArbitrationDecisionDTO,
 	BacktestCashLedgerEntryDTO,
+	BacktestComparisonRunDTO,
 	BacktestEventDTO,
+	BacktestEventOverlayDTO,
+	BacktestExportMetadataDTO,
+	BacktestGreeksAttributionDTO,
 	BacktestIntegrityFailureDTO,
 	BacktestLifecycleTriggerDTO,
 	BacktestOrderIntentDTO,
 	BacktestPartialFillDTO,
+	BacktestPnLAttributionDTO,
+	BacktestPortfolioAnalyticsDTO,
 	BacktestPortfolioSnapshotDTO,
 	BacktestPositionDTO,
 	BacktestPositionInstanceDTO,
 	BacktestPositionLegDTO,
 	BacktestReconciliationEventDTO,
+	BacktestReconstructedTradeDTO,
+	BacktestReplaySnapshotDTO,
 	BacktestReproducibilityChecksumDTO,
 	BacktestResearchFillDTO,
 	BacktestRollPlanDTO,
@@ -25,6 +34,8 @@ from backend.database.dtos import (
 	BacktestRunDTO,
 	BacktestScenarioResultDTO,
 	BacktestStateTransitionDTO,
+	BacktestStrategyAnalyticsDTO,
+	BacktestStrategyCycleDTO,
 	BacktestStrategyDefinitionDTO,
 	BacktestStrategyHistoryDTO,
 	BacktestStrategyInstanceDTO,
@@ -33,17 +44,26 @@ from backend.database.dtos import (
 	BacktestValuationDTO,
 )
 from backend.database.repositories.backtesting import (
+	BacktestArbitrationDecisionRepository,
 	BacktestCashLedgerRepository,
+	BacktestComparisonRunRepository,
+	BacktestEventOverlayRepository,
 	BacktestEventRepository,
+	BacktestExportMetadataRepository,
+	BacktestGreeksAttributionRepository,
 	BacktestIntegrityFailureRepository,
 	BacktestLifecycleTriggerRepository,
 	BacktestOrderIntentRepository,
 	BacktestPartialFillRepository,
+	BacktestPnLAttributionRepository,
+	BacktestPortfolioAnalyticsRepository,
 	BacktestPortfolioSnapshotRepository,
 	BacktestPositionInstanceRepository,
 	BacktestPositionLegRepository,
 	BacktestPositionRepository,
 	BacktestReconciliationEventRepository,
+	BacktestReconstructedTradeRepository,
+	BacktestReplaySnapshotRepository,
 	BacktestReproducibilityChecksumRepository,
 	BacktestResearchFillRepository,
 	BacktestRollPlanRepository,
@@ -52,6 +72,8 @@ from backend.database.repositories.backtesting import (
 	BacktestRunRepository,
 	BacktestScenarioResultRepository,
 	BacktestStateTransitionRepository,
+	BacktestStrategyAnalyticsRepository,
+	BacktestStrategyCycleRepository,
 	BacktestStrategyDefinitionRepository,
 	BacktestStrategyHistoryRepository,
 	BacktestStrategyInstanceRepository,
@@ -98,6 +120,17 @@ class BacktestPersistenceService:
 		reconciliation_events: list[BacktestReconciliationEventDTO] | None = None,
 		integrity_failures: list[BacktestIntegrityFailureDTO] | None = None,
 		strategy_histories: list[BacktestStrategyHistoryDTO] | None = None,
+		strategy_analytics: list[BacktestStrategyAnalyticsDTO] | None = None,
+		portfolio_analytics: list[BacktestPortfolioAnalyticsDTO] | None = None,
+		pnl_attributions: list[BacktestPnLAttributionDTO] | None = None,
+		greeks_attributions: list[BacktestGreeksAttributionDTO] | None = None,
+		reconstructed_trades: list[BacktestReconstructedTradeDTO] | None = None,
+		strategy_cycles: list[BacktestStrategyCycleDTO] | None = None,
+		replay_snapshots: list[BacktestReplaySnapshotDTO] | None = None,
+		event_overlays: list[BacktestEventOverlayDTO] | None = None,
+		arbitration_decisions: list[BacktestArbitrationDecisionDTO] | None = None,
+		comparison_runs: list[BacktestComparisonRunDTO] | None = None,
+		export_metadata: list[BacktestExportMetadataDTO] | None = None,
 	) -> int:
 		strategy_definitions = strategy_definitions or []
 		strategy_templates = strategy_templates or []
@@ -111,6 +144,17 @@ class BacktestPersistenceService:
 		reconciliation_events = reconciliation_events or []
 		integrity_failures = integrity_failures or []
 		strategy_histories = strategy_histories or []
+		strategy_analytics = strategy_analytics or []
+		portfolio_analytics = portfolio_analytics or []
+		pnl_attributions = pnl_attributions or []
+		greeks_attributions = greeks_attributions or []
+		reconstructed_trades = reconstructed_trades or []
+		strategy_cycles = strategy_cycles or []
+		replay_snapshots = replay_snapshots or []
+		event_overlays = event_overlays or []
+		arbitration_decisions = arbitration_decisions or []
+		comparison_runs = comparison_runs or []
+		export_metadata = export_metadata or []
 
 		self._validate_run(run)
 		payload = {
@@ -328,6 +372,110 @@ class BacktestPersistenceService:
 						**asdict(item),
 					}
 					for item in strategy_histories
+				]
+			)
+			BacktestStrategyAnalyticsRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in strategy_analytics
+				]
+			)
+			BacktestPortfolioAnalyticsRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in portfolio_analytics
+				]
+			)
+			BacktestPnLAttributionRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in pnl_attributions
+				]
+			)
+			BacktestGreeksAttributionRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in greeks_attributions
+				]
+			)
+			BacktestReconstructedTradeRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in reconstructed_trades
+				]
+			)
+			BacktestStrategyCycleRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in strategy_cycles
+				]
+			)
+			BacktestReplaySnapshotRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in replay_snapshots
+				]
+			)
+			BacktestEventOverlayRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in event_overlays
+				]
+			)
+			BacktestArbitrationDecisionRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in arbitration_decisions
+				]
+			)
+			BacktestComparisonRunRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in comparison_runs
+				]
+			)
+			BacktestExportMetadataRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{
+							key: value
+							for key, value in asdict(item).items()
+							if key != "metadata_json"
+						},
+						"metadata": item.metadata_json,
+					}
+					for item in export_metadata
 				]
 			)
 			return run_row_id

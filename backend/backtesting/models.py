@@ -31,6 +31,24 @@ class EventType(StrEnum):
     ROLL_EVALUATION = "roll_evaluation"
     FILL_EVENT = "fill_event"
     RISK_EVENT = "risk_event"
+    EARNINGS_ANNOUNCEMENT = "earnings_announcement"
+    EARNINGS_DATE_REVISION = "earnings_date_revision"
+    EX_DIVIDEND_DATE = "ex_dividend_date"
+    DIVIDEND_ANNOUNCEMENT = "dividend_announcement"
+    DIVIDEND_REVISION = "dividend_revision"
+    SPECIAL_DIVIDEND = "special_dividend"
+    STOCK_SPLIT = "stock_split"
+    REVERSE_SPLIT = "reverse_split"
+    SYMBOL_CHANGE = "symbol_change"
+    MERGER = "merger"
+    SPIN_OFF = "spin_off"
+    CONTRACT_ADJUSTMENT = "contract_adjustment"
+    LIQUIDITY_DETERIORATION = "liquidity_deterioration"
+    STALE_DATA_THRESHOLD_BREACH = "stale_data_threshold_breach"
+    MARKET_HALT = "market_halt"
+    TRADING_RESUMPTION = "trading_resumption"
+    PENDING_ASSIGNMENT_OR_EXERCISE = "pending_assignment_or_exercise"
+    PORTFOLIO_ARBITRATION_DECISION = "portfolio_arbitration_decision"
     END_OF_BACKTEST = "end_of_backtest"
     LIFECYCLE_EVALUATION = "lifecycle_evaluation"
     VALUATION = "valuation"
@@ -38,17 +56,36 @@ class EventType(StrEnum):
 
 
 class EventPriority(IntEnum):
+    MARKET_HALT = 5
+    RISK_EVENT = 8
+    PENDING_ASSIGNMENT_OR_EXERCISE = 9
     CORPORATE_ACTION = 10
+    STOCK_SPLIT = 11
+    REVERSE_SPLIT = 11
+    MERGER = 12
+    SPIN_OFF = 12
+    SYMBOL_CHANGE = 13
+    CONTRACT_ADJUSTMENT = 14
     SESSION_OPEN = 20
     UNDERLYING_PRICE = 30
     QUOTE = 40
     VOLATILITY_SURFACE = 50
     EARNINGS = 60
+    EARNINGS_ANNOUNCEMENT = 61
+    EARNINGS_DATE_REVISION = 62
     DIVIDEND = 70
+    EX_DIVIDEND_DATE = 71
+    DIVIDEND_ANNOUNCEMENT = 72
+    DIVIDEND_REVISION = 73
+    SPECIAL_DIVIDEND = 74
     OPTION_EXPIRATION = 80
     LIFECYCLE_EVALUATION = 90
+    LIQUIDITY_DETERIORATION = 91
+    STALE_DATA_THRESHOLD_BREACH = 92
     VALUATION = 100
+    PORTFOLIO_ARBITRATION_DECISION = 101
     SESSION_CLOSE = 110
+    TRADING_RESUMPTION = 115
     INTRADAY = 120
 
 

@@ -823,3 +823,136 @@ class BacktestStrategyHistoryDTO:
     history_kind: str
     payload_json: dict[str, Any]
     checksum_metadata: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestStrategyAnalyticsDTO:
+    strategy_instance_id: str
+    snapshot_timestamp: datetime
+    realized_pnl: Decimal
+    unrealized_pnl: Decimal
+    total_pnl: Decimal
+    return_value: Decimal
+    capital_usage: Decimal
+    cash_usage: Decimal
+    intrinsic_value: Decimal
+    extrinsic_value: Decimal
+    greeks: dict[str, Any]
+    implied_volatility: Decimal | None
+    realized_volatility: Decimal | None
+    iv_rank: Decimal | None
+    iv_percentile: Decimal | None
+    term_structure_json: dict[str, Any]
+    liquidity_json: dict[str, Any]
+    lifecycle_state: str
+    warnings: list[str]
+    failures: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestPortfolioAnalyticsDTO:
+    snapshot_timestamp: datetime
+    equity: Decimal
+    cash: Decimal
+    reserved_capital: Decimal
+    capital_utilization: Decimal
+    realized_pnl: Decimal
+    unrealized_pnl: Decimal
+    greeks: dict[str, Any]
+    exposures_json: dict[str, Any]
+    risk_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestPnLAttributionDTO:
+    strategy_instance_id: str
+    snapshot_timestamp: datetime
+    factors_json: dict[str, Any]
+    approximation: bool
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestGreeksAttributionDTO:
+    strategy_instance_id: str
+    snapshot_timestamp: datetime
+    greek_changes: dict[str, Any]
+    attributable_to: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestReconstructedTradeDTO:
+    trade_id: str
+    strategy_id: str
+    position_id: str
+    lifecycle_json: dict[str, Any]
+    cash_movements: Decimal
+    realized_pnl: Decimal
+    fees: Decimal
+    final_state: str
+    source_event_ids: list[str]
+    source_checksums: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestStrategyCycleDTO:
+    cycle_id: str
+    strategy_id: str
+    initial_position: str
+    child_positions: list[str]
+    roll_chain: list[str]
+    cumulative_debit_credit: Decimal
+    cumulative_fees: Decimal
+    cumulative_pnl: Decimal
+    maximum_capital_usage: Decimal
+    total_holding_duration_seconds: Decimal
+    final_result: str
+    lifecycle_reasons: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestReplaySnapshotDTO:
+    snapshot_id: str
+    cursor: int
+    snapshot_timestamp: datetime
+    payload_json: dict[str, Any]
+    source_checksums: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestEventOverlayDTO:
+    event_sequence_number: int
+    event_type: str
+    priority: int
+    effective_timestamp: datetime
+    overlay_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestArbitrationDecisionDTO:
+    decision_id: str
+    decision_timestamp: datetime
+    policy: str
+    accepted_actions: list[dict[str, Any]]
+    rejected_actions: list[dict[str, Any]]
+    diagnostics: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestComparisonRunDTO:
+    comparison_id: str
+    left_run_id: str
+    right_run_id: str
+    comparison_key: str
+    table_rows: list[dict[str, Any]]
+    chart_payload: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExportMetadataDTO:
+    export_id: str
+    export_kind: str
+    artifact_path: str
+    artifact_checksum: str
+    metadata_json: dict[str, Any]
+    created_at: datetime

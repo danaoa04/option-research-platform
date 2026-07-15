@@ -1375,6 +1375,249 @@ class BacktestStrategyHistoryRecord(Base):
     checksum_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
 
 
+class BacktestStrategyAnalyticsRecord(Base):
+    __tablename__ = "backtest_strategy_analytics"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "strategy_instance_id", "snapshot_timestamp"),
+        Index(
+            "ix_backtest_strategy_analytics_run_ts",
+            "run_row_id",
+            "snapshot_timestamp",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    snapshot_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    realized_pnl: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    unrealized_pnl: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    total_pnl: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    return_value: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    capital_usage: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    cash_usage: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    intrinsic_value: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    extrinsic_value: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    greeks: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    implied_volatility: Mapped[Decimal | None] = mapped_column(Numeric(20, 10), nullable=True)
+    realized_volatility: Mapped[Decimal | None] = mapped_column(Numeric(20, 10), nullable=True)
+    iv_rank: Mapped[Decimal | None] = mapped_column(Numeric(20, 10), nullable=True)
+    iv_percentile: Mapped[Decimal | None] = mapped_column(Numeric(20, 10), nullable=True)
+    term_structure_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    liquidity_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    lifecycle_state: Mapped[str] = mapped_column(String(64), nullable=False)
+    warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    failures: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+
+
+class BacktestPortfolioAnalyticsRecord(Base):
+    __tablename__ = "backtest_portfolio_analytics"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "snapshot_timestamp"),
+        Index(
+            "ix_backtest_portfolio_analytics_run_ts",
+            "run_row_id",
+            "snapshot_timestamp",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    snapshot_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    equity: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    cash: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    reserved_capital: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    capital_utilization: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    realized_pnl: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    unrealized_pnl: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    greeks: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    exposures_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    risk_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestPnLAttributionRecord(Base):
+    __tablename__ = "backtest_pnl_attribution"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "strategy_instance_id", "snapshot_timestamp"),
+        Index(
+            "ix_backtest_pnl_attribution_run_ts",
+            "run_row_id",
+            "snapshot_timestamp",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    snapshot_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    factors_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    approximation: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+
+
+class BacktestGreeksAttributionRecord(Base):
+    __tablename__ = "backtest_greeks_attribution"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "strategy_instance_id", "snapshot_timestamp"),
+        Index(
+            "ix_backtest_greeks_attribution_run_ts",
+            "run_row_id",
+            "snapshot_timestamp",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    snapshot_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    greek_changes: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    attributable_to: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestReconstructedTradeRecord(Base):
+    __tablename__ = "backtest_reconstructed_trades"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "trade_id"),
+        Index("ix_backtest_reconstructed_trades_run", "run_row_id", "strategy_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    trade_id: Mapped[str] = mapped_column(String(256), nullable=False)
+    strategy_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    position_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    lifecycle_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    cash_movements: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    realized_pnl: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    fees: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    final_state: Mapped[str] = mapped_column(String(64), nullable=False)
+    source_event_ids: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    source_checksums: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+
+
+class BacktestStrategyCycleRecord(Base):
+    __tablename__ = "backtest_strategy_cycles"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "cycle_id"),
+        Index("ix_backtest_strategy_cycles_run", "run_row_id", "strategy_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    cycle_id: Mapped[str] = mapped_column(String(256), nullable=False)
+    strategy_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    initial_position: Mapped[str] = mapped_column(String(128), nullable=False)
+    child_positions: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    roll_chain: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    cumulative_debit_credit: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    cumulative_fees: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    cumulative_pnl: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    maximum_capital_usage: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    total_holding_duration_seconds: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    final_result: Mapped[str] = mapped_column(String(64), nullable=False)
+    lifecycle_reasons: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+
+
+class BacktestReplaySnapshotRecord(Base):
+    __tablename__ = "backtest_replay_snapshots"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "snapshot_id"),
+        Index("ix_backtest_replay_snapshots_run_ts", "run_row_id", "snapshot_timestamp"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    snapshot_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    cursor: Mapped[int] = mapped_column(Integer, nullable=False)
+    snapshot_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    payload_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    source_checksums: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestEventOverlayRecord(Base):
+    __tablename__ = "backtest_event_overlays"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "event_sequence_number"),
+        Index("ix_backtest_event_overlays_run", "run_row_id", "event_type"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    event_sequence_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    event_type: Mapped[str] = mapped_column(String(128), nullable=False)
+    priority: Mapped[int] = mapped_column(Integer, nullable=False)
+    effective_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    overlay_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestArbitrationDecisionRecord(Base):
+    __tablename__ = "backtest_arbitration_decisions"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "decision_id"),
+        Index(
+            "ix_backtest_arbitration_decisions_run_ts",
+            "run_row_id",
+            "decision_timestamp",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    decision_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    decision_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    policy: Mapped[str] = mapped_column(String(64), nullable=False)
+    accepted_actions: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    rejected_actions: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    diagnostics: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestComparisonRunRecord(Base):
+    __tablename__ = "backtest_comparison_runs"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "comparison_id"),
+        Index("ix_backtest_comparison_runs_pair", "left_run_id", "right_run_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    comparison_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    left_run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    right_run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    comparison_key: Mapped[str] = mapped_column(String(128), nullable=False)
+    table_rows: Mapped[list[dict[str, Any]]] = mapped_column(JSON, nullable=False, default=list)
+    chart_payload: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class BacktestExportMetadataRecord(Base):
+    __tablename__ = "backtest_export_metadata"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "export_id"),
+        Index("ix_backtest_export_metadata_run_ts", "run_row_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("backtest_runs.id"), nullable=False)
+    export_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    export_kind: Mapped[str] = mapped_column(String(64), nullable=False)
+    artifact_path: Mapped[str] = mapped_column(String(512), nullable=False)
+    artifact_checksum: Mapped[str] = mapped_column(String(256), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class DataLineageRecord(Base):
     __tablename__ = "data_lineage_records"
     __table_args__ = (

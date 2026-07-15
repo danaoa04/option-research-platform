@@ -165,3 +165,10 @@ Backtesting Sprint 6A boundaries:
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+## Sprint 6C Update
+- Added typed analytics services for strategy/portfolio equity, drawdown, IV term structure, and performance summaries.
+- Added immutable trade reconstruction and strategy-cycle reconstruction foundations from deterministic ledger records.
+- Added deterministic replay foundations with play/pause/step/jump controls, typed inspections, and persisted replay snapshots.
+- Added rich event taxonomy overlays and cross-strategy arbitration decision contracts for reproducible conflict handling.
+- Added backtesting analytics/replay persistence schema (`0010_backtest_analytics_replay_foundation`) and repository/service wiring.

@@ -10,17 +10,26 @@ from sqlalchemy import Select, Table, select
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 from backend.database.models import (
+    BacktestArbitrationDecisionRecord,
     BacktestCashLedgerEntryRecord,
+    BacktestComparisonRunRecord,
+    BacktestEventOverlayRecord,
     BacktestEventRecord,
+    BacktestExportMetadataRecord,
+    BacktestGreeksAttributionRecord,
     BacktestIntegrityFailureRecord,
     BacktestLifecycleTriggerRecord,
     BacktestOrderIntentRecord,
     BacktestPartialFillRecord,
+    BacktestPnLAttributionRecord,
+    BacktestPortfolioAnalyticsRecord,
     BacktestPortfolioSnapshotRecord,
     BacktestPositionInstanceRecord,
     BacktestPositionLegRecord,
     BacktestPositionRecord,
     BacktestReconciliationEventRecord,
+    BacktestReconstructedTradeRecord,
+    BacktestReplaySnapshotRecord,
     BacktestReproducibilityChecksumRecord,
     BacktestResearchFillRecord,
     BacktestRollPlanRecord,
@@ -29,6 +38,8 @@ from backend.database.models import (
     BacktestRunComparisonRecord,
     BacktestScenarioResultRecord,
     BacktestStateTransitionRecord,
+    BacktestStrategyAnalyticsRecord,
+    BacktestStrategyCycleRecord,
     BacktestStrategyDefinitionRecord,
     BacktestStrategyHistoryRecord,
     BacktestStrategyInstanceRecord,
@@ -316,3 +327,111 @@ class BacktestStrategyHistoryRepository(_BulkImmutableRepository):
         "history_timestamp",
         "history_kind",
     )
+
+
+class BacktestStrategyAnalyticsRepository(_BulkImmutableRepository):
+    model = BacktestStrategyAnalyticsRecord
+    conflict_columns = ("run_row_id", "strategy_instance_id", "snapshot_timestamp")
+
+    def as_of(
+        self,
+        *,
+        run_row_id: int,
+        strategy_instance_id: str,
+        as_of: datetime,
+    ) -> BacktestStrategyAnalyticsRecord | None:
+        stmt: Select[tuple[BacktestStrategyAnalyticsRecord]] = (
+            select(BacktestStrategyAnalyticsRecord)
+            .where(
+                BacktestStrategyAnalyticsRecord.run_row_id == run_row_id,
+                BacktestStrategyAnalyticsRecord.strategy_instance_id == strategy_instance_id,
+                BacktestStrategyAnalyticsRecord.snapshot_timestamp <= as_of,
+            )
+            .order_by(BacktestStrategyAnalyticsRecord.snapshot_timestamp.desc())
+            .limit(1)
+        )
+        return self.session.execute(stmt).scalars().first()
+
+
+class BacktestPortfolioAnalyticsRepository(_BulkImmutableRepository):
+    model = BacktestPortfolioAnalyticsRecord
+    conflict_columns = ("run_row_id", "snapshot_timestamp")
+
+    def as_of(
+        self,
+        *,
+        run_row_id: int,
+        as_of: datetime,
+    ) -> BacktestPortfolioAnalyticsRecord | None:
+        stmt: Select[tuple[BacktestPortfolioAnalyticsRecord]] = (
+            select(BacktestPortfolioAnalyticsRecord)
+            .where(
+                BacktestPortfolioAnalyticsRecord.run_row_id == run_row_id,
+                BacktestPortfolioAnalyticsRecord.snapshot_timestamp <= as_of,
+            )
+            .order_by(BacktestPortfolioAnalyticsRecord.snapshot_timestamp.desc())
+            .limit(1)
+        )
+        return self.session.execute(stmt).scalars().first()
+
+
+class BacktestPnLAttributionRepository(_BulkImmutableRepository):
+    model = BacktestPnLAttributionRecord
+    conflict_columns = ("run_row_id", "strategy_instance_id", "snapshot_timestamp")
+
+
+class BacktestGreeksAttributionRepository(_BulkImmutableRepository):
+    model = BacktestGreeksAttributionRecord
+    conflict_columns = ("run_row_id", "strategy_instance_id", "snapshot_timestamp")
+
+
+class BacktestReconstructedTradeRepository(_BulkImmutableRepository):
+    model = BacktestReconstructedTradeRecord
+    conflict_columns = ("run_row_id", "trade_id")
+
+
+class BacktestStrategyCycleRepository(_BulkImmutableRepository):
+    model = BacktestStrategyCycleRecord
+    conflict_columns = ("run_row_id", "cycle_id")
+
+
+class BacktestReplaySnapshotRepository(_BulkImmutableRepository):
+    model = BacktestReplaySnapshotRecord
+    conflict_columns = ("run_row_id", "snapshot_id")
+
+    def snapshot_as_of(
+        self,
+        *,
+        run_row_id: int,
+        as_of: datetime,
+    ) -> BacktestReplaySnapshotRecord | None:
+        stmt: Select[tuple[BacktestReplaySnapshotRecord]] = (
+            select(BacktestReplaySnapshotRecord)
+            .where(
+                BacktestReplaySnapshotRecord.run_row_id == run_row_id,
+                BacktestReplaySnapshotRecord.snapshot_timestamp <= as_of,
+            )
+            .order_by(BacktestReplaySnapshotRecord.snapshot_timestamp.desc())
+            .limit(1)
+        )
+        return self.session.execute(stmt).scalars().first()
+
+
+class BacktestEventOverlayRepository(_BulkImmutableRepository):
+    model = BacktestEventOverlayRecord
+    conflict_columns = ("run_row_id", "event_sequence_number")
+
+
+class BacktestArbitrationDecisionRepository(_BulkImmutableRepository):
+    model = BacktestArbitrationDecisionRecord
+    conflict_columns = ("run_row_id", "decision_id")
+
+
+class BacktestComparisonRunRepository(_BulkImmutableRepository):
+    model = BacktestComparisonRunRecord
+    conflict_columns = ("run_row_id", "comparison_id")
+
+
+class BacktestExportMetadataRepository(_BulkImmutableRepository):
+    model = BacktestExportMetadataRecord
+    conflict_columns = ("run_row_id", "export_id")

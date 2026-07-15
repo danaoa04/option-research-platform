@@ -126,7 +126,7 @@ def test_backtest_checksum_is_order_stable() -> None:
 	assert checksum_a == checksum_b
 
 
-def test_alembic_upgrade_and_downgrade_for_0007_and_0008(tmp_path: Path) -> None:
+def test_alembic_upgrade_and_downgrade_for_0007_to_0010(tmp_path: Path) -> None:
 	db_path = tmp_path / "migration_test.db"
 	cfg = Config()
 	cfg.set_main_option(
@@ -182,6 +182,60 @@ def test_alembic_upgrade_and_downgrade_for_0007_and_0008(tmp_path: Path) -> None
 		).scalar_one()
 		assert row_count == 0
 	engine_s6b.dispose()
+
+	command.stamp(cfg, "0009_strategy_state_machine_foundation")
+	command.upgrade(cfg, "0010_backtest_analytics_replay_foundation")
+
+	engine_s6c = create_engine(f"sqlite+pysqlite:///{db_path}", future=True)
+	with engine_s6c.connect() as conn:
+		s6c_count = conn.exec_driver_sql(
+			"SELECT COUNT(*) FROM backtest_strategy_analytics"
+		).scalar_one()
+		assert s6c_count == 0
+		conn.exec_driver_sql(
+			"INSERT INTO backtest_strategy_analytics ("
+			"run_row_id, strategy_instance_id, snapshot_timestamp, realized_pnl, "
+			"unrealized_pnl, total_pnl, return_value, capital_usage, cash_usage, "
+			"intrinsic_value, extrinsic_value, greeks, implied_volatility, "
+			"realized_volatility, iv_rank, iv_percentile, term_structure_json, "
+			"liquidity_json, lifecycle_state, warnings, failures"
+			") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+			(
+				1,
+				"si-1",
+				"2026-06-02T14:30:00+00:00",
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				"{}",
+				None,
+				None,
+				None,
+				None,
+				"{}",
+				"{}",
+				"open",
+				"[]",
+				"[]",
+			),
+		)
+	engine_s6c.dispose()
+
+	command.downgrade(cfg, "0009_strategy_state_machine_foundation")
+
+	engine_after_s6c = create_engine(f"sqlite+pysqlite:///{db_path}", future=True)
+	with engine_after_s6c.connect() as conn:
+		rows_s6c = conn.exec_driver_sql(
+			"SELECT name FROM sqlite_master WHERE type='table' "
+			"AND name='backtest_strategy_analytics'"
+		).fetchall()
+	engine_after_s6c.dispose()
+	assert rows_s6c == []
 
 	command.downgrade(cfg, "0008_backtesting_event_loop_foundation")
 

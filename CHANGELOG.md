@@ -102,3 +102,9 @@ All notable changes to this project will be documented in this file.
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+## Sprint 6C Update
+- Added `backend/backtesting` analytics, reconstruction, replay, rich-event taxonomy, arbitration, and typed API contract foundations.
+- Added Sprint 6C persistence schema migration `0010_backtest_analytics_replay_foundation.py` for strategy/portfolio analytics, attribution, reconstructed trades/cycles, replay snapshots, overlays, arbitration decisions, comparison runs, and export metadata.
+- Extended backtesting ORM models, DTO contracts, repositories, and persistence service wiring for Sprint 6C artifacts.
+- Added deterministic persistence and migration coverage for Sprint 6C in `backend/tests/test_backtesting_analytics_persistence.py` and extended migration checks in `backend/tests/test_backtesting_persistence.py`.
