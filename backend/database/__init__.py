@@ -23,6 +23,8 @@ from .dtos import (
     OptionContractDTO,
     OptionQuoteDTO,
     RawVendorRecordDTO,
+    ResearchOpportunityDTO,
+    ResearchRunDTO,
     SymbolHistoryDTO,
     UnderlyingPriceDTO,
     VolatilityObservationDTO,
@@ -32,6 +34,11 @@ from .dtos import (
 from .engine import create_database_engine
 from .ingestion import BulkIngestionService, ImportResult, IngestionConfig, UpsertPolicy
 from .query import AsOfQueryResult, HistoricalQueryService
+from .research import (
+    ResearchMutationError,
+    ResearchPersistenceService,
+    deterministic_research_checksum,
+)
 from .session import DatabaseSessionManager
 from .snapshots import SnapshotMutationError, SnapshotService
 from .validation import RecordValidator, ValidationIssue, ValidationSummary
@@ -60,7 +67,11 @@ __all__ = [
     "OptionContractDTO",
     "OptionQuoteDTO",
     "RawVendorRecordDTO",
+    "ResearchOpportunityDTO",
+    "ResearchRunDTO",
     "RecordValidator",
+    "ResearchMutationError",
+    "ResearchPersistenceService",
     "SnapshotMutationError",
     "SnapshotService",
     "SymbolHistoryDTO",
@@ -84,4 +95,5 @@ __all__ = [
     "CorporateActionService",
     "NormalizedCorporateActionDTO",
     "deterministic_slice_checksum",
+    "deterministic_research_checksum",
 ]

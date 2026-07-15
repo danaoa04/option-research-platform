@@ -15,6 +15,7 @@ from .reproducibility import (
     CorporateActionNormalizationRepository,
     SnapshotRepository,
 )
+from .research import ResearchOpportunityRepository, ResearchRunRepository
 from .volatility import VolatilityObservationRepository, VolatilitySliceRepository
 
 __all__ = [
@@ -28,6 +29,8 @@ __all__ = [
     "UnderlyingPricesRepository",
     "AuditRepository",
     "CorporateActionNormalizationRepository",
+    "ResearchOpportunityRepository",
+    "ResearchRunRepository",
     "SnapshotRepository",
     "VolatilityObservationRepository",
     "VolatilitySliceRepository",

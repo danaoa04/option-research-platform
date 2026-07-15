@@ -66,3 +66,8 @@ All notable changes to this project will be documented in this file.
 - Added database schema support for volatility observations and time slices with migration `0003_volatility_analytics_foundation.py`, ORM entities, DTOs, repositories, and query-service extensions.
 - Added deterministic Sprint 4D tests for estimators, quality policies, tree diagnostics, term/surface construction, persistence immutability, and no-look-ahead behavior.
 - Added opt-in volatility benchmark test entrypoint guarded by `RUN_OPT_IN_BENCHMARKS=1`.
+- Added Sprint 4E calendar and multi-expiry research engine in `backend/research` with typed strategy framework, strategy state tracking, historical regime classification, explainable opportunity scoring, historical analytics, and deterministic parameter sweeps.
+- Added Sprint 4E research persistence schema with migration `0004_calendar_research_engine.py`, including `research_runs` and `research_opportunities` tables.
+- Added research persistence services and no-look-ahead research query methods for best opportunities, highest POP/EV/theta capture, highest quality, and regime-specific ranking.
+- Added deterministic Sprint 4E offline tests and opt-in benchmark coverage for research scoring and sweep generation.
+- Added Sprint 4E documentation set: `docs/34_Calendar_Research_Engine.md`, `docs/35_Strategy_Analytics.md`, and `docs/36_Research_Framework.md`.

@@ -286,3 +286,36 @@ class VolatilityTimeSliceNodeDTO:
     node_kind: str
     confidence_score: Decimal
     provenance: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class ResearchRunDTO:
+    run_id: str
+    strategy_type: str
+    symbol: str
+    entry_date: date
+    exit_date: date
+    configuration: dict[str, Any]
+    parameters: dict[str, Any]
+    software_version: str
+    manifest_id: int
+    run_timestamp: datetime
+    checksums: dict[str, Any]
+    quality_score: Decimal | None
+    summary_metrics: dict[str, Any]
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class ResearchOpportunityDTO:
+    as_of_timestamp: datetime
+    opportunity_score: Decimal
+    confidence: Decimal
+    historical_pop: Decimal | None
+    expected_value: Decimal | None
+    theta_capture: Decimal | None
+    quality_score: Decimal | None
+    term_structure_regime: str | None
+    diagnostics: dict[str, Any]
+    warnings: list[str]

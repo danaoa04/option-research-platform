@@ -86,3 +86,20 @@
 - [x] Documentation updates
 - [x] Lint passing
 - [x] Tests passing
+
+## Sprint 4E - Calendar and Multi-Expiry Research Engine
+
+- [x] Generic multi-leg strategy framework for calendar/diagonal families and custom multi-expiry structures
+- [x] Strategy state tracking for IV/RV, IV percentile/rank, selected Greeks, PnL, intrinsic/extrinsic values
+- [x] Deterministic historical regime classification engine
+- [x] Explainable opportunity scoring engine with diagnostics and warnings
+- [x] Multi-DTE support with standard buckets and arbitrary combinations
+- [x] Historical analytics metrics (POP, EV, drawdown, Sharpe/Sortino, streaks, theta/vega/gamma exposure)
+- [x] Deterministic exhaustive parameter sweep framework
+- [x] Research run/result persistence schema and services
+- [x] No-look-ahead research query services
+- [x] Opt-in benchmarks
+- [x] Deterministic offline tests
+- [x] Documentation updates
+- [x] Lint passing
+- [x] Tests passing

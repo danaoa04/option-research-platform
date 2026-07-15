@@ -75,6 +75,16 @@ Volatility analytics foundation (Sprint 4D):
 - Persistence layer stores volatility observations and immutable time slices with deterministic checksum metadata.
 - Historical queries enforce no-look-ahead semantics and nearest-prior finalized-surface retrieval.
 
+Calendar and multi-expiry research foundation (Sprint 4E):
+
+- Generic strategy framework supports calendar, diagonal, double-calendar, double-diagonal, ratio-calendar, PMCC, synthetic-covered-call, and custom multi-expiry definitions.
+- Strategy state time series tracks IV/RV, IV percentile/rank, theta/gamma/vega/charm/vanna/vomma, PnL, and intrinsic/extrinsic values.
+- Deterministic regime classifier labels contango/backwardation/flat, earnings distortion, IV expansion/contraction, and realized-volatility regimes.
+- Explainable opportunity scorer returns score, confidence, diagnostics, warnings, and component-level contributions.
+- Deterministic exhaustive parameter sweeps support front/back DTE, strike/delta thresholds, IV/rank filters, and quality controls.
+- Research persistence stores run configuration/parameters/version/manifest/checksums/metrics and opportunity snapshots with no-look-ahead query methods.
+- Benchmarks remain opt-in and are disabled by default.
+
 Backtesting boundary:
 
 - Historical bid/ask quotes remain the source of truth for fill simulation.

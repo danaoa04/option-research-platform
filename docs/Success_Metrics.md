@@ -64,3 +64,10 @@ Success for the platform will be measured through engineering quality, research 
 - Regime labels and confidence outputs are deterministic for identical term-structure and realized-volatility inputs.
 - Volatility time slices cannot be mutated after finalization and attempted mutations raise explicit errors.
 - Nearest-prior finalized-surface queries remain no-look-ahead safe under all as-of test cases.
+- Multi-expiry strategy definitions are deterministic and expose complete leg/expiry/strike/type/quantity/date metadata.
+- Strategy state analytics deterministically track IV/RV, IV percentile/rank, selected Greeks, PnL, and intrinsic/extrinsic decomposition.
+- Regime classification consistently labels curve shape, earnings distortion, IV expansion/contraction, and realized-volatility states.
+- Opportunity scoring remains explainable with reproducible component-level contributions, diagnostics, and warnings.
+- Exhaustive parameter sweeps are deterministic, stable-ordered, and reproducible with fixed grids.
+- Research run persistence captures configuration, parameters, software version, manifest lineage, checksums, timestamps, quality scores, and summary metrics.
+- Research opportunity queries are no-look-ahead safe for all as-of ranking endpoints.

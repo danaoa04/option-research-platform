@@ -15,6 +15,8 @@ from backend.database.models import (
     InterestRateCurve,
     OptionContract,
     OptionQuote,
+    ResearchOpportunity,
+    ResearchRun,
     Underlying,
     UnderlyingPrice,
     VolatilityObservation,
@@ -370,6 +372,117 @@ class HistoricalQueryService:
         stmt = stmt.order_by(
             VolatilityTimeSliceNode.tenor_days.asc(),
             VolatilityTimeSliceNode.x.asc(),
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def best_calendar_opportunities(
+        self,
+        *,
+        as_of: datetime,
+        limit: int = 25,
+        min_quality_score: float = 0.0,
+    ) -> list[ResearchOpportunity]:
+        stmt: Select[tuple[ResearchOpportunity]] = (
+            select(ResearchOpportunity)
+            .where(
+                ResearchOpportunity.as_of_timestamp <= as_of,
+                (ResearchOpportunity.quality_score.is_(None))
+                | (ResearchOpportunity.quality_score >= min_quality_score),
+            )
+            .order_by(ResearchOpportunity.opportunity_score.desc())
+            .limit(limit)
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def highest_pop_runs(
+        self,
+        *,
+        as_of: datetime,
+        limit: int = 25,
+    ) -> list[ResearchRun]:
+        stmt: Select[tuple[ResearchRun]] = (
+            select(ResearchRun)
+            .where(ResearchRun.run_timestamp <= as_of)
+            .order_by(ResearchRun.summary_metrics["historical_pop"].desc())
+            .limit(limit)
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def highest_ev_runs(
+        self,
+        *,
+        as_of: datetime,
+        limit: int = 25,
+    ) -> list[ResearchRun]:
+        stmt: Select[tuple[ResearchRun]] = (
+            select(ResearchRun)
+            .where(ResearchRun.run_timestamp <= as_of)
+            .order_by(ResearchRun.summary_metrics["expected_value"].desc())
+            .limit(limit)
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def best_theta_capture_runs(
+        self,
+        *,
+        as_of: datetime,
+        limit: int = 25,
+    ) -> list[ResearchRun]:
+        stmt: Select[tuple[ResearchRun]] = (
+            select(ResearchRun)
+            .where(ResearchRun.run_timestamp <= as_of)
+            .order_by(ResearchRun.summary_metrics["theta_capture"].desc())
+            .limit(limit)
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def highest_quality_research_runs(
+        self,
+        *,
+        as_of: datetime,
+        limit: int = 25,
+    ) -> list[ResearchRun]:
+        stmt: Select[tuple[ResearchRun]] = (
+            select(ResearchRun)
+            .where(ResearchRun.run_timestamp <= as_of)
+            .order_by(ResearchRun.quality_score.desc())
+            .limit(limit)
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def best_term_structure_opportunities(
+        self,
+        *,
+        as_of: datetime,
+        limit: int = 25,
+        regime_label: str | None = None,
+    ) -> list[ResearchOpportunity]:
+        stmt: Select[tuple[ResearchOpportunity]] = select(ResearchOpportunity).where(
+            ResearchOpportunity.as_of_timestamp <= as_of
+        )
+        if regime_label is not None:
+            stmt = stmt.where(ResearchOpportunity.term_structure_regime == regime_label)
+        stmt = stmt.order_by(ResearchOpportunity.opportunity_score.desc()).limit(limit)
+        return list(self.session.execute(stmt).scalars())
+
+    def best_historical_regime(
+        self,
+        *,
+        as_of: datetime,
+        regime_label: str,
+        limit: int = 25,
+    ) -> list[ResearchOpportunity]:
+        stmt: Select[tuple[ResearchOpportunity]] = (
+            select(ResearchOpportunity)
+            .where(
+                ResearchOpportunity.as_of_timestamp <= as_of,
+                ResearchOpportunity.term_structure_regime == regime_label,
+            )
+            .order_by(
+                ResearchOpportunity.confidence.desc(),
+                ResearchOpportunity.opportunity_score.desc(),
+            )
+            .limit(limit)
         )
         return list(self.session.execute(stmt).scalars())
 

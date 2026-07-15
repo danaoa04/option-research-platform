@@ -398,6 +398,64 @@ class VolatilityTimeSliceNode(Base):
     slice: Mapped[VolatilityTimeSlice] = relationship()
 
 
+class ResearchRun(Base):
+    __tablename__ = "research_runs"
+    __table_args__ = (
+        UniqueConstraint("run_id"),
+        Index("ix_research_runs_symbol_ts", "symbol", "run_timestamp"),
+        Index("ix_research_runs_quality", "quality_score"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    strategy_type: Mapped[str] = mapped_column(String(48), nullable=False)
+    symbol: Mapped[str] = mapped_column(String(32), nullable=False)
+    entry_date: Mapped[date] = mapped_column(Date, nullable=False)
+    exit_date: Mapped[date] = mapped_column(Date, nullable=False)
+    configuration: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    parameters: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    software_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    manifest_id: Mapped[int] = mapped_column(ForeignKey("dataset_manifests.id"), nullable=False)
+    run_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    checksums: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    quality_score: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    summary_metrics: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata_json",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    manifest: Mapped[DatasetManifest] = relationship()
+
+
+class ResearchOpportunity(Base):
+    __tablename__ = "research_opportunities"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "as_of_timestamp"),
+        Index("ix_research_opportunities_score", "opportunity_score"),
+        Index("ix_research_opportunities_asof", "as_of_timestamp"),
+        Index("ix_research_opportunities_regime", "term_structure_regime"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("research_runs.id"), nullable=False)
+    as_of_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    opportunity_score: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    confidence: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    historical_pop: Mapped[Decimal | None] = mapped_column(Numeric(20, 10), nullable=True)
+    expected_value: Mapped[Decimal | None] = mapped_column(Numeric(20, 10), nullable=True)
+    theta_capture: Mapped[Decimal | None] = mapped_column(Numeric(20, 10), nullable=True)
+    quality_score: Mapped[Decimal | None] = mapped_column(Numeric(20, 10), nullable=True)
+    term_structure_regime: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    diagnostics: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+
+    run: Mapped[ResearchRun] = relationship()
+
+
 class DataLineageRecord(Base):
     __tablename__ = "data_lineage_records"
     __table_args__ = (
