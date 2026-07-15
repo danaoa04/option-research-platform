@@ -7,22 +7,37 @@ from hashlib import sha256
 
 from backend.database.dtos import (
 	BacktestArbitrationDecisionDTO,
+	BacktestAssignmentDecisionDTO,
 	BacktestCashLedgerEntryDTO,
+	BacktestCashSettlementDTO,
 	BacktestComparisonRunDTO,
+	BacktestCostBasisRecordDTO,
+	BacktestDividendSettlementDTO,
 	BacktestEventDTO,
 	BacktestEventOverlayDTO,
+	BacktestExecutionFillDTO,
+	BacktestExecutionReproducibilityChecksumDTO,
+	BacktestExecutionRequestDTO,
+	BacktestExerciseDecisionDTO,
+	BacktestExpirationEventDTO,
 	BacktestExportMetadataDTO,
+	BacktestFeeItemDTO,
+	BacktestFillAttemptDTO,
 	BacktestGreeksAttributionDTO,
 	BacktestIntegrityFailureDTO,
+	BacktestLedgerPostingDTO,
 	BacktestLifecycleTriggerDTO,
 	BacktestOrderIntentDTO,
 	BacktestPartialFillDTO,
+	BacktestPhysicalSettlementDTO,
+	BacktestPinRiskDiagnosticDTO,
 	BacktestPnLAttributionDTO,
 	BacktestPortfolioAnalyticsDTO,
 	BacktestPortfolioSnapshotDTO,
 	BacktestPositionDTO,
 	BacktestPositionInstanceDTO,
 	BacktestPositionLegDTO,
+	BacktestQuoteSelectionDTO,
 	BacktestReconciliationEventDTO,
 	BacktestReconstructedTradeDTO,
 	BacktestReplaySnapshotDTO,
@@ -33,7 +48,9 @@ from backend.database.dtos import (
 	BacktestRunComparisonDTO,
 	BacktestRunDTO,
 	BacktestScenarioResultDTO,
+	BacktestSettlementReconciliationDTO,
 	BacktestStateTransitionDTO,
+	BacktestStockPositionDTO,
 	BacktestStrategyAnalyticsDTO,
 	BacktestStrategyCycleDTO,
 	BacktestStrategyDefinitionDTO,
@@ -45,22 +62,37 @@ from backend.database.dtos import (
 )
 from backend.database.repositories.backtesting import (
 	BacktestArbitrationDecisionRepository,
+	BacktestAssignmentDecisionRepository,
 	BacktestCashLedgerRepository,
+	BacktestCashSettlementRepository,
 	BacktestComparisonRunRepository,
+	BacktestCostBasisRecordRepository,
+	BacktestDividendSettlementRepository,
 	BacktestEventOverlayRepository,
 	BacktestEventRepository,
+	BacktestExecutionFillRepository,
+	BacktestExecutionReproducibilityChecksumRepository,
+	BacktestExecutionRequestRepository,
+	BacktestExerciseDecisionRepository,
+	BacktestExpirationEventRepository,
 	BacktestExportMetadataRepository,
+	BacktestFeeItemRepository,
+	BacktestFillAttemptRepository,
 	BacktestGreeksAttributionRepository,
 	BacktestIntegrityFailureRepository,
+	BacktestLedgerPostingRepository,
 	BacktestLifecycleTriggerRepository,
 	BacktestOrderIntentRepository,
 	BacktestPartialFillRepository,
+	BacktestPhysicalSettlementRepository,
+	BacktestPinRiskDiagnosticRepository,
 	BacktestPnLAttributionRepository,
 	BacktestPortfolioAnalyticsRepository,
 	BacktestPortfolioSnapshotRepository,
 	BacktestPositionInstanceRepository,
 	BacktestPositionLegRepository,
 	BacktestPositionRepository,
+	BacktestQuoteSelectionRepository,
 	BacktestReconciliationEventRepository,
 	BacktestReconstructedTradeRepository,
 	BacktestReplaySnapshotRepository,
@@ -71,7 +103,9 @@ from backend.database.repositories.backtesting import (
 	BacktestRunComparisonRepository,
 	BacktestRunRepository,
 	BacktestScenarioResultRepository,
+	BacktestSettlementReconciliationRepository,
 	BacktestStateTransitionRepository,
+	BacktestStockPositionRepository,
 	BacktestStrategyAnalyticsRepository,
 	BacktestStrategyCycleRepository,
 	BacktestStrategyDefinitionRepository,
@@ -131,6 +165,25 @@ class BacktestPersistenceService:
 		arbitration_decisions: list[BacktestArbitrationDecisionDTO] | None = None,
 		comparison_runs: list[BacktestComparisonRunDTO] | None = None,
 		export_metadata: list[BacktestExportMetadataDTO] | None = None,
+		execution_requests: list[BacktestExecutionRequestDTO] | None = None,
+		quote_selections: list[BacktestQuoteSelectionDTO] | None = None,
+		fill_attempts: list[BacktestFillAttemptDTO] | None = None,
+		execution_fills: list[BacktestExecutionFillDTO] | None = None,
+		fee_items: list[BacktestFeeItemDTO] | None = None,
+		exercise_decisions: list[BacktestExerciseDecisionDTO] | None = None,
+		assignment_decisions: list[BacktestAssignmentDecisionDTO] | None = None,
+		expiration_events: list[BacktestExpirationEventDTO] | None = None,
+		physical_settlements: list[BacktestPhysicalSettlementDTO] | None = None,
+		cash_settlements: list[BacktestCashSettlementDTO] | None = None,
+		dividend_settlements: list[BacktestDividendSettlementDTO] | None = None,
+		stock_positions: list[BacktestStockPositionDTO] | None = None,
+		cost_basis_records: list[BacktestCostBasisRecordDTO] | None = None,
+		ledger_postings: list[BacktestLedgerPostingDTO] | None = None,
+		pin_risk_diagnostics: list[BacktestPinRiskDiagnosticDTO] | None = None,
+		settlement_reconciliations: list[BacktestSettlementReconciliationDTO] | None = None,
+		execution_reproducibility_checksums: list[
+			BacktestExecutionReproducibilityChecksumDTO
+		] | None = None,
 	) -> int:
 		strategy_definitions = strategy_definitions or []
 		strategy_templates = strategy_templates or []
@@ -155,6 +208,23 @@ class BacktestPersistenceService:
 		arbitration_decisions = arbitration_decisions or []
 		comparison_runs = comparison_runs or []
 		export_metadata = export_metadata or []
+		execution_requests = execution_requests or []
+		quote_selections = quote_selections or []
+		fill_attempts = fill_attempts or []
+		execution_fills = execution_fills or []
+		fee_items = fee_items or []
+		exercise_decisions = exercise_decisions or []
+		assignment_decisions = assignment_decisions or []
+		expiration_events = expiration_events or []
+		physical_settlements = physical_settlements or []
+		cash_settlements = cash_settlements or []
+		dividend_settlements = dividend_settlements or []
+		stock_positions = stock_positions or []
+		cost_basis_records = cost_basis_records or []
+		ledger_postings = ledger_postings or []
+		pin_risk_diagnostics = pin_risk_diagnostics or []
+		settlement_reconciliations = settlement_reconciliations or []
+		execution_reproducibility_checksums = execution_reproducibility_checksums or []
 
 		self._validate_run(run)
 		payload = {
@@ -476,6 +546,159 @@ class BacktestPersistenceService:
 						"metadata": item.metadata_json,
 					}
 					for item in export_metadata
+				]
+			)
+			BacktestExecutionRequestRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{k.replace("_json", ""): v for k, v in asdict(item).items()},
+					}
+					for item in execution_requests
+				]
+			)
+			BacktestQuoteSelectionRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in quote_selections
+				]
+			)
+			BacktestFillAttemptRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in fill_attempts
+				]
+			)
+			BacktestExecutionFillRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in execution_fills
+				]
+			)
+			BacktestFeeItemRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{k.replace("_json", ""): v for k, v in asdict(item).items()},
+					}
+					for item in fee_items
+				]
+			)
+			BacktestExerciseDecisionRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in exercise_decisions
+				]
+			)
+			BacktestAssignmentDecisionRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in assignment_decisions
+				]
+			)
+			BacktestExpirationEventRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in expiration_events
+				]
+			)
+			BacktestPhysicalSettlementRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in physical_settlements
+				]
+			)
+			BacktestCashSettlementRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in cash_settlements
+				]
+			)
+			BacktestDividendSettlementRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in dividend_settlements
+				]
+			)
+			BacktestStockPositionRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{k.replace("_json", ""): v for k, v in asdict(item).items()},
+					}
+					for item in stock_positions
+				]
+			)
+			BacktestCostBasisRecordRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{k.replace("_json", ""): v for k, v in asdict(item).items()},
+					}
+					for item in cost_basis_records
+				]
+			)
+			BacktestLedgerPostingRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{k.replace("_json", ""): v for k, v in asdict(item).items()},
+					}
+					for item in ledger_postings
+				]
+			)
+			BacktestPinRiskDiagnosticRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in pin_risk_diagnostics
+				]
+			)
+			BacktestSettlementReconciliationRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**asdict(item),
+					}
+					for item in settlement_reconciliations
+				]
+			)
+			BacktestExecutionReproducibilityChecksumRepository(session).insert_rows(
+				[
+					{
+						"run_row_id": run_row_id,
+						**{k.replace("_json", ""): v for k, v in asdict(item).items()},
+					}
+					for item in execution_reproducibility_checksums
 				]
 			)
 			return run_row_id

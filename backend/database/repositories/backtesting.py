@@ -11,22 +11,37 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 from backend.database.models import (
     BacktestArbitrationDecisionRecord,
+    BacktestAssignmentDecisionRecord,
     BacktestCashLedgerEntryRecord,
+    BacktestCashSettlementRecord,
     BacktestComparisonRunRecord,
+    BacktestCostBasisRecord,
+    BacktestDividendSettlementRecord,
     BacktestEventOverlayRecord,
     BacktestEventRecord,
+    BacktestExecutionFillRecord,
+    BacktestExecutionReproducibilityChecksumRecord,
+    BacktestExecutionRequestRecord,
+    BacktestExerciseDecisionRecord,
+    BacktestExpirationEventRecord,
     BacktestExportMetadataRecord,
+    BacktestFeeItemRecord,
+    BacktestFillAttemptRecord,
     BacktestGreeksAttributionRecord,
     BacktestIntegrityFailureRecord,
+    BacktestLedgerPostingRecord,
     BacktestLifecycleTriggerRecord,
     BacktestOrderIntentRecord,
     BacktestPartialFillRecord,
+    BacktestPhysicalSettlementRecord,
+    BacktestPinRiskDiagnosticRecord,
     BacktestPnLAttributionRecord,
     BacktestPortfolioAnalyticsRecord,
     BacktestPortfolioSnapshotRecord,
     BacktestPositionInstanceRecord,
     BacktestPositionLegRecord,
     BacktestPositionRecord,
+    BacktestQuoteSelectionRecord,
     BacktestReconciliationEventRecord,
     BacktestReconstructedTradeRecord,
     BacktestReplaySnapshotRecord,
@@ -37,7 +52,9 @@ from backend.database.models import (
     BacktestRun,
     BacktestRunComparisonRecord,
     BacktestScenarioResultRecord,
+    BacktestSettlementReconciliationRecord,
     BacktestStateTransitionRecord,
+    BacktestStockPositionRecord,
     BacktestStrategyAnalyticsRecord,
     BacktestStrategyCycleRecord,
     BacktestStrategyDefinitionRecord,
@@ -435,3 +452,126 @@ class BacktestComparisonRunRepository(_BulkImmutableRepository):
 class BacktestExportMetadataRepository(_BulkImmutableRepository):
     model = BacktestExportMetadataRecord
     conflict_columns = ("run_row_id", "export_id")
+
+
+class BacktestExecutionRequestRepository(_BulkImmutableRepository):
+    model = BacktestExecutionRequestRecord
+    conflict_columns = ("run_row_id", "request_id")
+
+
+class BacktestQuoteSelectionRepository(_BulkImmutableRepository):
+    model = BacktestQuoteSelectionRecord
+    conflict_columns = ("run_row_id", "request_id")
+
+
+class BacktestFillAttemptRepository(_BulkImmutableRepository):
+    model = BacktestFillAttemptRecord
+    conflict_columns = ("run_row_id", "request_id", "attempt_timestamp")
+
+
+class BacktestExecutionFillRepository(_BulkImmutableRepository):
+    model = BacktestExecutionFillRecord
+    conflict_columns = ("run_row_id", "request_id", "fill_timestamp")
+
+
+class BacktestFeeItemRepository(_BulkImmutableRepository):
+    model = BacktestFeeItemRecord
+    conflict_columns = ("run_row_id", "request_id", "event_timestamp", "fee_type")
+
+
+class BacktestExerciseDecisionRepository(_BulkImmutableRepository):
+    model = BacktestExerciseDecisionRecord
+    conflict_columns = ("run_row_id", "request_id", "decision_timestamp")
+
+
+class BacktestAssignmentDecisionRepository(_BulkImmutableRepository):
+    model = BacktestAssignmentDecisionRecord
+    conflict_columns = ("run_row_id", "request_id", "decision_timestamp")
+
+
+class BacktestExpirationEventRepository(_BulkImmutableRepository):
+    model = BacktestExpirationEventRecord
+    conflict_columns = ("run_row_id", "request_id", "expiration_timestamp")
+
+
+class BacktestPhysicalSettlementRepository(_BulkImmutableRepository):
+    model = BacktestPhysicalSettlementRecord
+    conflict_columns = ("run_row_id", "request_id", "settlement_timestamp")
+
+
+class BacktestCashSettlementRepository(_BulkImmutableRepository):
+    model = BacktestCashSettlementRecord
+    conflict_columns = ("run_row_id", "request_id", "settlement_timestamp")
+
+
+class BacktestDividendSettlementRepository(_BulkImmutableRepository):
+    model = BacktestDividendSettlementRecord
+    conflict_columns = ("run_row_id", "strategy_id", "position_id", "ex_date")
+
+
+class BacktestStockPositionRepository(_BulkImmutableRepository):
+    model = BacktestStockPositionRecord
+    conflict_columns = ("run_row_id", "symbol", "strategy_id", "position_id", "as_of_timestamp")
+
+    def as_of(
+        self,
+        *,
+        run_row_id: int,
+        symbol: str,
+        as_of: datetime,
+    ) -> BacktestStockPositionRecord | None:
+        stmt: Select[tuple[BacktestStockPositionRecord]] = (
+            select(BacktestStockPositionRecord)
+            .where(
+                BacktestStockPositionRecord.run_row_id == run_row_id,
+                BacktestStockPositionRecord.symbol == symbol,
+                BacktestStockPositionRecord.as_of_timestamp <= as_of,
+            )
+            .order_by(BacktestStockPositionRecord.as_of_timestamp.desc())
+            .limit(1)
+        )
+        return self.session.execute(stmt).scalars().first()
+
+
+class BacktestCostBasisRecordRepository(_BulkImmutableRepository):
+    model = BacktestCostBasisRecord
+    conflict_columns = ("run_row_id", "strategy_cycle_id", "as_of_timestamp")
+
+    def as_of(
+        self,
+        *,
+        run_row_id: int,
+        strategy_cycle_id: str,
+        as_of: datetime,
+    ) -> BacktestCostBasisRecord | None:
+        stmt: Select[tuple[BacktestCostBasisRecord]] = (
+            select(BacktestCostBasisRecord)
+            .where(
+                BacktestCostBasisRecord.run_row_id == run_row_id,
+                BacktestCostBasisRecord.strategy_cycle_id == strategy_cycle_id,
+                BacktestCostBasisRecord.as_of_timestamp <= as_of,
+            )
+            .order_by(BacktestCostBasisRecord.as_of_timestamp.desc())
+            .limit(1)
+        )
+        return self.session.execute(stmt).scalars().first()
+
+
+class BacktestLedgerPostingRepository(_BulkImmutableRepository):
+    model = BacktestLedgerPostingRecord
+    conflict_columns = ("run_row_id", "posting_id")
+
+
+class BacktestPinRiskDiagnosticRepository(_BulkImmutableRepository):
+    model = BacktestPinRiskDiagnosticRecord
+    conflict_columns = ("run_row_id", "request_id", "event_timestamp")
+
+
+class BacktestSettlementReconciliationRepository(_BulkImmutableRepository):
+    model = BacktestSettlementReconciliationRecord
+    conflict_columns = ("run_row_id", "strategy_id", "position_id", "event_timestamp")
+
+
+class BacktestExecutionReproducibilityChecksumRepository(_BulkImmutableRepository):
+    model = BacktestExecutionReproducibilityChecksumRecord
+    conflict_columns = ("run_row_id", "checksum_key")

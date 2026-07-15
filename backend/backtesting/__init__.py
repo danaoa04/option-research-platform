@@ -47,6 +47,21 @@ from .exceptions import (
     StrategyLifecycleError,
     ValuationError,
 )
+from .execution import (
+    ExecutionAction,
+    ExecutionOrderType,
+    ExecutionRequest,
+    ExecutionSide,
+    ExerciseAssignmentOrchestrator,
+    FillAttempt,
+    MultiLegExecutionCoordinator,
+    MultiLegExecutionResult,
+    OpenCloseEffect,
+    execution_reproducibility_checksum,
+)
+from .execution_queries import ExecutionQueryService, QueryAsOfResult
+from .fees import FeeItem, FeeModelRequest, ItemizedFeeModel
+from .fill_models import FillModelRequest, FillModelResult, ResearchFillModelEngine
 from .fills import BaselineResearchFillModel, FillModelConfig
 from .guards import NoLookAheadGuard
 from .models import (
@@ -86,9 +101,25 @@ from .policies import (
     PolicyDisposition,
 )
 from .queries import AsOfResult, BacktestAsOfQueryService
+from .quote_selection import (
+    QuotePriceSelection,
+    QuoteSelectionPolicy,
+    QuoteSelectionResult,
+    QuoteSelector,
+)
 from .reconstruction import ReconstructedTrade, StrategyCycle, TradeReconstructionService
 from .replay import BacktestReplayEngine, ReplayInspection, ReplaySnapshot, ReplayStatus
 from .scenarios import DEFAULT_SCENARIO_LIBRARY
+from .settlement import (
+    AssignmentDecision,
+    DividendSettlement,
+    ExerciseDecision,
+    ExpirationProcessingResult,
+    PinRiskDiagnostic,
+    SettlementEngine,
+    SettlementPosting,
+    SettlementResult,
+)
 from .state_machine import (
     ActionName,
     ActionPlan,
@@ -124,6 +155,7 @@ __all__ = [
     "ActionPlan",
     "ApiEnvelopeV1",
     "ArbitrationDecision",
+    "AssignmentDecision",
     "ArbitrationPolicy",
     "AsOfResult",
     "AttributionContractV1",
@@ -151,12 +183,27 @@ __all__ = [
     "DeterministicEvent",
     "default_priority",
     "DrawdownPoint",
+    "DividendSettlement",
     "EntryMode",
     "EventClockConfig",
     "EventClockError",
     "EventType",
+    "ExecutionAction",
+    "ExecutionOrderType",
+    "execution_reproducibility_checksum",
+    "ExecutionQueryService",
+    "ExecutionRequest",
+    "ExecutionSide",
+    "ExerciseAssignmentOrchestrator",
+    "ExerciseDecision",
+    "ExpirationProcessingResult",
+    "FeeItem",
+    "FeeModelRequest",
+    "FillAttempt",
     "FillModelConfig",
     "FillModelError",
+    "FillModelRequest",
+    "FillModelResult",
     "FillPricePolicy",
     "FillReconciliationEvent",
     "GuardEvaluationRequest",
@@ -179,12 +226,16 @@ __all__ = [
     "LifecyclePolicySignal",
     "LifecycleState",
     "MarkPricePolicy",
+    "ItemizedFeeModel",
     "MultiLegDefinitionLeg",
+    "MultiLegExecutionCoordinator",
+    "MultiLegExecutionResult",
     "MultiLegOrchestrator",
     "MultiLegStrategyDefinition",
     "NoLookAheadError",
     "NoLookAheadGuard",
     "OrderAction",
+    "OpenCloseEffect",
     "OrderIntent",
     "OrderSide",
     "OverlayMetrics",
@@ -195,12 +246,19 @@ __all__ = [
     "PortfolioAnalyticsPoint",
     "PortfolioConflictContractV1",
     "PortfolioSnapshot",
+    "PinRiskDiagnostic",
+    "QueryAsOfResult",
+    "QuotePriceSelection",
+    "QuoteSelectionPolicy",
+    "QuoteSelectionResult",
+    "QuoteSelector",
     "ReconstructedTrade",
     "ReplayControlContractV1",
     "ReplayInspection",
     "ReplaySnapshot",
     "ReplaySnapshotContractV1",
     "ReplayStatus",
+    "ResearchFillModelEngine",
     "RichEvent",
     "RichEventPriority",
     "RichEventType",
@@ -219,6 +277,9 @@ __all__ = [
     "StrategyLifecycle",
     "StrategyLifecycleError",
     "StrategyStateMachine",
+    "SettlementEngine",
+    "SettlementPosting",
+    "SettlementResult",
     "TradeListContractV1",
     "TradeReconstructionService",
     "TradingSession",

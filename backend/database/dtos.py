@@ -956,3 +956,212 @@ class BacktestExportMetadataDTO:
     artifact_checksum: str
     metadata_json: dict[str, Any]
     created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionRequestDTO:
+    request_id: str
+    strategy_id: str
+    position_id: str
+    leg_id: str
+    contract_identifier: str
+    action: str
+    side: str
+    effect: str
+    quantity: int
+    requested_timestamp: datetime
+    order_type: str
+    limit_price: Decimal | None
+    mark_price_policy: str
+    execution_delay_policy: dict[str, Any]
+    fill_model_policy: dict[str, Any]
+    slippage_policy: dict[str, Any]
+    commission_policy: dict[str, Any]
+    exchange_fee_policy: dict[str, Any]
+    minimum_fill_quantity: int
+    all_or_none_research: bool
+    maximum_legging_delay_seconds: Decimal
+    lifecycle_trigger: str
+    reason_code: str
+    dataset_manifest: str
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestQuoteSelectionDTO:
+    request_id: str
+    selected_timestamp: datetime | None
+    quote_age_seconds: Decimal | None
+    spread_width: Decimal | None
+    selected_price: Decimal | None
+    quality_flags: list[str]
+    stale_data: bool
+    crossed_market: bool
+    source_manifest: str | None
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestFillAttemptDTO:
+    request_id: str
+    attempt_timestamp: datetime
+    fill_model: str
+    requested_quantity: int
+    filled_quantity: int
+    remaining_quantity: int
+    fill_price: Decimal | None
+    slippage: Decimal
+    spread_capture: Decimal | None
+    quote_quality: Decimal
+    warnings: list[str]
+    failure_reason: str | None
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionFillDTO:
+    request_id: str
+    fill_timestamp: datetime | None
+    fill_quantity: int
+    fill_price: Decimal | None
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestFeeItemDTO:
+    request_id: str
+    event_timestamp: datetime
+    fee_type: str
+    amount: Decimal
+    currency: str
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExerciseDecisionDTO:
+    request_id: str
+    decision_timestamp: datetime
+    decision: str
+    rationale: str
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestAssignmentDecisionDTO:
+    request_id: str
+    decision_timestamp: datetime
+    decision: str
+    partial_assignment: bool
+    assignment_quantity: int
+    rationale: str
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExpirationEventDTO:
+    request_id: str
+    expiration_timestamp: datetime
+    status: str
+    intrinsic_value: Decimal
+    in_the_money: bool
+    cash_settled: bool
+    physically_settled: bool
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestPhysicalSettlementDTO:
+    request_id: str
+    settlement_timestamp: datetime
+    stock_position_change: int
+    strike_cash_movement: Decimal
+    fees: Decimal
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestCashSettlementDTO:
+    request_id: str
+    settlement_timestamp: datetime
+    cash_movement: Decimal
+    fees: Decimal
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestDividendSettlementDTO:
+    strategy_id: str
+    position_id: str
+    ex_date: datetime
+    record_date: datetime | None
+    payable_date: datetime | None
+    amount: Decimal
+    direction: str
+    special_dividend: bool
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestStockPositionDTO:
+    symbol: str
+    strategy_id: str
+    position_id: str
+    quantity: int
+    cost_basis: Decimal
+    as_of_timestamp: datetime
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestCostBasisRecordDTO:
+    strategy_cycle_id: str
+    strategy_id: str
+    position_id: str
+    option_cost_basis: Decimal
+    stock_cost_basis: Decimal
+    cumulative_debits: Decimal
+    cumulative_credits: Decimal
+    cumulative_fees: Decimal
+    realized_pnl: Decimal
+    unrealized_pnl: Decimal
+    as_of_timestamp: datetime
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestLedgerPostingDTO:
+    posting_id: str
+    event_timestamp: datetime
+    strategy_id: str
+    position_id: str
+    posting_type: str
+    amount: Decimal
+    quantity: int
+    reason_code: str
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestPinRiskDiagnosticDTO:
+    request_id: str
+    event_timestamp: datetime
+    at_risk: bool
+    within_band: bool
+    warning_codes: list[str]
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestSettlementReconciliationDTO:
+    strategy_id: str
+    position_id: str
+    event_timestamp: datetime
+    reconciled: bool
+    failure_codes: list[str]
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestExecutionReproducibilityChecksumDTO:
+    checksum_key: str
+    checksum_value: str
+    metadata_json: dict[str, Any]
