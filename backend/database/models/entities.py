@@ -546,6 +546,103 @@ class OptimizationCandidateResult(Base):
     run: Mapped[OptimizationRun] = relationship(back_populates="candidate_results")
 
 
+class ValidationRun(Base):
+    __tablename__ = "validation_runs"
+    __table_args__ = (
+        UniqueConstraint("run_id"),
+        Index("ix_validation_runs_strategy_ts", "strategy_name", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    strategy_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    candidate_ordering: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    validation_configuration: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    cpcv_definition: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    comparison_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    checksums: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    failures: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    software_git_commit: Mapped[str] = mapped_column(String(64), nullable=False)
+    schema_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    random_seed: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    candidate_results: Mapped[list[ValidationCandidateResult]] = relationship(
+        "ValidationCandidateResult",
+        back_populates="run",
+    )
+    folds: Mapped[list[ValidationFold]] = relationship(
+        "ValidationFold",
+        back_populates="run",
+    )
+
+
+class ValidationCandidateResult(Base):
+    __tablename__ = "validation_candidate_results"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "candidate_id"),
+        Index("ix_validation_candidate_results_run", "run_row_id", "candidate_id"),
+        Index("ix_validation_candidate_results_tier", "tier"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("validation_runs.id"), nullable=False)
+    candidate_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    tier: Mapped[str] = mapped_column(String(32), nullable=False)
+    parameters: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    deflated_sharpe: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    pbo: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    cpcv: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    sensitivity: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    neighborhood: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    degradation: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    regime_robustness: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    temporal_stability: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    stress_test: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    bootstrap: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    robustness_score: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    gate_result: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    failures: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    reproducibility_metadata: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+    run: Mapped[ValidationRun] = relationship(back_populates="candidate_results")
+
+
+class ValidationFold(Base):
+    __tablename__ = "validation_folds"
+    __table_args__ = (
+        UniqueConstraint("run_row_id", "split_id"),
+        Index("ix_validation_folds_run", "run_row_id", "split_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_row_id: Mapped[int] = mapped_column(ForeignKey("validation_runs.id"), nullable=False)
+    split_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    fold_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    split_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    selection_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    result_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+
+    run: Mapped[ValidationRun] = relationship(back_populates="folds")
+
+
 class DataLineageRecord(Base):
     __tablename__ = "data_lineage_records"
     __table_args__ = (

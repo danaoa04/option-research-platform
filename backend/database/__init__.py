@@ -29,6 +29,9 @@ from .dtos import (
     ResearchRunDTO,
     SymbolHistoryDTO,
     UnderlyingPriceDTO,
+    ValidationCandidateResultDTO,
+    ValidationFoldDTO,
+    ValidationRunDTO,
     VolatilityObservationDTO,
     VolatilityTimeSliceDTO,
     VolatilityTimeSliceNodeDTO,
@@ -48,6 +51,11 @@ from .research import (
 )
 from .session import DatabaseSessionManager
 from .snapshots import SnapshotMutationError, SnapshotService
+from .strategy_validation import (
+    StrategyValidationPersistenceService,
+    ValidationMutationError,
+    deterministic_validation_checksum,
+)
 from .validation import RecordValidator, ValidationIssue, ValidationSummary
 from .volatility import (
     VolatilityPersistenceService,
@@ -95,6 +103,9 @@ __all__ = [
     "UpsertPolicy",
     "ValidationIssue",
     "ValidationSummary",
+    "ValidationCandidateResultDTO",
+    "ValidationFoldDTO",
+    "ValidationRunDTO",
     "create_database_engine",
     "load_database_settings",
     "AdjustmentPolicy",
@@ -108,4 +119,7 @@ __all__ = [
     "deterministic_slice_checksum",
     "deterministic_optimization_checksum",
     "deterministic_research_checksum",
+    "StrategyValidationPersistenceService",
+    "ValidationMutationError",
+    "deterministic_validation_checksum",
 ]

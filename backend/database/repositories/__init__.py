@@ -17,6 +17,11 @@ from .reproducibility import (
     SnapshotRepository,
 )
 from .research import ResearchOpportunityRepository, ResearchRunRepository
+from .validation import (
+    ValidationCandidateResultRepository,
+    ValidationFoldRepository,
+    ValidationRunRepository,
+)
 from .volatility import VolatilityObservationRepository, VolatilitySliceRepository
 
 __all__ = [
@@ -27,6 +32,9 @@ __all__ = [
     "InterestRatesRepository",
     "OptimizationCandidateResultRepository",
     "OptimizationRunRepository",
+    "ValidationCandidateResultRepository",
+    "ValidationFoldRepository",
+    "ValidationRunRepository",
     "ManifestsLineageRepository",
     "QuotesRepository",
     "UnderlyingPricesRepository",

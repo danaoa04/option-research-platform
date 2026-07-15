@@ -368,3 +368,54 @@ class OptimizationCandidateResultDTO:
     lexicographic_tuple: list[float]
     dominated_by: list[str]
     reproducibility_metadata: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class ValidationRunDTO:
+    run_id: str
+    strategy_name: str
+    candidate_ordering: list[str]
+    validation_configuration: dict[str, Any]
+    cpcv_definition: dict[str, Any]
+    comparison_json: dict[str, Any]
+    checksums: dict[str, Any]
+    warnings: list[str]
+    failures: list[str]
+    software_git_commit: str
+    schema_version: str
+    random_seed: int | None
+    metadata: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class ValidationCandidateResultDTO:
+    candidate_id: str
+    tier: str
+    parameters: dict[str, Any]
+    deflated_sharpe: dict[str, Any]
+    pbo: dict[str, Any]
+    cpcv: dict[str, Any]
+    sensitivity: dict[str, Any]
+    neighborhood: dict[str, Any]
+    degradation: dict[str, Any]
+    regime_robustness: dict[str, Any]
+    temporal_stability: dict[str, Any]
+    stress_test: dict[str, Any]
+    bootstrap: dict[str, Any]
+    robustness_score: dict[str, Any]
+    gate_result: dict[str, Any]
+    warnings: list[str]
+    failures: list[str]
+    reproducibility_metadata: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class ValidationFoldDTO:
+    run_id: str
+    split_id: str
+    fold_index: int
+    split_json: dict[str, Any]
+    selection_json: dict[str, Any]
+    result_json: dict[str, Any]
+    warnings: list[str]
