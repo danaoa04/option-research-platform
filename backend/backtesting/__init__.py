@@ -64,6 +64,7 @@ from .fees import FeeItem, FeeModelRequest, ItemizedFeeModel
 from .fill_models import FillModelRequest, FillModelResult, ResearchFillModelEngine
 from .fills import BaselineResearchFillModel, FillModelConfig
 from .guards import NoLookAheadGuard
+from .margining import MarginEvaluationSnapshot, MarginLifecycleCoordinator, aware_timestamp
 from .models import (
     BacktestConfiguration,
     BacktestRunResult,
@@ -225,6 +226,8 @@ __all__ = [
     "LegSelectionResult",
     "LifecyclePolicySignal",
     "LifecycleState",
+    "MarginEvaluationSnapshot",
+    "MarginLifecycleCoordinator",
     "MarkPricePolicy",
     "ItemizedFeeModel",
     "MultiLegDefinitionLeg",
@@ -287,5 +290,6 @@ __all__ = [
     "TransitionTrigger",
     "ValuationError",
     "ValuationService",
+    "aware_timestamp",
     "compile_template",
 ]

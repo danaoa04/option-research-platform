@@ -530,6 +530,255 @@ class PortfolioRebalancePlanDTO:
 
 
 @dataclass(slots=True, frozen=True)
+class BacktestAccountConfigurationDTO:
+    account_id: str
+    account_type: str
+    base_currency: str
+    starting_cash: Decimal
+    reserve_cash: Decimal
+    settled_cash: Decimal
+    unsettled_cash: Decimal
+    interest_policy_json: dict[str, Any]
+    margin_policy_json: dict[str, Any]
+    borrow_policy_json: dict[str, Any]
+    commission_fee_policy_json: dict[str, Any]
+    house_margin_overlay_json: dict[str, Any]
+    risk_limits_json: dict[str, Any]
+    liquidation_policy_json: dict[str, Any]
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestMarginPolicyDTO:
+    account_id: str
+    policy_name: str
+    policy_version: str
+    supported_account_types: list[str]
+    supported_instrument_types: list[str]
+    limitations: list[str]
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestMarginCalculationDTO:
+    calculation_id: str
+    account_id: str
+    event_timestamp: datetime
+    event_type: str
+    policy_name: str
+    policy_version: str
+    strategy_id: str | None
+    position_id: str | None
+    initial_requirement: Decimal
+    maintenance_requirement: Decimal
+    option_buying_power_effect: Decimal
+    stock_buying_power_effect: Decimal
+    pending_order_reservation: Decimal
+    assignment_reservation: Decimal
+    exercise_reservation: Decimal
+    settlement_reservation: Decimal
+    concentration_add_ons: Decimal
+    event_risk_add_ons: Decimal
+    house_margin_add_ons: Decimal
+    post_trade_buying_power: Decimal
+    excess_liquidity: Decimal
+    cushion: Decimal
+    warnings: list[str]
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestBuyingPowerSnapshotDTO:
+    account_id: str
+    event_timestamp: datetime
+    available_buying_power: Decimal
+    initial_requirement: Decimal
+    maintenance_requirement: Decimal
+    excess_liquidity: Decimal
+    cushion: Decimal
+    free_cash: Decimal
+    settled_cash: Decimal
+    unsettled_cash: Decimal
+    reserved_cash: Decimal
+    collateral_cash: Decimal
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestCollateralRecordDTO:
+    account_id: str
+    event_timestamp: datetime
+    strategy_id: str | None
+    position_id: str | None
+    collateral_type: str
+    amount: Decimal
+    covered: bool
+    warnings: list[str]
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestCashBalanceDTO:
+    account_id: str
+    event_timestamp: datetime
+    settled_cash: Decimal
+    unsettled_cash: Decimal
+    reserved_cash: Decimal
+    collateral_cash: Decimal
+    free_cash: Decimal
+    net_cash: Decimal
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestCashSettlementFlowDTO:
+    posting_id: str
+    account_id: str
+    event_type: str
+    amount: Decimal
+    trade_timestamp: datetime
+    effective_timestamp: datetime
+    settlement_timestamp: datetime
+    settled_delta: Decimal
+    unsettled_delta: Decimal
+    reserved_delta: Decimal
+    collateral_delta: Decimal
+    strategy_id: str | None
+    position_id: str | None
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestInterestAccrualDTO:
+    accrual_id: str
+    account_id: str
+    event_timestamp: datetime
+    balance_basis: Decimal
+    annual_rate: Decimal
+    accrued_amount: Decimal
+    is_debit: bool
+    source_curve: str
+    assumptions_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestBorrowRecordDTO:
+    borrow_id: str
+    account_id: str
+    symbol: str
+    event_timestamp: datetime
+    available: bool
+    annualized_rate: Decimal
+    hard_to_borrow: bool
+    locate_required: bool
+    buy_in_risk: Decimal
+    recall_risk: Decimal
+    warnings: list[str]
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestBorrowAccrualDTO:
+    accrual_id: str
+    account_id: str
+    symbol: str
+    event_timestamp: datetime
+    share_quantity: int
+    annualized_rate: Decimal
+    accrued_amount: Decimal
+    hard_to_borrow: bool
+    warnings: list[str]
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestMarginCallEventDTO:
+    call_id: str
+    account_id: str
+    event_timestamp: datetime
+    reason: str
+    severity: str
+    amount_required: Decimal
+    deadline_placeholder: str
+    diagnostics_json: dict[str, Any]
+    reason_codes: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestLiquidationPlanDTO:
+    plan_id: str
+    account_id: str
+    event_timestamp: datetime
+    policy: str
+    deficit_to_resolve: Decimal
+    strategy_preserving: bool
+    solved: bool
+    warnings: list[str]
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestLiquidationStepDTO:
+    plan_id: str
+    step_id: str
+    strategy_id: str
+    position_id: str
+    quantity_fraction: Decimal
+    expected_margin_relief: Decimal
+    expected_cash_impact: Decimal
+    expected_realized_loss: Decimal
+    remaining_deficit: Decimal
+    warnings: list[str]
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestLiquidationOutcomeDTO:
+    plan_id: str
+    event_timestamp: datetime
+    realized_loss: Decimal
+    residual_margin_deficit: Decimal
+    residual_buying_power: Decimal
+    residual_excess_liquidity: Decimal
+    residual_stock_exposure: Decimal
+    residual_strategy_breakage: bool
+    residual_greeks_json: dict[str, Any]
+    warnings: list[str]
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestBrokerPolicyComparisonDTO:
+    comparison_id: str
+    account_id: str
+    event_timestamp: datetime
+    left_policy: str
+    right_policy: str
+    initial_requirement_diff: Decimal
+    maintenance_requirement_diff: Decimal
+    buying_power_diff: Decimal
+    ambiguity_warnings: list[str]
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestMarginReconciliationDTO:
+    reconciliation_id: str
+    account_id: str
+    event_timestamp: datetime
+    reconciled: bool
+    failure_codes: list[str]
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestMarginReproducibilityChecksumDTO:
+    checksum_key: str
+    checksum_value: str
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
 class BacktestRunDTO:
     run_id: str
     strategy_name: str

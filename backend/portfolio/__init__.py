@@ -1,8 +1,28 @@
 """Portfolio allocation and strategy-selection engine."""
 
+from .accounts import (
+    AccountConfiguration,
+    AccountState,
+    AccountType,
+    BorrowPolicy,
+    DayCountConvention,
+    HouseMarginOverlay,
+    InterestPolicy,
+    InterestRateMode,
+    LiquidationPolicyConfig,
+    RiskLimits,
+)
 from .allocation import PortfolioAllocator
 from .analytics import PortfolioAnalyticsEngine
 from .benchmarks import PortfolioBenchmarkResult, PortfolioBenchmarkRunner
+from .borrow import BorrowAccrual, BorrowAssessment, BorrowEngine, BorrowQuote
+from .cash import (
+    CashBalanceSnapshot,
+    CashEventType,
+    CashLedgerEngine,
+    CashPosting,
+    SettlementTiming,
+)
 from .checksums import deterministic_portfolio_checksum
 from .clustering import RiskClusterEngine
 from .constraints import PortfolioConstraintEngine
@@ -15,6 +35,34 @@ from .exceptions import (
     PortfolioPersistenceError,
 )
 from .exposures import ExposureAggregator
+from .interest import InterestAccrual, InterestAccrualEngine, InterestRatePoint
+from .liquidation import (
+    LiquidationCandidate,
+    LiquidationEngine,
+    LiquidationOutcome,
+    LiquidationPlan,
+    LiquidationPriority,
+    LiquidationStep,
+)
+from .margin import (
+    BaselineRegTMarginPolicy,
+    BrokerPolicyComparisonService,
+    CollateralRecord,
+    InstrumentType,
+    MarginCallEvent,
+    MarginCallReason,
+    MarginComponent,
+    MarginEventType,
+    MarginLeg,
+    MarginMonitor,
+    MarginPolicyAdapter,
+    MarginPosition,
+    MarginRequest,
+    MarginResult,
+    PendingReservation,
+    PolicyComparison,
+    PositionMarginResult,
+)
 from .models import (
     AllocationProblem,
     CandidateExposure,
@@ -46,17 +94,39 @@ from .models import (
     SizingPolicy,
 )
 from .rebalancing import RebalanceEngine
+from .reconciliation import (
+    AccountReconciliationEngine,
+    ReconciliationCheck,
+    ReconciliationError,
+    ReconciliationResult,
+)
 from .risk import MarginalRiskEngine
 from .scenarios import ScenarioEngine
 from .sizing import PositionSizer
 
 __all__ = [
+    "AccountConfiguration",
+    "AccountReconciliationEngine",
+    "AccountState",
+    "AccountType",
     "AllocationProblem",
+    "BaselineRegTMarginPolicy",
+    "BorrowAccrual",
+    "BorrowAssessment",
+    "BorrowEngine",
+    "BorrowPolicy",
+    "BorrowQuote",
+    "BrokerPolicyComparisonService",
     "CandidateExposure",
     "CandidateInput",
     "CandidateStats",
     "CandidateValidationSnapshot",
+    "CashBalanceSnapshot",
+    "CashEventType",
+    "CashLedgerEngine",
+    "CashPosting",
     "ClusterAssignment",
+    "CollateralRecord",
     "ConstructionMethod",
     "ConstraintDefinition",
     "ConstraintSeverity",
@@ -64,15 +134,41 @@ __all__ = [
     "CorrelationEstimate",
     "CorrelationKind",
     "CorrelationEngine",
+    "DayCountConvention",
     "EligibilityEngine",
     "EligibilityPolicy",
     "EligibilityRejection",
     "ExposureAggregator",
+    "HouseMarginOverlay",
+    "InstrumentType",
+    "InterestAccrual",
+    "InterestAccrualEngine",
+    "InterestPolicy",
+    "InterestRateMode",
+    "InterestRatePoint",
+    "LiquidationCandidate",
+    "LiquidationEngine",
+    "LiquidationOutcome",
+    "LiquidationPlan",
+    "LiquidationPolicyConfig",
+    "LiquidationPriority",
+    "LiquidationStep",
     "MarginalRiskContribution",
     "MarginalRiskEngine",
+    "MarginCallEvent",
+    "MarginCallReason",
+    "MarginComponent",
+    "MarginEventType",
+    "MarginLeg",
+    "MarginMonitor",
+    "MarginPolicyAdapter",
+    "MarginPosition",
+    "MarginRequest",
+    "MarginResult",
     "ObjectiveDefinition",
     "ObjectiveDirection",
     "ObjectiveMode",
+    "PendingReservation",
     "PortfolioAllocation",
     "PortfolioAllocator",
     "PortfolioAnalytics",
@@ -86,15 +182,22 @@ __all__ = [
     "PortfolioPersistenceError",
     "PortfolioRunResult",
     "PositionSizer",
+    "PolicyComparison",
+    "PositionMarginResult",
     "RebalanceChange",
     "RebalanceEngine",
     "RebalancePlan",
     "RebalanceTrigger",
+    "ReconciliationCheck",
+    "ReconciliationError",
+    "ReconciliationResult",
+    "RiskLimits",
     "RiskClusterEngine",
     "ScenarioDefinition",
     "ScenarioEngine",
     "ScenarioResult",
     "SelectionReport",
+    "SettlementTiming",
     "SizingPolicy",
     "deterministic_portfolio_checksum",
 ]
