@@ -161,3 +161,19 @@ Unimplemented backend endpoints remain typed TODO placeholders and are not calle
 - `optimize_spread_parameters(search_space, objective, constraints)`
 - `run_walk_forward_validation(strategy_spec, train_test_schedule)`
 - `analyze_volatility_regimes(symbols, features, schedule)`
+
+### 12. Sprint 4D Implemented Volatility Analytics Foundation
+
+Implemented scope includes:
+
+- historical volatility estimation services
+- observation quality scoring and exclusion recommendation policies
+- smile/term/surface construction and forward-volatility diagnostics
+- deterministic regime classification and confidence scoring
+- volatility observation and time-slice persistence with immutable finalization
+- no-look-ahead historical query semantics for nearest-prior finalized slices
+
+Future scope retained:
+
+- multi-expiry spread optimization engine
+- walk-forward optimizer orchestration and PoP optimization workflows

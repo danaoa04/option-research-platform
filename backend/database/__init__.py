@@ -25,6 +25,9 @@ from .dtos import (
     RawVendorRecordDTO,
     SymbolHistoryDTO,
     UnderlyingPriceDTO,
+    VolatilityObservationDTO,
+    VolatilityTimeSliceDTO,
+    VolatilityTimeSliceNodeDTO,
 )
 from .engine import create_database_engine
 from .ingestion import BulkIngestionService, ImportResult, IngestionConfig, UpsertPolicy
@@ -32,6 +35,11 @@ from .query import AsOfQueryResult, HistoricalQueryService
 from .session import DatabaseSessionManager
 from .snapshots import SnapshotMutationError, SnapshotService
 from .validation import RecordValidator, ValidationIssue, ValidationSummary
+from .volatility import (
+    VolatilityPersistenceService,
+    VolatilitySliceMutationError,
+    deterministic_slice_checksum,
+)
 
 __all__ = [
     "DatabaseSessionManager",
@@ -57,6 +65,11 @@ __all__ = [
     "SnapshotService",
     "SymbolHistoryDTO",
     "UnderlyingPriceDTO",
+    "VolatilityObservationDTO",
+    "VolatilityPersistenceService",
+    "VolatilitySliceMutationError",
+    "VolatilityTimeSliceDTO",
+    "VolatilityTimeSliceNodeDTO",
     "UpsertPolicy",
     "ValidationIssue",
     "ValidationSummary",
@@ -70,4 +83,5 @@ __all__ = [
     "AuditEventService",
     "CorporateActionService",
     "NormalizedCorporateActionDTO",
+    "deterministic_slice_checksum",
 ]

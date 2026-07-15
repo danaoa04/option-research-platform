@@ -134,4 +134,29 @@ Result contracts include metadata needed for next-phase construction of:
 - historical surfaces
 - stale-surface quality indicators
 
-Volatility-surface engine implementation is intentionally deferred.
+## Sprint 4D Extension
+
+Implemented in Sprint 4D:
+
+- historical volatility estimators (close-close, Parkinson, Garman-Klass, Rogers-Satchell, Yang-Zhang)
+- observation quality scoring with reason codes and exclusion recommendations
+- smile construction and evaluation by strike, moneyness, log-moneyness, or delta axis
+- term-structure construction with front/back metrics, curvature, and contango/backwardation/flat/mixed classification
+- forward-volatility diagnostics with explicit invalid-negative-forward-variance signaling
+- surface builder with node taxonomy (`raw`, `cleaned`, `interpolated`) and diagnostics
+- rule-based volatility regime classification with confidence score
+
+Persistence/query extension:
+
+- volatility observations and time slices are persisted in database tables with immutable finalization semantics
+- deterministic slice checksums are generated for reproducibility
+- nearest-prior finalized-surface retrieval enforces no-look-ahead constraints
+
+American diagnostics extension:
+
+- lattice-based inversion now includes configurable tree-step escalation diagnostics and convergence outcome metadata
+
+## Updated Limitations
+
+- Surface interpolation is deterministic and policy-based; no stochastic surface model calibration is included in this sprint.
+- Spread optimizer, PoP optimizer, and walk-forward optimizer are still future scope.

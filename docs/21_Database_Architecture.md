@@ -80,6 +80,16 @@ Implemented reproducibility and corporate-action extension modules in `backend/d
 - Audit event service for immutable event recording and filtered retrieval.
 - Deterministic offline tests validating forward/reverse split behavior, incomplete-action warnings, symbol history resolution, snapshot verification/comparison, immutability, and audit persistence.
 
+## Sprint 4D Implementation
+
+Implemented volatility analytics storage extensions in `backend/database`:
+
+- volatility observation persistence with deterministic upsert behavior
+- volatility time-slice persistence with node-level storage
+- immutable slice finalization and mutation rejection after finalization
+- no-look-ahead nearest-prior finalized-surface lookup paths
+- query-service methods for smile, term, surface, and historical slice retrieval workflows
+
 ## Historical Data Metadata Strategy
 
 - Store a deterministic manifest for each ingested dataset version containing provider, dataset version, schema version, symbol scope, date range, checksum, row count, and source metadata.

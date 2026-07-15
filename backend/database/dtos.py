@@ -222,3 +222,67 @@ class AuditEventDTO:
     manifest_id: int | None = None
     snapshot_id: str | None = None
     correlation_id: str | None = None
+
+
+@dataclass(slots=True, frozen=True)
+class VolatilityObservationDTO:
+    symbol: str
+    valuation_timestamp: datetime
+    expiration: date
+    strike: Decimal
+    option_type: str
+    moneyness: Decimal
+    forward_moneyness: Decimal | None
+    delta: Decimal | None
+    implied_volatility: Decimal
+    quote_source: str
+    pricing_model: str
+    solver_method: str
+    solver_status: str
+    pricing_error: Decimal | None
+    bid: Decimal | None
+    ask: Decimal | None
+    midpoint: Decimal | None
+    spread_width: Decimal | None
+    volume: int | None
+    open_interest: int | None
+    stale_age_seconds: Decimal | None
+    vega: Decimal | None
+    tree_sensitivity: Decimal | None
+    quality_score: Decimal | None
+    quality_flags: list[str]
+    contract_metadata: dict[str, Any]
+    solver_metadata: dict[str, Any]
+    manifest_id: int
+
+
+@dataclass(slots=True, frozen=True)
+class VolatilityTimeSliceDTO:
+    slice_id: str
+    symbol: str
+    valuation_timestamp: datetime
+    slice_kind: str
+    status: str
+    input_manifests: list[int]
+    solver_metadata: dict[str, Any]
+    filtering_policy: dict[str, Any]
+    interpolation_policy: dict[str, Any]
+    tree_step_policy: dict[str, Any]
+    quality_thresholds: dict[str, Any]
+    node_count: int
+    excluded_observation_count: int
+    checksums: dict[str, Any]
+    git_commit: str
+    created_at: datetime
+    parent_snapshot_id: str | None = None
+
+
+@dataclass(slots=True, frozen=True)
+class VolatilityTimeSliceNodeDTO:
+    slice_id: int
+    tenor_days: int
+    x: Decimal
+    implied_volatility: Decimal
+    node_kind: str
+    confidence_score: Decimal
+    provenance: dict[str, Any]

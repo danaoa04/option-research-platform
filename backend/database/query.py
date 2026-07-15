@@ -17,6 +17,9 @@ from backend.database.models import (
     OptionQuote,
     Underlying,
     UnderlyingPrice,
+    VolatilityObservation,
+    VolatilityTimeSlice,
+    VolatilityTimeSliceNode,
 )
 
 
@@ -192,6 +195,181 @@ class HistoricalQueryService:
 
         stmt: Select[tuple[InterestRateCurve]] = select(InterestRateCurve).where(
             InterestRateCurve.as_of_date == query_date
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def smile_by_symbol_date_expiration(
+        self,
+        *,
+        symbol: str,
+        as_of: datetime,
+        expiration: date,
+        quality_filtered: bool = False,
+        min_quality_score: float = 0.0,
+    ) -> list[VolatilityObservation]:
+        stmt: Select[tuple[VolatilityObservation]] = (
+            select(VolatilityObservation)
+            .where(
+                VolatilityObservation.symbol == symbol,
+                VolatilityObservation.expiration == expiration,
+                VolatilityObservation.valuation_timestamp <= as_of,
+            )
+            .order_by(VolatilityObservation.valuation_timestamp.desc())
+        )
+        rows = list(self.session.execute(stmt).scalars())
+        if not rows:
+            return []
+        latest_ts = rows[0].valuation_timestamp
+        latest = [row for row in rows if row.valuation_timestamp == latest_ts]
+        if quality_filtered:
+            return [
+                row
+                for row in latest
+                if row.quality_score is not None and float(row.quality_score) >= min_quality_score
+            ]
+        return latest
+
+    def term_structure_by_symbol_date(
+        self,
+        *,
+        symbol: str,
+        as_of: datetime,
+        min_quality_score: float | None = None,
+    ) -> list[VolatilityObservation]:
+        stmt: Select[tuple[VolatilityObservation]] = (
+            select(VolatilityObservation)
+            .where(
+                VolatilityObservation.symbol == symbol,
+                VolatilityObservation.valuation_timestamp <= as_of,
+            )
+            .order_by(
+                VolatilityObservation.valuation_timestamp.desc(),
+                VolatilityObservation.expiration.asc(),
+            )
+        )
+        rows = list(self.session.execute(stmt).scalars())
+        if not rows:
+            return []
+        latest_ts = rows[0].valuation_timestamp
+        latest = [row for row in rows if row.valuation_timestamp == latest_ts]
+        if min_quality_score is None:
+            return latest
+        return [
+            row
+            for row in latest
+            if row.quality_score is not None and float(row.quality_score) >= min_quality_score
+        ]
+
+    def surface_by_symbol_timestamp(
+        self,
+        *,
+        symbol: str,
+        valuation_timestamp: datetime,
+    ) -> VolatilityTimeSlice | None:
+        stmt: Select[tuple[VolatilityTimeSlice]] = (
+            select(VolatilityTimeSlice)
+            .where(
+                VolatilityTimeSlice.symbol == symbol,
+                VolatilityTimeSlice.valuation_timestamp == valuation_timestamp,
+                VolatilityTimeSlice.slice_kind == "surface",
+                VolatilityTimeSlice.status == "finalized",
+            )
+            .order_by(VolatilityTimeSlice.created_at.desc())
+        )
+        return self.session.execute(stmt).scalars().first()
+
+    def nearest_prior_valid_surface(
+        self,
+        *,
+        symbol: str,
+        as_of: datetime,
+    ) -> VolatilityTimeSlice | None:
+        stmt: Select[tuple[VolatilityTimeSlice]] = (
+            select(VolatilityTimeSlice)
+            .where(
+                VolatilityTimeSlice.symbol == symbol,
+                VolatilityTimeSlice.slice_kind == "surface",
+                VolatilityTimeSlice.status == "finalized",
+                VolatilityTimeSlice.valuation_timestamp <= as_of,
+            )
+            .order_by(VolatilityTimeSlice.valuation_timestamp.desc())
+        )
+        return self.session.execute(stmt).scalars().first()
+
+    def historical_term_structure_series(
+        self,
+        *,
+        symbol: str,
+        start_ts: datetime,
+        end_ts: datetime,
+    ) -> list[VolatilityTimeSlice]:
+        stmt: Select[tuple[VolatilityTimeSlice]] = (
+            select(VolatilityTimeSlice)
+            .where(
+                VolatilityTimeSlice.symbol == symbol,
+                VolatilityTimeSlice.slice_kind == "term_structure",
+                VolatilityTimeSlice.status == "finalized",
+                VolatilityTimeSlice.valuation_timestamp >= start_ts,
+                VolatilityTimeSlice.valuation_timestamp <= end_ts,
+            )
+            .order_by(VolatilityTimeSlice.valuation_timestamp.asc())
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def historical_regime_series(
+        self,
+        *,
+        symbol: str,
+        start_ts: datetime,
+        end_ts: datetime,
+    ) -> list[VolatilityTimeSlice]:
+        stmt: Select[tuple[VolatilityTimeSlice]] = (
+            select(VolatilityTimeSlice)
+            .where(
+                VolatilityTimeSlice.symbol == symbol,
+                VolatilityTimeSlice.slice_kind == "regime",
+                VolatilityTimeSlice.status == "finalized",
+                VolatilityTimeSlice.valuation_timestamp >= start_ts,
+                VolatilityTimeSlice.valuation_timestamp <= end_ts,
+            )
+            .order_by(VolatilityTimeSlice.valuation_timestamp.asc())
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def historical_realized_volatility_series(
+        self,
+        *,
+        symbol: str,
+        start_ts: datetime,
+        end_ts: datetime,
+    ) -> list[VolatilityTimeSlice]:
+        stmt: Select[tuple[VolatilityTimeSlice]] = (
+            select(VolatilityTimeSlice)
+            .where(
+                VolatilityTimeSlice.symbol == symbol,
+                VolatilityTimeSlice.slice_kind == "forward_curve",
+                VolatilityTimeSlice.status == "finalized",
+                VolatilityTimeSlice.valuation_timestamp >= start_ts,
+                VolatilityTimeSlice.valuation_timestamp <= end_ts,
+            )
+            .order_by(VolatilityTimeSlice.valuation_timestamp.asc())
+        )
+        return list(self.session.execute(stmt).scalars())
+
+    def surface_nodes(
+        self,
+        *,
+        slice_row_id: int,
+        node_kind: str | None = None,
+    ) -> list[VolatilityTimeSliceNode]:
+        stmt: Select[tuple[VolatilityTimeSliceNode]] = select(VolatilityTimeSliceNode).where(
+            VolatilityTimeSliceNode.slice_id == slice_row_id
+        )
+        if node_kind is not None:
+            stmt = stmt.where(VolatilityTimeSliceNode.node_kind == node_kind)
+        stmt = stmt.order_by(
+            VolatilityTimeSliceNode.tenor_days.asc(),
+            VolatilityTimeSliceNode.x.asc(),
         )
         return list(self.session.execute(stmt).scalars())
 

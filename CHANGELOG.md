@@ -60,3 +60,9 @@ All notable changes to this project will be documented in this file.
 - Added policy-driven quote handling for crossed, stale, zero-bid, missing-ask, wide-spread, and out-of-bounds market prices.
 - Extended American inversion metadata with tree-step settings and tree-resolution sensitivity reporting.
 - Expanded deterministic offline tests for near-expiry and extreme-moneyness scenarios, internal Brent-style path, policy controls, and threaded batch consistency.
+- Added Sprint 4D volatility analytics foundation in `backend/implied_volatility` with realized-volatility estimators, observation quality scoring, smile/term/surface builders, forward-volatility diagnostics, and volatility-regime classification.
+- Added American tree-step escalation policy diagnostics for model-aware inversion and surfaced selected-step/convergence metadata.
+- Added volatility persistence stack: slice assembler/writer, deterministic slice checksums, immutable finalization workflow, and no-look-ahead nearest-prior surface retrieval.
+- Added database schema support for volatility observations and time slices with migration `0003_volatility_analytics_foundation.py`, ORM entities, DTOs, repositories, and query-service extensions.
+- Added deterministic Sprint 4D tests for estimators, quality policies, tree diagnostics, term/surface construction, persistence immutability, and no-look-ahead behavior.
+- Added opt-in volatility benchmark test entrypoint guarded by `RUN_OPT_IN_BENCHMARKS=1`.

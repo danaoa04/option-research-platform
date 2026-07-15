@@ -23,6 +23,9 @@ from .entities import (
     TradingCalendar,
     Underlying,
     UnderlyingPrice,
+    VolatilityObservation,
+    VolatilityTimeSlice,
+    VolatilityTimeSliceNode,
 )
 
 __all__ = [
@@ -48,4 +51,7 @@ __all__ = [
     "TradingCalendar",
     "Underlying",
     "UnderlyingPrice",
+    "VolatilityObservation",
+    "VolatilityTimeSlice",
+    "VolatilityTimeSliceNode",
 ]

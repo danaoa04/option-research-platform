@@ -2,9 +2,9 @@
 
 ## Purpose
 
-The Volatility Term Structure and Spread Optimisation Engine is a planned research subsystem for volatility-shape analysis and multi-expiry spread research. It will support historical analysis, probability modelling, and strategy-parameter optimisation for calendar and diagonal families.
+The Volatility Term Structure and Spread Optimisation Engine is the volatility analytics subsystem for volatility-shape analysis and multi-expiry spread research. It supports historical analysis and deterministic surface-quality workflows.
 
-This is a documentation and architecture definition only. No production volatility or strategy logic is implemented in Sprint 3C.
+Sprint 4D implements the volatility analytics foundation (historical estimators, quality scoring, smile/term/surface construction, regime labeling, and persistence primitives). Full spread optimization workflows remain future scope.
 
 Contango and backwardation are research features and entry filters, not guaranteed profit signals.
 
@@ -168,9 +168,7 @@ Sprint 4C now provides a model-aware implied-volatility solver foundation in `ba
 - Batch outputs preserve deterministic ordering across mixed contract sets and repeated timestamps.
 - Result metadata now carries method-attempt diagnostics and model capabilities required for future stale-surface indicators.
 
-The term-structure and surface engine itself remains deferred and is not implemented in this sprint.
-
-This subsystem is a roadmap item and not part of Sprint 3C implementation scope.
+Sprint 4D implements the deterministic analytics foundation; optimizer/orchestration workflows remain roadmap scope.
 
 ## Sprint 4C Integration Readiness Notes
 
@@ -181,4 +179,46 @@ The downstream term-structure engine can rely on current IV result contracts for
 - explicit failure reasons for data-quality dashboards
 - American-model diagnostics to separate model-risk from data-quality risk
 
-Forward volatility, historical surface persistence, and contango/backwardation classification remain intentionally out of scope for Sprint 4C.
+## Sprint 4D Implemented Foundation
+
+Implemented modules in `backend/implied_volatility`:
+
+- `realized.py`: historical volatility estimators with annualization controls and missing-session policy.
+- `quality.py`: component-based quality scoring, reason codes, warnings, and exclusion recommendation.
+- `construction.py`: smile builder/evaluator, term-structure builder, forward-volatility diagnostics, surface builder, and regime classifier.
+- `tree_policy.py`: deterministic American tree-step escalation diagnostics.
+- `persistence.py`: slice assembly and persistence adapter integration.
+
+Implemented persistence/query support in `backend/database`:
+
+- Volatility observation and time-slice tables with migration `0003_volatility_analytics_foundation.py`.
+- Repositories and query methods for as-of smiles/term structures/surfaces.
+- Nearest-prior finalized-surface retrieval with no-look-ahead behavior.
+
+## Key Formulas
+
+- Close-to-close realized volatility:
+    $\sigma = \sqrt{\frac{A}{n-1}\sum_{t=2}^{n}(\ln(C_t/C_{t-1})-\bar r)^2}$
+- Parkinson estimator:
+    $\sigma = \sqrt{\frac{A}{4n\ln 2}\sum_{t=1}^{n}(\ln(H_t/L_t))^2}$
+- Garman-Klass estimator:
+    $\sigma^2 = A\cdot\frac{1}{n}\sum\left(0.5\ln(H/L)^2-(2\ln2-1)\ln(C/O)^2\right)$
+- Forward variance between tenors $T_1<T_2$:
+    $\sigma_f^2 = \frac{\sigma_2^2T_2-\sigma_1^2T_1}{T_2-T_1}$
+
+Units:
+
+- Implied and realized volatility values are annualized decimals.
+- Tenor values are stored in calendar days.
+- Timestamps are UTC and as-of constrained.
+
+## Quality and Exclusion Policy
+
+- Raw observations are preserved; quality scoring does not silently delete source rows.
+- Exclusion recommendations trigger from low aggregate score or hard-failure reason codes.
+- Explicit checks include solver status, arbitrage bounds, crossed market, missing ask, wide spread, staleness, liquidity, vega floor, pricing error, tree sensitivity, and neighborhood consistency.
+
+## Known Limits
+
+- Full multi-expiry spread optimizer and walk-forward optimizer remain future scope.
+- Regime classification is rule-based and intentionally deterministic, not ML-based.

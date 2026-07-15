@@ -357,6 +357,19 @@ Contango and backwardation are research features and entry filters, not guarante
 #### Roadmap dependency
 Planned after completion of the historical database foundation, pricing engine core, and Greeks engine core.
 
+#### Sprint 4D implementation status
+
+Implemented foundation components now include:
+
+- historical volatility estimators and annualization conventions
+- observation quality scoring and exclusion policy diagnostics
+- smile, term-structure, forward-volatility, and surface construction primitives
+- rule-based volatility regime classification with confidence
+- volatility slice persistence and immutable finalization workflow
+- nearest-prior no-look-ahead retrieval for finalized surfaces
+
+Multi-expiry spread optimization and walk-forward optimization orchestration remain future phases.
+
 ---
 
 ### 5. Execution Engine

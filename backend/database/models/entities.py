@@ -287,6 +287,117 @@ class InterestRateCurve(Base):
     rate: Mapped[Decimal | None] = mapped_column(Numeric(20, 10), nullable=True)
 
 
+class VolatilityObservation(Base):
+    __tablename__ = "volatility_observations"
+    __table_args__ = (
+        UniqueConstraint(
+            "symbol",
+            "valuation_timestamp",
+            "expiration",
+            "strike",
+            "option_type",
+            "quote_source",
+            "pricing_model",
+            "manifest_id",
+        ),
+        CheckConstraint("strike >= 0", name="vol_obs_strike_non_negative"),
+        CheckConstraint(
+            "implied_volatility >= 0",
+            name="vol_obs_iv_non_negative",
+        ),
+        CheckConstraint("moneyness >= 0", name="vol_obs_moneyness_non_negative"),
+        Index(
+            "ix_vol_obs_symbol_ts_exp",
+            "symbol",
+            "valuation_timestamp",
+            "expiration",
+        ),
+        Index("ix_vol_obs_symbol_quality", "symbol", "quality_score"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    symbol: Mapped[str] = mapped_column(String(32), nullable=False)
+    valuation_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    expiration: Mapped[date] = mapped_column(Date, nullable=False)
+    strike: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    option_type: Mapped[str] = mapped_column(String(8), nullable=False)
+    moneyness: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    forward_moneyness: Mapped[Decimal | None] = mapped_column(Numeric(20, 10), nullable=True)
+    delta: Mapped[Decimal | None] = mapped_column(Numeric(20, 10), nullable=True)
+    implied_volatility: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    quote_source: Mapped[str] = mapped_column(String(16), nullable=False)
+    pricing_model: Mapped[str] = mapped_column(String(64), nullable=False)
+    solver_method: Mapped[str] = mapped_column(String(32), nullable=False)
+    solver_status: Mapped[str] = mapped_column(String(32), nullable=False)
+    pricing_error: Mapped[Decimal | None] = mapped_column(Numeric(20, 12), nullable=True)
+    bid: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    ask: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    midpoint: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    spread_width: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    volume: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    open_interest: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    stale_age_seconds: Mapped[Decimal | None] = mapped_column(Numeric(20, 6), nullable=True)
+    vega: Mapped[Decimal | None] = mapped_column(Numeric(20, 12), nullable=True)
+    tree_sensitivity: Mapped[Decimal | None] = mapped_column(Numeric(20, 12), nullable=True)
+    quality_score: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    quality_flags: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    contract_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    solver_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    manifest_id: Mapped[int] = mapped_column(ForeignKey("dataset_manifests.id"), nullable=False)
+
+    manifest: Mapped[DatasetManifest] = relationship()
+
+
+class VolatilityTimeSlice(Base):
+    __tablename__ = "volatility_time_slices"
+    __table_args__ = (
+        UniqueConstraint("slice_id"),
+        Index("ix_vol_slices_symbol_ts", "symbol", "valuation_timestamp"),
+        Index("ix_vol_slices_kind_status", "slice_kind", "status"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    slice_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    symbol: Mapped[str] = mapped_column(String(32), nullable=False)
+    valuation_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    slice_kind: Mapped[str] = mapped_column(String(32), nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default="draft")
+    input_manifests: Mapped[list[int]] = mapped_column(JSON, nullable=False, default=list)
+    solver_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    filtering_policy: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    interpolation_policy: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    tree_step_policy: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    quality_thresholds: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    node_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    excluded_observation_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    checksums: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    git_commit: Mapped[str] = mapped_column(String(64), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    parent_snapshot_id: Mapped[str | None] = mapped_column(
+        ForeignKey("dataset_snapshots.id"),
+        nullable=True,
+    )
+
+
+class VolatilityTimeSliceNode(Base):
+    __tablename__ = "volatility_time_slice_nodes"
+    __table_args__ = (
+        UniqueConstraint("slice_id", "tenor_days", "x", "node_kind"),
+        Index("ix_vol_slice_nodes_slice", "slice_id", "node_kind"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    slice_id: Mapped[int] = mapped_column(ForeignKey("volatility_time_slices.id"), nullable=False)
+    tenor_days: Mapped[int] = mapped_column(Integer, nullable=False)
+    x: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    implied_volatility: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    node_kind: Mapped[str] = mapped_column(String(24), nullable=False)
+    confidence_score: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    provenance: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+    slice: Mapped[VolatilityTimeSlice] = relationship()
+
+
 class DataLineageRecord(Base):
     __tablename__ = "data_lineage_records"
     __table_args__ = (

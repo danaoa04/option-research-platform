@@ -99,3 +99,7 @@ flowchart LR
 - American-style Greeks currently provide first-order numerical Greeks only.
 - Finite-difference verification is not yet implemented for charm, color, speed, zomma, and ultima.
 - Date-based time granularity means near-expiry warnings are day-resolution, not intraday.
+
+## Sprint 4D Volatility Analytics Note
+
+The volatility quality engine uses solver and model diagnostics from pricing/IV paths (including American tree sensitivity) as quality inputs. Greeks remain a separate engine, but first-order stability diagnostics provide supporting context for volatility observation confidence workflows.

@@ -67,3 +67,22 @@
 - [x] Documentation updates completed
 - [x] Lint passing
 - [x] Tests passing
+
+## Sprint 4D - Volatility Surface, Term Structure, and Quality Engine
+
+- [x] Historical volatility estimators (close-close, Parkinson, Garman-Klass, Rogers-Satchell, Yang-Zhang)
+- [x] Observation quality scoring with explicit exclusion recommendations and reason codes
+- [x] Smile construction with sparse-data and duplicate-point diagnostics
+- [x] Term-structure construction with contango/backwardation/flat/mixed classification
+- [x] Forward-implied-volatility diagnostics with negative-forward-variance detection
+- [x] Surface construction with raw, cleaned, and interpolated node taxonomy
+- [x] Regime classification labels and confidence score generation
+- [x] American tree-step escalation diagnostics policy integrated into IV engine metadata
+- [x] Volatility persistence tables, repositories, and migration (`0003_volatility_analytics_foundation.py`)
+- [x] No-look-ahead historical surface retrieval and nearest-prior finalized-surface access
+- [x] Immutable slice finalization workflow and deterministic slice checksum generation
+- [x] Opt-in benchmark runner for quality and surface construction paths
+- [x] Deterministic Sprint 4D test suite
+- [x] Documentation updates
+- [x] Lint passing
+- [x] Tests passing

@@ -32,6 +32,7 @@ from .models import (
     SolverOutcome,
 )
 from .numerical_methods import solve_bisection, solve_brent_hybrid, solve_newton_raphson
+from .tree_policy import TreeResolutionPolicy
 from .validation import select_market_price, validate_request
 
 
@@ -201,6 +202,7 @@ class ImpliedVolatilityEngine:
                         "capabilities": self.adapter.capabilities(resolved_model),
                     }
                 )
+                metadata.setdefault("model_settings", {})
 
                 if resolved_model in {
                     PricingModelName.COX_ROSS_RUBINSTEIN,
@@ -212,7 +214,37 @@ class ImpliedVolatilityEngine:
                         attempted.implied_volatility,
                     )
 
-                metadata.setdefault("model_settings", {})
+                    if cfg.tree_step_policy_enabled:
+                        policy = TreeResolutionPolicy(pricing_engine=self.pricing_engine)
+                        tree_policy_result = policy.evaluate(
+                            request=request.pricing_request,
+                            model_name=resolved_model,
+                            implied_volatility=attempted.implied_volatility,
+                            config=cfg,
+                        )
+                        metadata["tree_step_policy"] = {
+                            "selected_tree_steps": tree_policy_result.selected_tree_steps,
+                            "converged": tree_policy_result.converged,
+                            "warnings": list(tree_policy_result.warnings),
+                            "diagnostics": [
+                                {
+                                    "tree_steps": row.tree_steps,
+                                    "price": row.price,
+                                    "delta": row.delta,
+                                    "gamma": row.gamma,
+                                    "price_change": row.price_change,
+                                    "delta_change": row.delta_change,
+                                    "gamma_change": row.gamma_change,
+                                    "iv_change_proxy": row.iv_change_proxy,
+                                }
+                                for row in tree_policy_result.diagnostics
+                            ],
+                        }
+                        metadata["model_settings"]["tree_steps"] = (
+                            tree_policy_result.selected_tree_steps
+                        )
+                        solver_warnings.extend(tree_policy_result.warnings)
+
                 metadata["model_settings"].update(
                     {
                         "tree_steps": request.pricing_request.tree_steps,

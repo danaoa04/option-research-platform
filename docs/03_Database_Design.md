@@ -128,3 +128,19 @@ Repository modules support:
 - Snapshots are immutable once created.
 - Verification uses a deterministic digest over core metadata and source manifest lineage.
 - Snapshot comparisons report dataset/schema version changes, checksum differences, and row-count deltas.
+
+## Sprint 4D Volatility Persistence Extension
+
+Added entities:
+
+- `VolatilityObservation`
+- `VolatilityTimeSlice`
+- `VolatilityTimeSliceNode`
+
+Design rules:
+
+- `VolatilityObservation` rows are upserted by logical quote identity and retain source quality flags.
+- `VolatilityTimeSlice` rows are immutable after finalization.
+- `VolatilityTimeSliceNode` rows are keyed by `(slice_id, tenor_days, x, node_kind)` for deterministic updates before finalization.
+- Deterministic slice checksums are stored in slice metadata for reproducibility verification.
+- Nearest-prior finalized-surface retrieval is enforced for no-look-ahead historical querying.

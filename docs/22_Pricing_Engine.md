@@ -200,6 +200,14 @@ The planned volatility term-structure subsystem depends on Pricing Engine output
 
 This integration is roadmap scope only and not implemented during Sprint 3C.
 
+## Sprint 4D Integration Status
+
+Pricing engine integration points now used by volatility analytics:
+
+- model-aware implied-volatility inversion outputs feed volatility observation records
+- American inversion includes tree-step escalation diagnostics for resolution governance
+- pricing metadata and solver diagnostics are persisted with volatility slices for reproducible audit trails
+
 ## Data Models
 
 - `PricingContext`

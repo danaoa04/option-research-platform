@@ -66,6 +66,15 @@ Implied-volatility foundation:
 - Batch APIs cover scalar, chain, and multi-expiration workflows; outputs preserve deterministic ordering and isolate per-contract failures.
 - American inversion returns tree-resolution sensitivity and model-setting metadata and never silently falls back to Black-Scholes.
 
+Volatility analytics foundation (Sprint 4D):
+
+- Historical volatility estimators include close-to-close, Parkinson, Garman-Klass, Rogers-Satchell, and Yang-Zhang methods.
+- Quality engine assigns component and aggregate quality scores with explicit reason codes and exclusion recommendations.
+- Surface stack supports smile construction, term-structure metrics/classification, forward-volatility diagnostics, and surface node construction (`raw`, `cleaned`, `interpolated`).
+- Regime classifier emits deterministic labels (IV level, realized-vol level, curve shape, event elevation, expansion/contraction) and confidence.
+- Persistence layer stores volatility observations and immutable time slices with deterministic checksum metadata.
+- Historical queries enforce no-look-ahead semantics and nearest-prior finalized-surface retrieval.
+
 Backtesting boundary:
 
 - Historical bid/ask quotes remain the source of truth for fill simulation.

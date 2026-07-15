@@ -57,3 +57,10 @@ Success for the platform will be measured through engineering quality, research 
 - Quote-policy behavior for crossed, stale, zero-bid, missing-ask, wide-spread, and out-of-bounds quotes is explicit and test-covered.
 - No silent fallback from American inversion paths to Black-Scholes is allowed.
 - Volatility-surface readiness metadata supports deferred smile/term/surface quality labeling without enabling live-surface construction yet.
+- Historical-volatility estimators produce deterministic annualized outputs for identical OHLC inputs and config.
+- Observation quality scoring produces stable component-level reason codes and reproducible exclusion recommendations.
+- Surface node counts (`raw`, `cleaned`, `interpolated`) are deterministic for identical observations and build config.
+- Forward-volatility diagnostics explicitly flag negative-forward-variance cases and never silently clamp to valid outputs.
+- Regime labels and confidence outputs are deterministic for identical term-structure and realized-volatility inputs.
+- Volatility time slices cannot be mutated after finalization and attempted mutations raise explicit errors.
+- Nearest-prior finalized-surface queries remain no-look-ahead safe under all as-of test cases.
