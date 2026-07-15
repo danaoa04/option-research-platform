@@ -184,9 +184,7 @@ class SnapshotRepository(RepositoryBase[DatasetSnapshot]):
 
     def set_snapshot_status(self, snapshot_id: str, status: str) -> None:
         stmt = (
-            update(DatasetSnapshot)
-            .where(DatasetSnapshot.id == snapshot_id)
-            .values(status=status)
+            update(DatasetSnapshot).where(DatasetSnapshot.id == snapshot_id).values(status=status)
         )
         self.session.execute(stmt)
 

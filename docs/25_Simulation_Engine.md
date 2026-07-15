@@ -120,3 +120,10 @@ Simulation continues to provide historical performance and risk inputs consumed 
 
 - Portfolio construction does not modify simulation assumptions.
 - Portfolio scenarios are deterministic stress transforms on simulation-derived metrics.
+## Sprint 6A Backtesting Event Loop Foundation
+
+- Added deterministic historical event-loop architecture with no-look-ahead controls.
+- Added provider-neutral order-intent and baseline research fill-model contracts.
+- Added immutable event/trade/valuation/cash ledgers with reproducibility checksums.
+- Added as-of nearest-prior query semantics and historical run-comparison support.
+- Added expiration and corporate-action baseline handling with settlement deferred.

@@ -127,8 +127,7 @@ class PortfolioPersistenceService:
         missing = sorted(required.difference(run.metadata_json))
         if missing:
             raise PortfolioMutationError(
-                "portfolio run is missing reproducibility metadata: "
-                f"missing={missing}"
+                f"portfolio run is missing reproducibility metadata: missing={missing}"
             )
 
 

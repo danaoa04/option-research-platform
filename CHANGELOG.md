@@ -91,3 +91,8 @@ All notable changes to this project will be documented in this file.
 - Added migration `0007_portfolio_selection_foundation.py` with normalized portfolio run, allocation, correlation, cluster, scenario, and rebalance tables.
 - Added deterministic offline tests in `backend/tests/test_portfolio_engine_foundation.py` and `backend/tests/test_portfolio_persistence.py`.
 - Added opt-in portfolio benchmark test in `backend/tests/test_portfolio_benchmarks_opt_in.py`.
+- Added Sprint 6A deterministic historical backtesting foundation in `backend/backtesting` with typed event-loop models, no-look-ahead guards, deterministic event clock, lifecycle hook interfaces, baseline research fill model integration, valuation policies, and as-of query services.
+- Added Sprint 6A backtesting persistence schema and migration `0008_backtesting_event_loop_foundation.py` including run/event/order-intent/fill/position/valuation/cash/snapshot/lifecycle/scenario/comparison/checksum tables.
+- Added backtesting persistence service and DTO contracts in `backend/database` plus deterministic run checksum utilities.
+- Added deterministic backtesting tests for clock ordering, no-look-ahead enforcement, fill/valuation behavior, event-loop failure isolation, scenario-template coverage, persistence round-trip, and migration upgrade/downgrade paths for `0007` and `0008`.
+- Added opt-in backtesting benchmark runner and scenario-library expansion for research-only stress templates.

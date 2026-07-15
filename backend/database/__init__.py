@@ -1,6 +1,11 @@
 """Database foundation package for historical options data."""
 
 from .audit import AuditEventService
+from .backtesting import (
+    BacktestMutationError,
+    BacktestPersistenceService,
+    deterministic_backtest_run_checksum,
+)
 from .config import DatabaseSettings, load_database_settings
 from .corporate_actions import (
     AdjustmentPolicy,
@@ -11,6 +16,19 @@ from .corporate_actions import (
 )
 from .dtos import (
     AuditEventDTO,
+    BacktestCashLedgerEntryDTO,
+    BacktestEventDTO,
+    BacktestLifecycleTriggerDTO,
+    BacktestOrderIntentDTO,
+    BacktestPortfolioSnapshotDTO,
+    BacktestPositionDTO,
+    BacktestPositionLegDTO,
+    BacktestReproducibilityChecksumDTO,
+    BacktestResearchFillDTO,
+    BacktestRunComparisonDTO,
+    BacktestRunDTO,
+    BacktestScenarioResultDTO,
+    BacktestValuationDTO,
     CorporateActionDTO,
     CorporateActionType,
     DataLineageRecordDTO,
@@ -82,6 +100,21 @@ __all__ = [
     "DatabaseSessionManager",
     "DatabaseSettings",
     "AsOfQueryResult",
+    "BacktestCashLedgerEntryDTO",
+    "BacktestEventDTO",
+    "BacktestLifecycleTriggerDTO",
+    "BacktestMutationError",
+    "BacktestOrderIntentDTO",
+    "BacktestPersistenceService",
+    "BacktestPortfolioSnapshotDTO",
+    "BacktestPositionDTO",
+    "BacktestPositionLegDTO",
+    "BacktestReproducibilityChecksumDTO",
+    "BacktestResearchFillDTO",
+    "BacktestRunComparisonDTO",
+    "BacktestRunDTO",
+    "BacktestScenarioResultDTO",
+    "BacktestValuationDTO",
     "BulkIngestionService",
     "CorporateActionDTO",
     "CorporateActionType",
@@ -150,4 +183,5 @@ __all__ = [
     "StrategyValidationPersistenceService",
     "ValidationMutationError",
     "deterministic_validation_checksum",
+    "deterministic_backtest_run_checksum",
 ]

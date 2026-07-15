@@ -22,3 +22,11 @@ Outputs per candidate:
 - Research-only risk assessment; not a live risk monitor.
 - Deterministic ordering by candidate ID.
 - No live market or broker dependencies.
+
+## Sprint 6A Backtesting Event Loop Foundation
+
+- Added deterministic historical event-loop architecture with no-look-ahead controls.
+- Added provider-neutral order-intent and baseline research fill-model contracts.
+- Added immutable event/trade/valuation/cash ledgers with reproducibility checksums.
+- Added as-of nearest-prior query semantics and historical run-comparison support.
+- Added expiration and corporate-action baseline handling with settlement deferred.

@@ -846,3 +846,11 @@ The core architecture now includes a portfolio allocation and strategy-selection
 - Outputs include allocation plans, constraint/risk diagnostics, scenario summaries, and rebalance plans.
 - Reproducibility is enforced via deterministic checksums and persisted run metadata.
 - The live-trading boundary remains strict: research-only, no broker/live API/live execution integration.
+
+## Sprint 6A Backtesting Event Loop Foundation
+
+- Added deterministic historical event-loop architecture with no-look-ahead controls.
+- Added provider-neutral order-intent and baseline research fill-model contracts.
+- Added immutable event/trade/valuation/cash ledgers with reproducibility checksums.
+- Added as-of nearest-prior query semantics and historical run-comparison support.
+- Added expiration and corporate-action baseline handling with settlement deferred.

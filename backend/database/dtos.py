@@ -527,3 +527,167 @@ class PortfolioRebalancePlanDTO:
     reason_codes: list[str]
     trigger: str
     as_of_date: date
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestRunDTO:
+    run_id: str
+    strategy_name: str
+    started_at: datetime
+    ended_at: datetime | None
+    configuration_json: dict[str, Any]
+    status: str
+    reproducibility_json: dict[str, Any]
+    checksums: dict[str, Any]
+    metadata_json: dict[str, Any]
+    software_git_commit: str
+    schema_version: str
+    random_seed: int | None
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestEventDTO:
+    sequence_number: int
+    event_timestamp: datetime
+    event_type: str
+    priority: int
+    payload: dict[str, Any]
+    reason_code: str
+    strategy_id: str
+    position_id: str | None
+    manifest_reference: str | None
+    software_version: str | None
+    checksum_metadata: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestOrderIntentDTO:
+    intent_id: str
+    requested_timestamp: datetime
+    strategy_id: str
+    position_id: str
+    side: str
+    action: str
+    asset_type: str
+    quantity: int
+    contract_identifier: str
+    price_policy: str
+    reason_code: str
+    lifecycle_trigger: str
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestResearchFillDTO:
+    intent_id: str
+    fill_timestamp: datetime | None
+    filled: bool
+    fill_price: Decimal | None
+    diagnostics: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestPositionDTO:
+    position_id: str
+    strategy_id: str
+    lifecycle_status: str
+    opened_at: datetime
+    closed_at: datetime | None
+    realized_pnl: Decimal
+    unrealized_pnl: Decimal
+    as_of_timestamp: datetime
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestPositionLegDTO:
+    position_id: str
+    leg_id: str
+    contract_identifier: str
+    asset_type: str
+    quantity: int
+    strike: Decimal | None
+    expiration: date | None
+    option_type: str | None
+    exercise_style: str | None
+    entry_price: Decimal | None
+    current_price: Decimal | None
+    implied_volatility: Decimal | None
+    realised_volatility: Decimal | None
+    pnl: Decimal
+    capital_usage: Decimal
+    data_quality_flags: list[str]
+    warnings: list[str]
+    as_of_timestamp: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestValuationDTO:
+    valuation_timestamp: datetime
+    position_id: str
+    leg_id: str | None
+    mark_price: Decimal
+    market_source: str
+    diagnostics: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestCashLedgerEntryDTO:
+    entry_index: int
+    entry_timestamp: datetime
+    amount: Decimal
+    balance_after: Decimal
+    reason_code: str
+    strategy_id: str
+    position_id: str | None
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestPortfolioSnapshotDTO:
+    snapshot_timestamp: datetime
+    cash_balance: Decimal
+    reserved_capital: Decimal
+    realized_pnl: Decimal
+    unrealized_pnl: Decimal
+    accrued_fees: Decimal
+    dividends: Decimal
+    portfolio_greeks: dict[str, Any]
+    portfolio_exposure: dict[str, Any]
+    capital_utilization: Decimal
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestLifecycleTriggerDTO:
+    trigger_timestamp: datetime
+    strategy_id: str
+    position_id: str
+    trigger: str
+    reason_code: str
+    information_set: list[dict[str, Any]]
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestRunComparisonDTO:
+    left_run_id: str
+    right_run_id: str
+    comparison_key_checksum: str
+    comparison_payload: dict[str, Any]
+    chart_payload: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestScenarioResultDTO:
+    scenario_name: str
+    metrics_json: dict[str, Any]
+    warnings: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestReproducibilityChecksumDTO:
+    checksum_key: str
+    checksum_value: str
+    metadata_json: dict[str, Any]

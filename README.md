@@ -143,3 +143,19 @@ Portfolio boundary:
 - No live API connectivity.
 - No broker connectivity.
 - No live execution pathways.
+
+Backtesting event-loop foundation (Sprint 6A):
+
+- Deterministic historical event clock with stable timestamp/priority/sequence ordering.
+- Explicit no-look-ahead enforcement and per-lookup information-set audit metadata.
+- Provider-neutral research order intents and deterministic baseline fill diagnostics.
+- Immutable event/trade/cash/valuation ledgers with reproducibility checksums.
+- Baseline expiration and corporate-action state events (full settlement deferred to later sprint).
+- Typed as-of query services for portfolio state, open positions, cash, Greeks, allocation-vs-realized, constraints, and risk-contribution history.
+
+Backtesting Sprint 6A boundaries:
+
+- No live API connectivity.
+- No broker connectivity.
+- No live order execution.
+- No full assignment/exercise settlement or production margin logic.

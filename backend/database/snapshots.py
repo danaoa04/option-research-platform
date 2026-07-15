@@ -104,9 +104,7 @@ class SnapshotService:
 
     def _deterministic_digest(self, snapshot: DatasetSnapshotDTO) -> str:
         checksum_inputs = {
-            key: value
-            for key, value in snapshot.checksums.items()
-            if key != "snapshot_digest"
+            key: value for key, value in snapshot.checksums.items() if key != "snapshot_digest"
         }
         material = {
             "id": snapshot.id,

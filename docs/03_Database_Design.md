@@ -165,3 +165,11 @@ Design rules:
 - Each table uses deterministic run-scoped uniqueness constraints.
 - Run writes require reproducibility metadata (`allocation_problem`, objectives, constraints, policies, manifests).
 - Order-stable portfolio checksum helpers support persistence reconciliation.
+
+## Sprint 6A Backtesting Event Loop Foundation
+
+- Added deterministic historical event-loop architecture with no-look-ahead controls.
+- Added provider-neutral order-intent and baseline research fill-model contracts.
+- Added immutable event/trade/valuation/cash ledgers with reproducibility checksums.
+- Added as-of nearest-prior query semantics and historical run-comparison support.
+- Added expiration and corporate-action baseline handling with settlement deferred.

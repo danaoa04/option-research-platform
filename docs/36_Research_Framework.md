@@ -153,3 +153,11 @@ Portfolio allocation and strategy-selection are added as a downstream determinis
 - Inputs are validated candidate outputs and historical analytics features.
 - Outputs are reproducible allocation plans, diagnostics, and persisted run artifacts.
 - No live brokerage or execution system integration is introduced.
+
+## Sprint 6A Backtesting Event Loop Foundation
+
+- Added deterministic historical event-loop architecture with no-look-ahead controls.
+- Added provider-neutral order-intent and baseline research fill-model contracts.
+- Added immutable event/trade/valuation/cash ledgers with reproducibility checksums.
+- Added as-of nearest-prior query semantics and historical run-comparison support.
+- Added expiration and corporate-action baseline handling with settlement deferred.

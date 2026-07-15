@@ -140,3 +140,10 @@ Portfolio allocation runs are now persisted as normalized run artifacts.
 - DTOs, ORM entities, repositories, and persistence service are implemented under `backend/database`.
 - Migration `0007_portfolio_selection_foundation` defines the portfolio schema foundation.
 - Run-level metadata validation prevents incomplete reproducibility records from being committed.
+## Sprint 6A Backtesting Event Loop Foundation
+
+- Added deterministic historical event-loop architecture with no-look-ahead controls.
+- Added provider-neutral order-intent and baseline research fill-model contracts.
+- Added immutable event/trade/valuation/cash ledgers with reproducibility checksums.
+- Added as-of nearest-prior query semantics and historical run-comparison support.
+- Added expiration and corporate-action baseline handling with settlement deferred.

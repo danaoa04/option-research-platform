@@ -55,8 +55,7 @@ class OptimizationPersistenceService:
         missing_problem = sorted(required_problem_keys.difference(run.optimization_problem))
         if missing_problem:
             raise OptimizationMutationError(
-                "optimization run is missing required problem metadata: "
-                f"missing={missing_problem}"
+                f"optimization run is missing required problem metadata: missing={missing_problem}"
             )
 
         if not run.software_git_commit:

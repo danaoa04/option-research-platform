@@ -1,5 +1,20 @@
 """Repository exports for database access patterns."""
 
+from .backtesting import (
+    BacktestCashLedgerRepository,
+    BacktestEventRepository,
+    BacktestLifecycleTriggerRepository,
+    BacktestOrderIntentRepository,
+    BacktestPortfolioSnapshotRepository,
+    BacktestPositionLegRepository,
+    BacktestPositionRepository,
+    BacktestReproducibilityChecksumRepository,
+    BacktestResearchFillRepository,
+    BacktestRunComparisonRepository,
+    BacktestRunRepository,
+    BacktestScenarioResultRepository,
+    BacktestValuationRepository,
+)
 from .market_data import (
     ContractsRepository,
     CorporateActionsRepository,
@@ -38,6 +53,19 @@ from .volatility import VolatilityObservationRepository, VolatilitySliceReposito
 
 __all__ = [
     "ContractsRepository",
+    "BacktestCashLedgerRepository",
+    "BacktestEventRepository",
+    "BacktestLifecycleTriggerRepository",
+    "BacktestOrderIntentRepository",
+    "BacktestPortfolioSnapshotRepository",
+    "BacktestPositionLegRepository",
+    "BacktestPositionRepository",
+    "BacktestReproducibilityChecksumRepository",
+    "BacktestResearchFillRepository",
+    "BacktestRunComparisonRepository",
+    "BacktestRunRepository",
+    "BacktestScenarioResultRepository",
+    "BacktestValuationRepository",
     "CorporateActionsRepository",
     "DividendsRepository",
     "EarningsRepository",
