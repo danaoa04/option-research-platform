@@ -156,3 +156,9 @@ Frontend commands are `make frontend-install`, `make frontend-lint`, `make front
 ## Sprint 8A API Surface for GUI
 
 Added V1 API contracts for strategy catalogue/detail, parameter schemas, validation results, payoff previews, risk classes, optimizer compatibility, and custom strategy creation.
+# Sprint 11F production integration
+
+Runtime configuration, shared HTTP transport, compatibility, workspaces, polling, logging, and
+diagnostics are provider-neutral modules. The shell displays its explicit mode; failed health checks
+fall back only when fixture mode was configured. Route splitting, broad virtualization, and a
+production WebGL library remain blockers pending production endpoints and desktop profiling.

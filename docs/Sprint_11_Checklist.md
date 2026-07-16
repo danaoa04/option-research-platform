@@ -67,3 +67,17 @@
 - [x] Strategy, optimization, scenario, replay, reporting, and deterministic export boundaries
 - [x] Abort-aware fixture API client and tests protecting missing-node and extrapolation semantics
 - [ ] Production WebGL renderer, API hooks, durable workspaces, virtualization, and licensed-data policy wiring
+
+## Sprint 11F integration and readiness
+
+- [x] Typed runtime configuration and explicit offline/local/degraded/incompatible mode vocabulary
+- [x] Common HTTP boundary with version/request headers, timeout, cancellation, structured errors, and mutation keys
+- [x] Health-based compatibility gate; unsafe mutations blocked without version and migration evidence
+- [x] Workspace import validation, conflict classification, and compatibility-gated debounced autosave primitive
+- [x] Visibility-aware adaptive polling primitive with terminal-state detection, backoff, and cancellation
+- [x] Persistent mode indicator, accessible command launcher, diagnostics route, and redacted bundle preview
+- [x] Restricted atomic Tauri export and workspace-metadata command implementations
+- [x] Tightened CSP and aggregate `make quality` plus opt-in `make desktop-check`
+- [x] Deterministic tests for integration safety, polling, conflicts, redaction, and keyboard launcher
+- [ ] Mounted production endpoints beyond health, production WebGL dependency, broad virtualization, and desktop E2E
+- [ ] Rust/Tauri compile validation, backend sidecar bundling, macOS application smoke test, signing, and notarization

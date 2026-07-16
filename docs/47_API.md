@@ -19,3 +19,12 @@ Sprint 8B introduces additive typed API contracts for policy catalog, policy set
 ## Compatibility
 
 These contracts are additive and preserve existing Sprint 8A public interfaces and legacy strategy compile behavior.
+# Sprint 11F frontend compatibility boundary
+
+New production requests use a shared transport with API version, request identifier, timeout,
+abort, structured error, idempotency, and resource-version support. Automatic retries are allowed
+only for safe reads. Mutations remain disabled during incompatibility or required migrations.
+
+The audit found `/health` mounted as the general compatibility endpoint. Most research, portfolio,
+replay, workspace, report, and volatility services are not mounted as versioned HTTP routes, so
+explicit fixture clients remain instead of invented production URLs.

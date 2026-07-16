@@ -1,7 +1,7 @@
 PYTHON ?= python3
 VENV ?= .venv
 
-.PHONY: setup lint format test docs frontend-install frontend-lint frontend-typecheck frontend-test frontend-build
+.PHONY: setup lint format test docs frontend-install frontend-lint frontend-typecheck frontend-test frontend-build quality desktop-check
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -35,3 +35,10 @@ frontend-test:
 
 frontend-build:
 	cd frontend && npm run build
+
+desktop-check:
+	cd frontend/src-tauri && cargo fmt --check
+	cd frontend/src-tauri && cargo check
+
+quality: lint test frontend-lint frontend-typecheck frontend-test frontend-build
+	git diff --check

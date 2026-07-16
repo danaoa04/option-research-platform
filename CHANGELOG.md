@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 11F production-integration safety foundations: typed runtime modes and configuration,
+  consolidated versioned HTTP transport, backend compatibility gating, workspace conflict/autosave
+  primitives, adaptive polling, accessible command launcher, redacted diagnostics, restricted atomic
+  Tauri export commands, tightened CSP, aggregate quality commands, and integration regression tests.
+
 - Added Sprint 11E deterministic volatility workspace with typed smile and skew observations, term
   and forward volatility, historical/realised comparisons, event overlays, surface catalogue and
   builder, supplied-node interactive perspective view, accessibility tables, comparisons, research

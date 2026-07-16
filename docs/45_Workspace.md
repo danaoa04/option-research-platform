@@ -59,3 +59,10 @@ flowchart TD
     Workspace --> Experiments[Experiment Records]
     Experiments --> Comparisons[Experiment Comparisons]
 ```
+# Sprint 11F durable workspace boundary
+
+Versioned documents include workspace type, schema and resource versions, checksum, timestamp, and
+presentation payload. Import validation rejects incomplete or unsupported schemas. Conflict
+detection distinguishes local-newer, server-newer, checksum mismatch, deletion, and incompatible
+schemas; newer state is never silently overwritten. Autosave runs only for valid documents when
+compatibility permits mutations. Actual durable saves await mounted workspace HTTP handlers.
