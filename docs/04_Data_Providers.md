@@ -84,3 +84,10 @@ observations are never modified.
 Cboe and Polygon expose conservative metadata foundations only. Their licensed quote/trade access
 is not validated and live fetches fail explicitly. Migration `0020_provider_operations` adds the
 durable job, event, checkpoint, checksum, and unresolved-failure spine shared by all providers.
+
+Sprint 10D.1 adds `python -m backend.data.provider_cli` as the executable offline provider
+operations boundary. Its handlers call the versioned `ProviderApiService`; argument parsing contains
+no ingestion business logic. Outputs use deterministic redacted JSON or self-contained escaped HTML.
+Migration `0021_provider_operations_completion` adds immutable typed operational artifacts indexed
+by provider, kind, job, and checksum for catalogues, capabilities, retries, synchronization,
+certifications, comparisons, reconciliation, monitoring, and export metadata.

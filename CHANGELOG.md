@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 10D.1 executable provider CLI, typed provider API service, deterministic exports,
+  lifecycle/query handlers, immutable provider operational artifacts, migration `0021`, and SQLite
+  tests for redaction, checksum immutability, cancellation, resume, and job history.
+
 - Added Sprint 10D deterministic cross-provider identity reconciliation, versioned precedence,
   divergence classification, provenance-preserving merge previews, conservative Cboe/Polygon
   foundations, and durable provider job/event/checkpoint/failure persistence migration `0020`.

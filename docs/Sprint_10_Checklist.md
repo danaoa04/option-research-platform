@@ -56,3 +56,13 @@
 - [x] Alembic migration `0020_provider_operations` with downgrade
 - [ ] Licensed Cboe/Polygon transport and schema validation
 - [ ] Scheduled synchronization and operational alert delivery
+
+## Sprint 10D.1 provider operations completion
+
+- [x] Executable deterministic provider CLI with typed handlers and non-zero failures
+- [x] Versioned provider API service for catalogue, capabilities, jobs, events, lifecycle, and merge previews
+- [x] Immutable generic persistence for certifications, comparisons, reconciliation, quality, monitoring, and exports
+- [x] Migration `0021_provider_operations_completion` without rewriting committed migration `0020`
+- [x] SQLite persistence, redaction, CLI, API, cancellation, resume, and checksum tests
+- [ ] Complete Cboe/Polygon fixture transports and schema-specific certification suites
+- [ ] External monitoring delivery (out of scope)

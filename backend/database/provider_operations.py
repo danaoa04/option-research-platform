@@ -76,6 +76,25 @@ class ProviderFailureEntity(Base):
     resolved: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
 
 
+class ProviderArtifactEntity(Base):
+    """Immutable typed operational artifact (catalogue, certification, merge, monitoring, etc.)."""
+
+    __tablename__ = "provider_operational_artifacts"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    provider: Mapped[str] = mapped_column(String(32), index=True)
+    job_id: Mapped[str | None] = mapped_column(
+        ForeignKey("provider_jobs.job_id", ondelete="CASCADE"), index=True
+    )
+    artifact_kind: Mapped[str] = mapped_column(String(64), index=True)
+    schema_version: Mapped[str] = mapped_column(String(32))
+    payload_json: Mapped[dict[str, Any]] = mapped_column(JSON)
+    checksum: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
+
+
 class ProviderOperationsRepository:
     def __init__(self, session: Session) -> None:
         self.session = session
@@ -133,3 +152,42 @@ class ProviderOperationsRepository:
         if provider:
             statement = statement.where(ProviderFailureEntity.provider == provider)
         return list(self.session.scalars(statement.order_by(ProviderFailureEntity.id)))
+
+    def persist_artifact(
+        self,
+        artifact_id: str,
+        provider: str,
+        kind: str,
+        payload: dict[str, Any],
+        checksum: str,
+        *,
+        job_id: str | None = None,
+        schema_version: str = "1.0.0",
+    ) -> ProviderArtifactEntity:
+        existing = self.session.scalar(
+            select(ProviderArtifactEntity).where(ProviderArtifactEntity.artifact_id == artifact_id)
+        )
+        if existing:
+            if existing.checksum != checksum:
+                raise ValueError("Immutable provider artifact checksum conflict")
+            return existing
+        artifact = ProviderArtifactEntity(
+            artifact_id=artifact_id,
+            provider=provider,
+            job_id=job_id,
+            artifact_kind=kind,
+            schema_version=schema_version,
+            payload_json=payload,
+            checksum=checksum,
+        )
+        self.session.add(artifact)
+        self.session.flush()
+        return artifact
+
+    def artifacts(self, kind: str, provider: str | None = None) -> list[ProviderArtifactEntity]:
+        statement = select(ProviderArtifactEntity).where(
+            ProviderArtifactEntity.artifact_kind == kind
+        )
+        if provider:
+            statement = statement.where(ProviderArtifactEntity.provider == provider)
+        return list(self.session.scalars(statement.order_by(ProviderArtifactEntity.artifact_id)))
