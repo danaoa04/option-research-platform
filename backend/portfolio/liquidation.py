@@ -174,9 +174,7 @@ class LiquidationEngine:
         realized_loss = sum(step.expected_realized_loss for step in plan.steps)
         cash_impact = sum(step.expected_cash_impact for step in plan.steps)
         residual_deficit = max(0.0, plan.deficit_to_resolve - margin_relief)
-        strategy_breakage = any(
-            "residual_uncovered_risk" in step.warnings for step in plan.steps
-        )
+        strategy_breakage = any("residual_uncovered_risk" in step.warnings for step in plan.steps)
         return LiquidationOutcome(
             plan_id=plan.plan_id,
             realized_loss=round(realized_loss, 8),

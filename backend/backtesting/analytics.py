@@ -158,12 +158,9 @@ class BacktestAnalyticsService:
         points: tuple[StrategyAnalyticsPoint, ...],
         strategy_instance_id: str,
     ) -> tuple[tuple[datetime, float], ...]:
-        rows = [
-            item for item in points if item.strategy_instance_id == strategy_instance_id
-        ]
+        rows = [item for item in points if item.strategy_instance_id == strategy_instance_id]
         return tuple(
-            (item.timestamp, item.total_pnl)
-            for item in sorted(rows, key=lambda row: row.timestamp)
+            (item.timestamp, item.total_pnl) for item in sorted(rows, key=lambda row: row.timestamp)
         )
 
     def portfolio_equity_curve(
@@ -172,8 +169,7 @@ class BacktestAnalyticsService:
         points: tuple[PortfolioAnalyticsPoint, ...],
     ) -> tuple[tuple[datetime, float], ...]:
         return tuple(
-            (item.timestamp, item.equity)
-            for item in sorted(points, key=lambda row: row.timestamp)
+            (item.timestamp, item.equity) for item in sorted(points, key=lambda row: row.timestamp)
         )
 
     def lifecycle_state_history(
@@ -182,9 +178,7 @@ class BacktestAnalyticsService:
         points: tuple[StrategyAnalyticsPoint, ...],
         strategy_instance_id: str,
     ) -> tuple[dict[str, Any], ...]:
-        rows = [
-            item for item in points if item.strategy_instance_id == strategy_instance_id
-        ]
+        rows = [item for item in points if item.strategy_instance_id == strategy_instance_id]
         return tuple(
             {
                 "timestamp": item.timestamp,
@@ -201,9 +195,7 @@ class BacktestAnalyticsService:
         points: tuple[StrategyAnalyticsPoint, ...],
         strategy_instance_id: str,
     ) -> tuple[dict[str, Any], ...]:
-        rows = [
-            item for item in points if item.strategy_instance_id == strategy_instance_id
-        ]
+        rows = [item for item in points if item.strategy_instance_id == strategy_instance_id]
         return tuple(
             {
                 "timestamp": item.timestamp,
@@ -218,9 +210,7 @@ class BacktestAnalyticsService:
         points: tuple[StrategyAnalyticsPoint, ...],
         strategy_instance_id: str,
     ) -> tuple[dict[str, Any], ...]:
-        rows = [
-            item for item in points if item.strategy_instance_id == strategy_instance_id
-        ]
+        rows = [item for item in points if item.strategy_instance_id == strategy_instance_id]
         return tuple(
             {
                 "timestamp": item.timestamp,
@@ -240,9 +230,7 @@ class BacktestAnalyticsService:
         points: tuple[StrategyAnalyticsPoint, ...],
         strategy_instance_id: str,
     ) -> tuple[dict[str, Any], ...]:
-        rows = [
-            item for item in points if item.strategy_instance_id == strategy_instance_id
-        ]
+        rows = [item for item in points if item.strategy_instance_id == strategy_instance_id]
         return tuple(
             {
                 "timestamp": item.timestamp,
@@ -350,11 +338,7 @@ class BacktestAnalyticsService:
         sharpe = 0.0 if volatility == 0 else (mean(returns) / volatility)
         sortino = 0.0 if downside_deviation == 0 else (mean(returns) / downside_deviation)
         calmar = 0.0 if max_drawdown == 0 else total_return / max_drawdown
-        profit_factor = (
-            0.0
-            if not losers
-            else abs(sum(winners) / min(-1e-9, sum(losers)))
-        )
+        profit_factor = 0.0 if not losers else abs(sum(winners) / min(-1e-9, sum(losers)))
         win_rate = (len(winners) / len(returns)) if returns else 0.0
         payoff_ratio = 0.0 if avg_loser == 0 else abs(avg_winner / avg_loser)
         expectancy = mean(returns) if returns else 0.0

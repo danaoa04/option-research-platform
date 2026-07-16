@@ -77,9 +77,7 @@ def _candidate(
         target_legs=(_leg("short_call_new"),),
         roll_type=RollType.ROLL_OUT,
         target_expiration=(
-            expiration
-            if expiration is not None
-            else datetime(2027, 3, 19, tzinfo=UTC)
+            expiration if expiration is not None else datetime(2027, 3, 19, tzinfo=UTC)
         ),
         target_strike=105.0,
         target_delta=0.3,

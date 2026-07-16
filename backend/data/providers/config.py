@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -14,6 +15,10 @@ SECRET_FIELD_NAMES = ("password", "token", "secret", "api_key", "auth")
 
 class ProviderConfigError(ValueError):
     """Raised when provider configuration cannot be loaded or validated."""
+
+
+class MissingCredentialError(ProviderConfigError):
+    """Raised when a required credential environment variable is absent."""
 
 
 @dataclass(slots=True, frozen=True)
@@ -43,6 +48,45 @@ class ProvidersConfiguration:
 
     providers: dict[str, ProviderSettings]
     future_providers: dict[str, ProviderSettings]
+
+
+@dataclass(slots=True, frozen=True)
+class ResolvedCredentials:
+    """Resolved credentials whose representation never exposes values."""
+
+    provider: str
+    values: dict[str, str]
+    source: str = "environment"
+
+    def redacted(self) -> dict[str, str]:
+        return {key: "***" for key in sorted(self.values)}
+
+    def __repr__(self) -> str:
+        return f"ResolvedCredentials(provider={self.provider!r}, values={self.redacted()!r})"
+
+
+def resolve_credentials(
+    settings: ProviderSettings,
+    *,
+    environ: dict[str, str] | None = None,
+    required: bool = True,
+) -> ResolvedCredentials:
+    """Resolve configured ``*_env`` references without retaining variable names as secrets."""
+    source = os.environ if environ is None else environ
+    resolved: dict[str, str] = {}
+    missing: list[str] = []
+    for key, variable in settings.credentials.values.items():
+        logical_key = key.removesuffix("_env")
+        value = source.get(variable)
+        if value:
+            resolved[logical_key] = value
+        else:
+            missing.append(variable)
+    if required and missing:
+        raise MissingCredentialError(
+            f"Missing credentials for provider '{settings.name}': {', '.join(sorted(missing))}"
+        )
+    return ResolvedCredentials(provider=settings.name, values=resolved)
 
 
 def load_providers_configuration(path: str | Path) -> ProvidersConfiguration:

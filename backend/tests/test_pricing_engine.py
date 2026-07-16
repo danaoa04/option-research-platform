@@ -150,15 +150,12 @@ def test_american_dividend_call_signals_early_exercise_nodes() -> None:
         option_type=OptionType.CALL,
         exercise_style=ExerciseStyle.AMERICAN,
         underlying_type=UnderlyingType.EQUITY,
-        discrete_dividends=(
-            DiscreteDividend(ex_dividend_date=date(2026, 3, 1), amount=1.5),
-        ),
+        discrete_dividends=(DiscreteDividend(ex_dividend_date=date(2026, 3, 1), amount=1.5),),
     )
     result = engine.price(request)
 
     assert (
-        result.calculation_metadata["selected_model"]
-        == PricingModelName.COX_ROSS_RUBINSTEIN.value
+        result.calculation_metadata["selected_model"] == PricingModelName.COX_ROSS_RUBINSTEIN.value
     )
     assert result.calculation_metadata["early_exercise_nodes"] >= 0
 
@@ -194,9 +191,10 @@ def test_crr_convergence_gap_tightens_with_more_steps() -> None:
         )
     )
 
-    assert high_steps.calculation_metadata["convergence_gap"] <= low_steps.calculation_metadata[
-        "convergence_gap"
-    ]
+    assert (
+        high_steps.calculation_metadata["convergence_gap"]
+        <= low_steps.calculation_metadata["convergence_gap"]
+    )
 
 
 def test_black76_reference_value_for_european_futures_option() -> None:
@@ -236,12 +234,10 @@ def test_model_routing_uses_contract_metadata_not_ticker() -> None:
     )
 
     assert (
-        european_spot.calculation_metadata["selected_model"]
-        == PricingModelName.BLACK_SCHOLES.value
+        european_spot.calculation_metadata["selected_model"] == PricingModelName.BLACK_SCHOLES.value
     )
     assert (
-        european_futures.calculation_metadata["selected_model"]
-        == PricingModelName.BLACK_76.value
+        european_futures.calculation_metadata["selected_model"] == PricingModelName.BLACK_76.value
     )
     assert (
         american_equity.calculation_metadata["selected_model"]

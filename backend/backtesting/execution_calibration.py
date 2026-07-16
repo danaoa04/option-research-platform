@@ -419,10 +419,7 @@ class SlippageCalibrator:
         return CalibrationResult(
             model_name=model.value,
             calibrated_parameters={k: round(v, 8) for k, v in params.items()},
-            confidence_intervals={
-                k: (round(v[0], 8), round(v[1], 8))
-                for k, v in ci.items()
-            },
+            confidence_intervals={k: (round(v[0], 8), round(v[1], 8)) for k, v in ci.items()},
             sample_size=sample,
             fit_diagnostics={"rmse": round(rmse, 8), "mae": round(mae, 8)},
             residual_analysis={
@@ -478,9 +475,7 @@ class SpreadCaptureCalibrator:
             "mean": mean(captures),
         }
         params = (
-            distribution
-            if not deterministic
-            else {"deterministic_capture": distribution["p50"]}
+            distribution if not deterministic else {"deterministic_capture": distribution["p50"]}
         )
 
         return CalibrationResult(
@@ -490,10 +485,7 @@ class SpreadCaptureCalibrator:
                 else "spread_capture_deterministic"
             ),
             calibrated_parameters={k: round(v, 8) for k, v in params.items()},
-            confidence_intervals={
-                k: _confidence_interval(v, sample)
-                for k, v in params.items()
-            },
+            confidence_intervals={k: _confidence_interval(v, sample) for k, v in params.items()},
             sample_size=sample,
             fit_diagnostics={
                 "capture_std": round(_stddev(captures), 8),
@@ -557,8 +549,7 @@ class PartialFillCalibrator:
         cancellations = [1.0 if item.cancelled else 0.0 for item in records]
         delays = [max(0.0, item.execution_delay_seconds) for item in records]
         partial = [
-            1.0 if 0 < item.filled_quantity < item.requested_quantity else 0.0
-            for item in records
+            1.0 if 0 < item.filled_quantity < item.requested_quantity else 0.0 for item in records
         ]
         timeouts = [1.0 if item.execution_delay_seconds > 30.0 else 0.0 for item in records]
 
@@ -715,14 +706,11 @@ class BrokerPolicyCapabilities:
 class BrokerPolicyAdapter(Protocol):
     version_info: BrokerPolicyVersion
 
-    def fee_schedule(self) -> BrokerPolicyFeeSchedule:
-        ...
+    def fee_schedule(self) -> BrokerPolicyFeeSchedule: ...
 
-    def capabilities(self) -> BrokerPolicyCapabilities:
-        ...
+    def capabilities(self) -> BrokerPolicyCapabilities: ...
 
-    def ambiguity_warnings(self) -> tuple[str, ...]:
-        ...
+    def ambiguity_warnings(self) -> tuple[str, ...]: ...
 
 
 @dataclass(slots=True)
@@ -1119,8 +1107,7 @@ class ExecutionQualityScorer:
             "price_improvement": max(0.0, min(1.0, metrics.price_improvement)),
             "residual_quantity": max(
                 0.0,
-                1.0
-                - min(1.0, metrics.residual_quantity / max(1, record.requested_quantity)),
+                1.0 - min(1.0, metrics.residual_quantity / max(1, record.requested_quantity)),
             ),
             "cancellation": 0.0 if record.cancelled else 1.0,
             "model_confidence": max(0.0, min(1.0, model_confidence)),
@@ -1292,12 +1279,16 @@ class CalibrationValidator:
         if shared:
             param_drift = mean([abs(trained_params[k] - validated_params[k]) for k in shared])
 
-        cost_train = mean(
-            [item.commission + item.exchange_fees + abs(item.slippage) for item in train]
-        ) if train else 0.0
-        cost_valid = mean(
-            [item.commission + item.exchange_fees + abs(item.slippage) for item in validation]
-        ) if validation else 0.0
+        cost_train = (
+            mean([item.commission + item.exchange_fees + abs(item.slippage) for item in train])
+            if train
+            else 0.0
+        )
+        cost_valid = (
+            mean([item.commission + item.exchange_fees + abs(item.slippage) for item in validation])
+            if validation
+            else 0.0
+        )
         out_sample = abs(cost_valid - cost_train)
 
         # Overconfidence grows when parameter intervals are tight but drift is high.
@@ -1346,8 +1337,7 @@ class MarketImpactModel(Protocol):
         participation_rate: float,
         legs: int,
         stress: float,
-    ) -> MarketImpactEstimate:
-        ...
+    ) -> MarketImpactEstimate: ...
 
 
 @dataclass(slots=True)
@@ -1366,7 +1356,7 @@ class PlaceholderMarketImpactModel:
         rel_volume = order_size / max(1, volume)
         temporary = min(0.5, 0.01 * rel_displayed + 0.02 * participation_rate)
         permanent = min(0.5, 0.005 * rel_volume)
-        nonlinear = min(0.5, 0.001 * (order_size ** 0.5))
+        nonlinear = min(0.5, 0.001 * (order_size**0.5))
         multi_leg = min(0.5, max(0, legs - 1) * 0.005)
         stress_mult = max(1.0, stress)
         return MarketImpactEstimate(
@@ -1412,20 +1402,16 @@ class MultiLegExecutionRealismAnalyzer:
         unfilled = sum(max(0, item.requested_quantity - item.filled_quantity) for item in records)
         completion_risk = 0.0 if total_qty <= 0 else unfilled / total_qty
         spread_leakage = sum(
-            max(0.0, (item.spread_width or 0.0) - (item.spread_capture or 0.0))
-            for item in records
+            max(0.0, (item.spread_width or 0.0) - (item.spread_capture or 0.0)) for item in records
         )
         delay = (
-            mean([max(0.0, item.execution_delay_seconds) for item in records])
-            if records
-            else 0.0
+            mean([max(0.0, item.execution_delay_seconds) for item in records]) if records else 0.0
         )
         temp_delta = sum((item.delta or 0.0) * item.filled_quantity for item in records)
         return MultiLegExecutionRealism(
             net_price_order=(
                 all(
-                    item.order_type
-                    in {ExecutionOrderType.NET_DEBIT, ExecutionOrderType.NET_CREDIT}
+                    item.order_type in {ExecutionOrderType.NET_DEBIT, ExecutionOrderType.NET_CREDIT}
                     for item in records
                 )
                 if records
@@ -1622,11 +1608,15 @@ class ExecutionStressTestEngine:
                     metadata=row.metadata,
                 )
             )
-        stressed_cost = TransactionCostEngine().aggregate(
-            records=tuple(stressed_records),
-            borrow_charges=baseline_borrow * scenario.borrow_multiplier,
-            margin_interest=baseline_margin_interest * scenario.margin_interest_multiplier,
-        ).total_cost
+        stressed_cost = (
+            TransactionCostEngine()
+            .aggregate(
+                records=tuple(stressed_records),
+                borrow_charges=baseline_borrow * scenario.borrow_multiplier,
+                margin_interest=baseline_margin_interest * scenario.margin_interest_multiplier,
+            )
+            .total_cost
+        )
 
         avg_fill = mean(
             [item.filled_quantity / max(1, item.requested_quantity) for item in stressed_records]

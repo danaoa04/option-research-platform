@@ -62,9 +62,7 @@ class TradeReconstructionService:
             ordered = sorted(records, key=lambda item: (item.timestamp, item.sequence_number))
             strategy_id = ordered[0].strategy_id
             entry = [
-                row.payload
-                for row in ordered
-                if row.record_type in {"position_open", "entry_plan"}
+                row.payload for row in ordered if row.record_type in {"position_open", "entry_plan"}
             ]
             fills = [row.payload for row in ordered if row.record_type in {"fill", "partial_fill"}]
             management = [row.payload for row in ordered if row.record_type == "management"]
@@ -119,9 +117,7 @@ class TradeReconstructionService:
             ordered = sorted(rows, key=lambda item: item.trade_id)
             initial = ordered[0].position_id
             child = tuple(item.position_id for item in ordered[1:])
-            roll_chain = tuple(
-                item.trade_id for item in ordered if item.rolls
-            )
+            roll_chain = tuple(item.trade_id for item in ordered if item.rolls)
             cycles.append(
                 StrategyCycle(
                     cycle_id=f"cycle:{strategy_id}:{initial}",

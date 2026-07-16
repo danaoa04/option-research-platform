@@ -194,11 +194,9 @@ class MarginPolicyAdapter(Protocol):
     supported_account_types: tuple[AccountType, ...]
     supported_instrument_types: tuple[InstrumentType, ...]
 
-    def evaluate(self, request: MarginRequest) -> MarginResult:
-        ...
+    def evaluate(self, request: MarginRequest) -> MarginResult: ...
 
-    def limitations(self) -> tuple[str, ...]:
-        ...
+    def limitations(self) -> tuple[str, ...]: ...
 
 
 @dataclass(slots=True)
@@ -219,8 +217,7 @@ class BaselineRegTMarginPolicy:
 
     def evaluate(self, request: MarginRequest) -> MarginResult:
         position_results = tuple(
-            self._evaluate_position(position, request)
-            for position in request.positions
+            self._evaluate_position(position, request) for position in request.positions
         )
         initial = sum(item.initial_requirement for item in position_results)
         maintenance = sum(item.maintenance_requirement for item in position_results)
@@ -240,27 +237,19 @@ class BaselineRegTMarginPolicy:
             if item.reservation_type == "pending_order"
         )
         assignment = sum(
-            item.amount
-            for item in request.pending_orders
-            if item.reservation_type == "assignment"
+            item.amount for item in request.pending_orders if item.reservation_type == "assignment"
         )
         exercise = sum(
-            item.amount
-            for item in request.pending_orders
-            if item.reservation_type == "exercise"
+            item.amount for item in request.pending_orders if item.reservation_type == "exercise"
         )
         settlement = sum(
-            item.amount
-            for item in request.pending_orders
-            if item.reservation_type == "settlement"
+            item.amount for item in request.pending_orders if item.reservation_type == "settlement"
         )
         concentration = sum(
-            max(0.0, item.diagnostics.get("concentration_add_on", 0.0))
-            for item in position_results
+            max(0.0, item.diagnostics.get("concentration_add_on", 0.0)) for item in position_results
         )
         event_add = sum(
-            max(0.0, item.diagnostics.get("event_add_on", 0.0))
-            for item in position_results
+            max(0.0, item.diagnostics.get("event_add_on", 0.0)) for item in position_results
         )
         house_add = self._house_add_on(
             request.account.house_margin_overlay,
@@ -277,12 +266,7 @@ class BaselineRegTMarginPolicy:
             + house_add
         )
         total_maintenance = (
-            maintenance
-            + assignment
-            + settlement
-            + concentration
-            + event_add
-            + house_add
+            maintenance + assignment + settlement + concentration + event_add + house_add
         )
         buying_power_base = self._base_buying_power(request)
         post_trade_buying_power = buying_power_base - total_initial
@@ -379,9 +363,8 @@ class BaselineRegTMarginPolicy:
         elif family == "cash_secured_put":
             strike = max((leg.strike or 0.0) for leg in position.legs)
             qty = max(abs(leg.quantity) for leg in position.legs) if position.legs else 0
-            collateral = (
-                strike * qty * self._max_multiplier(position)
-                - max(0.0, position.net_premium)
+            collateral = strike * qty * self._max_multiplier(position) - max(
+                0.0, position.net_premium
             )
             initial = collateral
             maintenance = collateral
@@ -503,8 +486,7 @@ class BaselineRegTMarginPolicy:
             )
         return max(
             0.0,
-            (request.settled_cash + request.unsettled_cash) * 2.0
-            - request.reserved_cash,
+            (request.settled_cash + request.unsettled_cash) * 2.0 - request.reserved_cash,
         )
 
     def _house_add_on(
@@ -595,9 +577,7 @@ class BrokerPolicyComparisonService:
     ) -> PolicyComparison:
         left_result = left.evaluate(request)
         right_result = right.evaluate(request)
-        warnings = tuple(
-            sorted(set(left.limitations()).union(right.limitations()))
-        )
+        warnings = tuple(sorted(set(left.limitations()).union(right.limitations())))
         return PolicyComparison(
             left_policy=left.policy_name,
             right_policy=right.policy_name,
@@ -610,8 +590,7 @@ class BrokerPolicyComparisonService:
                 8,
             ),
             buying_power_diff=round(
-                left_result.post_trade_buying_power
-                - right_result.post_trade_buying_power,
+                left_result.post_trade_buying_power - right_result.post_trade_buying_power,
                 8,
             ),
             ambiguity_warnings=warnings,

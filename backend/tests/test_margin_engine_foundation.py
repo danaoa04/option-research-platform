@@ -90,9 +90,7 @@ def test_cash_account_restricts_uncovered_but_allows_long_option() -> None:
         strategy_id="s1",
         strategy_family="long_option",
         instrument_type=policy.supported_instrument_types[1],
-        legs=(
-            MarginLeg("l1", "SPY", 1, "long", "call", 500.0, None, 4.5),
-        ),
+        legs=(MarginLeg("l1", "SPY", 1, "long", "call", 500.0, None, 4.5),),
         market_value=450.0,
         net_premium=450.0,
         defined_risk=True,
@@ -102,9 +100,7 @@ def test_cash_account_restricts_uncovered_but_allows_long_option() -> None:
         strategy_id="s2",
         strategy_family="uncovered_option",
         instrument_type=policy.supported_instrument_types[1],
-        legs=(
-            MarginLeg("l2", "SPY", -1, "short", "call", 520.0, None, 2.0),
-        ),
+        legs=(MarginLeg("l2", "SPY", -1, "short", "call", 520.0, None, 2.0),),
         market_value=200.0,
         net_premium=-200.0,
         defined_risk=False,
@@ -218,8 +214,7 @@ def test_reg_t_stock_spread_and_calendar_margin_are_deterministic() -> None:
 
     assert result.positions[0].initial_requirement == 5000.0
     assert (
-        result.positions[1].maintenance_requirement
-        > result.positions[1].initial_requirement * 0.8
+        result.positions[1].maintenance_requirement > result.positions[1].initial_requirement * 0.8
     )
     assert result.positions[2].initial_requirement == 1150.0
     assert "calendar_diagonal_treatment_conservative" in result.positions[3].warnings

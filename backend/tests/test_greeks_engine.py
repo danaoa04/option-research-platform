@@ -219,9 +219,7 @@ def test_american_greeks_with_dividend_schedule_are_deterministic() -> None:
     request = _request(
         option_type=OptionType.CALL,
         exercise_style=ExerciseStyle.AMERICAN,
-        discrete_dividends=(
-            DiscreteDividend(ex_dividend_date=date(2026, 3, 15), amount=1.25),
-        ),
+        discrete_dividends=(DiscreteDividend(ex_dividend_date=date(2026, 3, 15), amount=1.25),),
     )
 
     first = engine.calculate(request)

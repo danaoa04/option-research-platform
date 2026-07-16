@@ -22,8 +22,7 @@ def test_alembic_upgrade_and_downgrade_for_0015_to_0016(tmp_path: Path) -> None:
     engine_8b = create_engine(f"sqlite+pysqlite:///{db_path}", future=True)
     with engine_8b.begin() as conn:
         rows = conn.exec_driver_sql(
-            "SELECT name FROM sqlite_master WHERE type='table' "
-            "AND name='roll_policy_registry'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='roll_policy_registry'"
         ).fetchall()
         assert rows == []
     engine_8b.dispose()
@@ -75,8 +74,7 @@ def test_alembic_upgrade_and_downgrade_for_0015_to_0016(tmp_path: Path) -> None:
     engine_after = create_engine(f"sqlite+pysqlite:///{db_path}", future=True)
     with engine_after.begin() as conn:
         rows = conn.exec_driver_sql(
-            "SELECT name FROM sqlite_master WHERE type='table' "
-            "AND name='roll_policy_registry'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='roll_policy_registry'"
         ).fetchall()
         assert rows == []
     engine_after.dispose()

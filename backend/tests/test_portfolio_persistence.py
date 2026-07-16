@@ -42,7 +42,6 @@ def sqlite_manager() -> Iterator[DatabaseSessionManager]:
         engine.dispose()
 
 
-
 def _run() -> PortfolioRunDTO:
     return PortfolioRunDTO(
         run_id="portfolio-run-1",
@@ -77,7 +76,6 @@ def _run() -> PortfolioRunDTO:
         },
         created_at=datetime(2026, 2, 5, 14, 30, tzinfo=UTC),
     )
-
 
 
 def test_portfolio_persistence_round_trip(sqlite_manager: DatabaseSessionManager) -> None:
@@ -185,7 +183,6 @@ def test_portfolio_persistence_round_trip(sqlite_manager: DatabaseSessionManager
     assert stored_run.run_id == "portfolio-run-1"
     assert [item.candidate_id for item in stored_eligible] == ["a"]
     assert {item.candidate_id for item in stored_allocations} == {"a", "b"}
-
 
 
 def test_portfolio_checksum_is_order_stable() -> None:

@@ -4,25 +4,24 @@ from __future__ import annotations
 
 
 class BacktestingError(RuntimeError):
-	"""Base error for historical backtesting workflows."""
+    """Base error for historical backtesting workflows."""
 
 
 class FillModelError(BacktestingError):
-	"""Raised when a fill model configuration or invocation is invalid."""
+    """Raised when a fill model configuration or invocation is invalid."""
 
 
 class ValuationError(BacktestingError):
-	"""Raised when valuation cannot proceed under configured policies."""
+    """Raised when valuation cannot proceed under configured policies."""
 
 
 class EventClockError(BacktestingError):
-	"""Raised when event clock construction detects invalid scheduling input."""
+    """Raised when event clock construction detects invalid scheduling input."""
 
 
 class NoLookAheadError(BacktestingError):
-	"""Raised when an information-set lookup attempts to use future data."""
+    """Raised when an information-set lookup attempts to use future data."""
 
 
 class StrategyLifecycleError(BacktestingError):
-	"""Raised when a strategy lifecycle hook violates engine invariants."""
-
+    """Raised when a strategy lifecycle hook violates engine invariants."""

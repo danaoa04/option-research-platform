@@ -67,9 +67,7 @@ def test_alembic_upgrade_and_downgrade_for_0013_to_0014(tmp_path: Path) -> None:
                 ts,
             ),
         )
-        count = conn.exec_driver_sql(
-            "SELECT COUNT(*) FROM strategy_template_registry"
-        ).scalar_one()
+        count = conn.exec_driver_sql("SELECT COUNT(*) FROM strategy_template_registry").scalar_one()
         assert count == 1
     engine_8a.dispose()
 

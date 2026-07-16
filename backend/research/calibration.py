@@ -77,9 +77,7 @@ class ScoreCalibrationEngine:
             )
             ece += (len(bucket) / total) * abs(observed_frequency - predicted_mean)
             if len(bucket) < self.min_bucket_samples:
-                warnings.append(
-                    f"bucket {index} has sparse sample size ({len(bucket)})"
-                )
+                warnings.append(f"bucket {index} has sparse sample size ({len(bucket)})")
 
         brier = sum(
             (max(0.0, min(1.0, p)) - (1.0 if y else 0.0)) ** 2
@@ -87,12 +85,10 @@ class ScoreCalibrationEngine:
         ) / len(predicted_probabilities)
 
         overconfidence = sum(
-            max(0.0, bucket.predicted_mean - bucket.observed_frequency)
-            for bucket in reliability
+            max(0.0, bucket.predicted_mean - bucket.observed_frequency) for bucket in reliability
         )
         underconfidence = sum(
-            max(0.0, bucket.observed_frequency - bucket.predicted_mean)
-            for bucket in reliability
+            max(0.0, bucket.observed_frequency - bucket.predicted_mean) for bucket in reliability
         )
 
         if regime_labels is not None and len(regime_labels) != len(predicted_probabilities):

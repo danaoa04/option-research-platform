@@ -311,9 +311,9 @@ def test_execution_calibration_persistence_round_trip() -> None:
 
     with manager.session_scope() as session:
         assert session.execute(select(BacktestRun)).scalars().all()
-        assert session.execute(
-            select(BacktestExecutionFillQualityObservationRecord)
-        ).scalars().all()
+        assert (
+            session.execute(select(BacktestExecutionFillQualityObservationRecord)).scalars().all()
+        )
         assert session.execute(select(BacktestExecutionQualityScoreRecord)).scalars().all()
         assert session.execute(select(BacktestExecutionStressTestResultRecord)).scalars().all()
 

@@ -92,7 +92,8 @@ class ImpliedVolatilityEngine:
             reason = _reason_from_message(str(exc))
             outcome = (
                 SolverOutcome.INVALID_MARKET_PRICE
-                if reason in {
+                if reason
+                in {
                     FailureReason.BELOW_INTRINSIC,
                     FailureReason.ABOVE_THEORETICAL_BOUND,
                 }
@@ -204,10 +205,14 @@ class ImpliedVolatilityEngine:
                 )
                 metadata.setdefault("model_settings", {})
 
-                if resolved_model in {
-                    PricingModelName.COX_ROSS_RUBINSTEIN,
-                    PricingModelName.BINOMIAL_TREE,
-                } and attempted.implied_volatility is not None:
+                if (
+                    resolved_model
+                    in {
+                        PricingModelName.COX_ROSS_RUBINSTEIN,
+                        PricingModelName.BINOMIAL_TREE,
+                    }
+                    and attempted.implied_volatility is not None
+                ):
                     metadata["tree_resolution_sensitivity"] = self._tree_resolution_sensitivity(
                         request.pricing_request,
                         resolved_model,

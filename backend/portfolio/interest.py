@@ -1,4 +1,4 @@
-"""Deterministic interest accrual for positive cash and margin debits.""" 
+"""Deterministic interest accrual for positive cash and margin debits."""
 
 from __future__ import annotations
 

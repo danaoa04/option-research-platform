@@ -48,8 +48,7 @@ class ObservationQualityScorer:
 
         add(
             QualityReasonCode.SOLVER_NON_CONVERGED,
-            observation.solver_status
-            not in {IVSolverStatus.SUCCESS, IVSolverStatus.APPROXIMATE},
+            observation.solver_status not in {IVSolverStatus.SUCCESS, IVSolverStatus.APPROXIMATE},
             details=f"solver_status={observation.solver_status.value}",
         )
 

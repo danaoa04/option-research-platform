@@ -92,15 +92,12 @@ class ResearchFillModelEngine:
             )
             * vol
         )
-        liq_slip = (
-            float(
-                req.request.slippage_policy.get(
-                    "liquidity_sensitivity",
-                    self.default_liquidity_sensitivity,
-                )
+        liq_slip = float(
+            req.request.slippage_policy.get(
+                "liquidity_sensitivity",
+                self.default_liquidity_sensitivity,
             )
-            * max(0.0, 1.0 - liq)
-        )
+        ) * max(0.0, 1.0 - liq)
 
         slippage = base_slippage + pct_slip * selected_price + spread_slip + vol_slip + liq_slip
         signed = slippage if req.request.side.value == "buy" else -slippage

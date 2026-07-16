@@ -45,8 +45,7 @@ class EarlyExerciseAnalyzer:
         if request.option_type == OptionType.CALL:
             if not upcoming_dividends and request.dividend_yield <= 0.0:
                 warnings.append(
-                    "no dividend inputs provided; "
-                    "call early-exercise signal unavailable"
+                    "no dividend inputs provided; call early-exercise signal unavailable"
                 )
             dividend_value = sum(div.amount for div in upcoming_dividends) * request.multiplier
             if dividend_value > 0.0 and extrinsic < dividend_value:

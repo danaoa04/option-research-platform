@@ -77,7 +77,7 @@ def _generate_observations(count: int) -> list[VolatilityObservationRecord]:
     for idx in range(count):
         strike = 80.0 + float(idx % 200)
         tenor_days = 7 + (idx % 120)
-        expiry = (base_ts.date() + timedelta(days=tenor_days))
+        expiry = base_ts.date() + timedelta(days=tenor_days)
         observations.append(
             VolatilityObservationRecord(
                 symbol="SPY",

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added the Sprint 10A local historical-data integration foundation: explicit provider
+  capabilities, environment credential resolution with redacted diagnostics, versioned schema
+  profiles, deterministic CSV/gzip and optional Parquet ingestion, safe archive extraction,
+  row lineage, quarantine/repair records, quality certification, and JSON/HTML exports.
+
 - Added Sprint 9A risk-lab persistence/query foundation with migration `0017_risk_lab_foundation.py`, deterministic checksum support, and migration/persistence test coverage.
 - Added Sprint 9B replay workspace persistence foundation with migration `0018_replay_workspace_foundation.py` for sessions, branches, checkpoints, bookmarks, timeline events, annotations, filters, comparisons, diagnostics, reproducibility reports, decision explanations, experiments, and workspace metadata.
 - Added replay workspace repositories/services and deterministic replay workspace checksum utility in `backend/database/replay_workspace.py`.

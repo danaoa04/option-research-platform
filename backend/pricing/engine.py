@@ -222,11 +222,7 @@ class BlackScholesModel(PricingModel):
             sigma_sqrt_t = request.volatility * math.sqrt(t)
             d1 = (
                 math.log(request.spot / request.strike)
-                + (
-                    request.risk_free_rate
-                    - request.dividend_yield
-                    + 0.5 * request.volatility**2
-                )
+                + (request.risk_free_rate - request.dividend_yield + 0.5 * request.volatility**2)
                 * t
             ) / sigma_sqrt_t
             d2 = d1 - sigma_sqrt_t
@@ -235,15 +231,13 @@ class BlackScholesModel(PricingModel):
             df_q = discount_factor(request.dividend_yield, t)
 
             if request.option_type == OptionType.CALL:
-                value = (
-                    request.spot * df_q * standard_normal_cdf(d1)
-                    - request.strike * df_r * standard_normal_cdf(d2)
-                )
+                value = request.spot * df_q * standard_normal_cdf(
+                    d1
+                ) - request.strike * df_r * standard_normal_cdf(d2)
             else:
-                value = (
-                    request.strike * df_r * standard_normal_cdf(-d2)
-                    - request.spot * df_q * standard_normal_cdf(-d1)
-                )
+                value = request.strike * df_r * standard_normal_cdf(
+                    -d2
+                ) - request.spot * df_q * standard_normal_cdf(-d1)
 
         value = max(value, intrinsic)
         extrinsic = max(value - intrinsic, 0.0)
@@ -315,13 +309,11 @@ class Black76Model(PricingModel):
             d2 = d1 - sigma_sqrt_t
             if request.option_type == OptionType.CALL:
                 value = discount * (
-                    forward * standard_normal_cdf(d1)
-                    - request.strike * standard_normal_cdf(d2)
+                    forward * standard_normal_cdf(d1) - request.strike * standard_normal_cdf(d2)
                 )
             else:
                 value = discount * (
-                    request.strike * standard_normal_cdf(-d2)
-                    - forward * standard_normal_cdf(-d1)
+                    request.strike * standard_normal_cdf(-d2) - forward * standard_normal_cdf(-d1)
                 )
 
         extrinsic = max(value - intrinsic, 0.0)
@@ -545,9 +537,7 @@ def _crr_tree_value(
     for step in range(steps - 1, -1, -1):
         next_values = [0.0] * (step + 1)
         for node in range(step + 1):
-            continuation = discount * (
-                prob * values[node + 1] + (1.0 - prob) * values[node]
-            )
+            continuation = discount * (prob * values[node + 1] + (1.0 - prob) * values[node])
             if request.exercise_style == ExerciseStyle.AMERICAN:
                 node_spot = adjusted_spot * (up**node) * (down ** (step - node))
                 immediate = max(sign * (node_spot - request.strike), 0.0)

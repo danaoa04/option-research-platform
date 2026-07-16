@@ -143,19 +143,14 @@ class MultiLegOrchestrator:
         cancellation_on_incomplete_fill: bool,
         completion_allowed_after_partial_fill: bool,
     ) -> CoordinatedEntryPlan:
-        priorities = {
-            label: index
-            for index, label in enumerate(leg_priority)
-        }
+        priorities = {label: index for index, label in enumerate(leg_priority)}
         intents: list[PlannedOrderIntent] = []
         for leg in strategy_definition.legs:
             if leg.label not in priorities:
                 priorities[leg.label] = len(priorities)
             intents.append(
                 PlannedOrderIntent(
-                    intent_id=(
-                        f"{strategy_instance_id}|entry|{priorities[leg.label]}|{leg.label}"
-                    ),
+                    intent_id=(f"{strategy_instance_id}|entry|{priorities[leg.label]}|{leg.label}"),
                     leg_label=leg.label,
                     priority=priorities[leg.label],
                     requested_quantity=leg.quantity_ratio,

@@ -118,11 +118,7 @@ class CashLedgerEngine:
         kwargs = {delta_key: amount}
         return CashPosting(
             posting_id=posting_id,
-            event_type=(
-                CashEventType.COLLATERAL
-                if collateral
-                else CashEventType.RESERVATION
-            ),
+            event_type=(CashEventType.COLLATERAL if collateral else CashEventType.RESERVATION),
             amount=0.0,
             trade_timestamp=_aware(timestamp),
             effective_timestamp=_aware(timestamp),
@@ -178,9 +174,7 @@ class CashLedgerEngine:
         maintenance_requirement: float,
     ) -> AccountState:
         excess = balance.net_cash - maintenance_requirement
-        cushion = (
-            0.0 if maintenance_requirement <= 0 else excess / maintenance_requirement
-        )
+        cushion = 0.0 if maintenance_requirement <= 0 else excess / maintenance_requirement
         return AccountState(
             account_id=configuration.account_id,
             base_currency=configuration.base_currency,

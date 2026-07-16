@@ -140,9 +140,7 @@ class StrategyManagementPersistenceService:
                     for item in roll_executions
                 ]
             )
-            BacktestRollFillV2Repository(session).upsert_rows(
-                [asdict(item) for item in roll_fills]
-            )
+            BacktestRollFillV2Repository(session).upsert_rows([asdict(item) for item in roll_fills])
             BacktestPartialRollStateRepository(session).upsert_rows(
                 [
                     {

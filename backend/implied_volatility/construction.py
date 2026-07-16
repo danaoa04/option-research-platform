@@ -106,8 +106,10 @@ class SmileEvaluator:
                 return None
             if self.config.extrapolation == ExtrapolationPolicy.FLAT:
                 return ys[0] if x < xs[0] else ys[-1]
-            return _linear(xs[0], ys[0], xs[1], ys[1], x) if x < xs[0] else _linear(
-                xs[-2], ys[-2], xs[-1], ys[-1], x
+            return (
+                _linear(xs[0], ys[0], xs[1], ys[1], x)
+                if x < xs[0]
+                else _linear(xs[-2], ys[-2], xs[-1], ys[-1], x)
             )
 
         idx = bisect_left(xs, x)
@@ -186,9 +188,7 @@ class TermStructureBuilder:
         if len(points) >= 3:
             mid = points[len(points) // 2]
             curvature = (
-                back.implied_volatility
-                - 2.0 * mid.implied_volatility
-                + front.implied_volatility
+                back.implied_volatility - 2.0 * mid.implied_volatility + front.implied_volatility
             )
 
         for idx in range(len(points) - 1):
@@ -332,9 +332,7 @@ class SurfaceBuilder:
 
         all_nodes = nodes + interpolated
         diagnostics = {
-            "raw_nodes": len(
-                [node for node in all_nodes if node.node_kind == SurfaceNodeKind.RAW]
-            ),
+            "raw_nodes": len([node for node in all_nodes if node.node_kind == SurfaceNodeKind.RAW]),
             "cleaned_nodes": len(
                 [node for node in all_nodes if node.node_kind == SurfaceNodeKind.CLEANED]
             ),

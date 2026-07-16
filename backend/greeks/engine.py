@@ -96,9 +96,10 @@ class GreeksEngine:
         model_name: PricingModelName | None = None,
     ) -> GreeksResult:
         self._validate_request(request)
-        selected_model = model_name or self._pricing_engine.resolve_model(
-            _to_pricing_request(request)
-        ).model_name
+        selected_model = (
+            model_name
+            or self._pricing_engine.resolve_model(_to_pricing_request(request)).model_name
+        )
         model = self._models.get(selected_model)
         if model is None:
             raise GreeksNotImplementedError(
@@ -179,9 +180,10 @@ class GreeksEngine:
         if cfg.day_bump <= 0:
             raise GreeksValidationError("day_bump must be positive")
 
-        selected_model = model_name or self._pricing_engine.resolve_model(
-            _to_pricing_request(request)
-        ).model_name
+        selected_model = (
+            model_name
+            or self._pricing_engine.resolve_model(_to_pricing_request(request)).model_name
+        )
         analytic = self.calculate(request, model_name=selected_model)
 
         base = self._price(request, model_name=selected_model)
@@ -246,12 +248,9 @@ class GreeksEngine:
             model_name=selected_model,
         )
 
-        vanna_fd = (
-            up_spot_up_vol
-            - up_spot_down_vol
-            - down_spot_up_vol
-            + down_spot_down_vol
-        ) / (4.0 * cfg.spot_bump * cfg.volatility_bump)
+        vanna_fd = (up_spot_up_vol - up_spot_down_vol - down_spot_up_vol + down_spot_down_vol) / (
+            4.0 * cfg.spot_bump * cfg.volatility_bump
+        )
 
         up_rate = self._price(
             _replace_request(request, risk_free_rate=request.risk_free_rate + cfg.rate_bump),
@@ -284,8 +283,7 @@ class GreeksEngine:
                     GreekWarning(
                         code=GreekWarningCode.UNSUPPORTED_VERIFICATION,
                         message=(
-                            "finite-difference verification is "
-                            f"not implemented for {greek_name}"
+                            f"finite-difference verification is not implemented for {greek_name}"
                         ),
                         severity=GreekWarningSeverity.INFO,
                         greek=greek_name,
@@ -297,8 +295,7 @@ class GreeksEngine:
                     GreekWarning(
                         code=GreekWarningCode.NUMERICAL_INSTABILITY,
                         message=(
-                            "finite-difference verification exceeded "
-                            f"tolerance for {greek_name}"
+                            f"finite-difference verification exceeded tolerance for {greek_name}"
                         ),
                         severity=GreekWarningSeverity.WARNING,
                         greek=greek_name,
@@ -397,10 +394,7 @@ class BlackScholesGreeksModel(GreeksModel):
         )
         theta_put = (
             -request.spot * terms.df_q * terms.pdf_d1 * request.volatility / (2.0 * terms.sqrt_t)
-            + request.risk_free_rate
-            * request.strike
-            * terms.df_r
-            * _norm_cdf(-terms.d2)
+            + request.risk_free_rate * request.strike * terms.df_r * _norm_cdf(-terms.d2)
             - request.dividend_yield * request.spot * terms.df_q * _norm_cdf(-terms.d1)
         )
         theta_year = theta_call if sign > 0 else theta_put
@@ -450,11 +444,7 @@ class BlackScholesGreeksModel(GreeksModel):
         zomma = gamma * (terms.d1 * terms.d2 - 1.0) / request.volatility
         ultima = (
             -vega
-            * (
-                terms.d1 * terms.d2 * (1.0 - terms.d1 * terms.d2)
-                + terms.d1**2
-                + terms.d2**2
-            )
+            * (terms.d1 * terms.d2 * (1.0 - terms.d1 * terms.d2) + terms.d1**2 + terms.d2**2)
             / (request.volatility**2)
         )
 
@@ -526,10 +516,7 @@ class BlackScholesGreeksModel(GreeksModel):
             count=size,
         )
         t = np.fromiter(
-            (
-                year_fraction(request.valuation_date, request.expiry)
-                for request in requests
-            ),
+            (year_fraction(request.valuation_date, request.expiry) for request in requests),
             dtype=float,
             count=size,
         )
@@ -561,8 +548,8 @@ class BlackScholesGreeksModel(GreeksModel):
 
         delta = np.where(call_mask, df_q * cdf_d1, df_q * (cdf_d1 - 1.0))
         gamma = np.zeros(size, dtype=float)
-        gamma[valid_mask] = df_q[valid_mask] * pdf_d1[valid_mask] / (
-            spot[valid_mask] * sigma_sqrt_t[valid_mask]
+        gamma[valid_mask] = (
+            df_q[valid_mask] * pdf_d1[valid_mask] / (spot[valid_mask] * sigma_sqrt_t[valid_mask])
         )
 
         theta_call = (
@@ -584,9 +571,9 @@ class BlackScholesGreeksModel(GreeksModel):
             -strike * t * df_r * _norm_cdf_array(-d2),
         )
         vanna = np.zeros(size, dtype=float)
-        vanna[valid_mask] = -df_q[valid_mask] * pdf_d1[valid_mask] * d2[valid_mask] / volatility[
-            valid_mask
-        ]
+        vanna[valid_mask] = (
+            -df_q[valid_mask] * pdf_d1[valid_mask] * d2[valid_mask] / volatility[valid_mask]
+        )
         vomma = np.zeros(size, dtype=float)
         vomma[valid_mask] = (
             vega[valid_mask] * d1[valid_mask] * d2[valid_mask] / volatility[valid_mask]
@@ -626,8 +613,10 @@ class BlackScholesGreeksModel(GreeksModel):
         )
 
         speed = np.zeros(size, dtype=float)
-        speed[valid_mask] = -gamma[valid_mask] / spot[valid_mask] * (
-            d1[valid_mask] / sigma_sqrt_t[valid_mask] + 1.0
+        speed[valid_mask] = (
+            -gamma[valid_mask]
+            / spot[valid_mask]
+            * (d1[valid_mask] / sigma_sqrt_t[valid_mask] + 1.0)
         )
         zomma = np.zeros(size, dtype=float)
         zomma[valid_mask] = (
@@ -637,9 +626,7 @@ class BlackScholesGreeksModel(GreeksModel):
         ultima[valid_mask] = (
             -vega[valid_mask]
             * (
-                d1[valid_mask]
-                * d2[valid_mask]
-                * (1.0 - d1[valid_mask] * d2[valid_mask])
+                d1[valid_mask] * d2[valid_mask] * (1.0 - d1[valid_mask] * d2[valid_mask])
                 + d1[valid_mask] ** 2
                 + d2[valid_mask] ** 2
             )
@@ -760,16 +747,14 @@ class Black76GreeksModel(GreeksModel):
         forward = (
             request.futures_price
             if request.futures_price is not None
-            else request.spot
-            * math.exp((request.risk_free_rate - request.dividend_yield) * t)
+            else request.spot * math.exp((request.risk_free_rate - request.dividend_yield) * t)
         )
         if request.futures_price is None:
             warnings.append(
                 GreekWarning(
                     code=GreekWarningCode.NUMERICAL_INSTABILITY,
                     message=(
-                        "futures_price missing; using forward proxy "
-                        "from spot for Black-76 Greeks"
+                        "futures_price missing; using forward proxy from spot for Black-76 Greeks"
                     ),
                     severity=GreekWarningSeverity.INFO,
                 )
@@ -853,9 +838,7 @@ class AmericanNumericalGreeksModel(GreeksModel):
         base = self._price(request)
         up_spot = self._price(_replace_request(request, spot=request.spot + spot_bump))
         down_spot = self._price(_replace_request(request, spot=max(request.spot - spot_bump, 1e-9)))
-        up_vol = self._price(
-            _replace_request(request, volatility=request.volatility + vol_bump)
-        )
+        up_vol = self._price(_replace_request(request, volatility=request.volatility + vol_bump))
         down_vol = self._price(
             _replace_request(request, volatility=max(request.volatility - vol_bump, 1e-9))
         )
@@ -1117,9 +1100,7 @@ def _scale_result(result: GreeksResult, scale: float) -> GreeksResult:
 
 
 def _add_results(left: GreeksResult, right: GreeksResult) -> GreeksResult:
-    combined_supported = tuple(
-        sorted(set(left.supported_greeks) & set(right.supported_greeks))
-    )
+    combined_supported = tuple(sorted(set(left.supported_greeks) & set(right.supported_greeks)))
     combined_unsupported = tuple(
         sorted(set(left.unsupported_greeks) | set(right.unsupported_greeks))
     )

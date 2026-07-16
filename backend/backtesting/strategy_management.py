@@ -100,16 +100,13 @@ class RollPolicyRegistry:
         existing = self._policies.get(definition.canonical_identifier)
         if existing is not None and existing.version != definition.version:
             raise StrategyManagementError(
-                "roll policy version collision for "
-                f"'{definition.canonical_identifier}'"
+                f"roll policy version collision for '{definition.canonical_identifier}'"
             )
         self._policies[definition.canonical_identifier] = definition
         for alias in definition.aliases:
             current = self._aliases.get(alias)
             if current is not None and current != definition.canonical_identifier:
-                raise StrategyManagementError(
-                    f"roll policy alias collision '{alias}' ({current})"
-                )
+                raise StrategyManagementError(f"roll policy alias collision '{alias}' ({current})")
             self._aliases[alias] = definition.canonical_identifier
 
     def register_plugin_policies(
@@ -984,14 +981,8 @@ class StrategyManagementAnalytics:
             and item.estimated_net_credit_or_debit < 0
         ]
         avg_dte = [float(item.target_dte or 0) for item in plans]
-        avg_strike = [
-            float(item.target_strike or 0.0)
-            for item in plans
-        ]
-        avg_delta = [
-            float(item.target_delta or 0.0)
-            for item in plans
-        ]
+        avg_strike = [float(item.target_strike or 0.0) for item in plans]
+        avg_delta = [float(item.target_delta or 0.0) for item in plans]
         theta_changes = [
             item.post_roll_greeks.get("theta", 0.0) - item.pre_roll_greeks.get("theta", 0.0)
             for item in plans
@@ -1009,8 +1000,7 @@ class StrategyManagementAnalytics:
             for item in plans
         ]
         buying_power_changes = [
-            float(item.post_roll_capital_usage or 0.0)
-            - float(item.pre_roll_capital_usage or 0.0)
+            float(item.post_roll_capital_usage or 0.0) - float(item.pre_roll_capital_usage or 0.0)
             for item in plans
         ]
         wins = [item.expected_improvement.total_score > 0 for item in plans]
@@ -1029,9 +1019,7 @@ class StrategyManagementAnalytics:
             theta_change=(sum(theta_changes) / len(theta_changes)) if theta_changes else 0.0,
             vega_change=(sum(vega_changes) / len(vega_changes)) if vega_changes else 0.0,
             gamma_change=(sum(gamma_changes) / len(gamma_changes)) if gamma_changes else 0.0,
-            margin_change=(sum(margin_changes) / len(margin_changes))
-            if margin_changes
-            else 0.0,
+            margin_change=(sum(margin_changes) / len(margin_changes)) if margin_changes else 0.0,
             buying_power_change=(sum(buying_power_changes) / len(buying_power_changes))
             if buying_power_changes
             else 0.0,

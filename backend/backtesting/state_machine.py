@@ -119,75 +119,103 @@ class InvalidTransitionError(RuntimeError):
 
 
 _ALLOWED_TRANSITIONS: dict[LifecycleState, frozenset[LifecycleState]] = {
-    LifecycleState.CONFIGURED: frozenset({
-        LifecycleState.WAITING_FOR_ENTRY,
-        LifecycleState.CANCELLED,
-        LifecycleState.FAILED,
-    }),
-    LifecycleState.WAITING_FOR_ENTRY: frozenset({
-        LifecycleState.ENTRY_SIGNALED,
-        LifecycleState.CANCELLED,
-        LifecycleState.FAILED,
-    }),
-    LifecycleState.ENTRY_SIGNALED: frozenset({
-        LifecycleState.ENTRY_PENDING,
-        LifecycleState.CANCELLED,
-        LifecycleState.FAILED,
-    }),
-    LifecycleState.ENTRY_PENDING: frozenset({
-        LifecycleState.PARTIALLY_OPEN,
-        LifecycleState.OPEN,
-        LifecycleState.CANCELLED,
-        LifecycleState.FAILED,
-    }),
-    LifecycleState.PARTIALLY_OPEN: frozenset({
-        LifecycleState.OPEN,
-        LifecycleState.CANCELLED,
-        LifecycleState.FAILED,
-    }),
-    LifecycleState.OPEN: frozenset({
-        LifecycleState.MANAGEMENT_PENDING,
-        LifecycleState.EXIT_SIGNALED,
-        LifecycleState.ROLL_SIGNALED,
-        LifecycleState.EXPIRED,
-        LifecycleState.FAILED,
-    }),
-    LifecycleState.MANAGEMENT_PENDING: frozenset({
-        LifecycleState.OPEN,
-        LifecycleState.EXIT_SIGNALED,
-        LifecycleState.ROLL_SIGNALED,
-        LifecycleState.FAILED,
-    }),
-    LifecycleState.EXIT_SIGNALED: frozenset({
-        LifecycleState.EXIT_PENDING,
-        LifecycleState.FAILED,
-    }),
-    LifecycleState.EXIT_PENDING: frozenset({
-        LifecycleState.PARTIALLY_CLOSED,
-        LifecycleState.CLOSED,
-        LifecycleState.FAILED,
-    }),
-    LifecycleState.PARTIALLY_CLOSED: frozenset({
-        LifecycleState.CLOSED,
-        LifecycleState.FAILED,
-    }),
-    LifecycleState.ROLL_SIGNALED: frozenset({
-        LifecycleState.ROLL_PENDING,
-        LifecycleState.FAILED,
-    }),
-    LifecycleState.ROLL_PENDING: frozenset({
-        LifecycleState.OPEN,
-        LifecycleState.PARTIALLY_OPEN,
-        LifecycleState.FAILED,
-    }),
-    LifecycleState.EXPIRED: frozenset({
-        LifecycleState.PENDING_EXERCISE_OR_ASSIGNMENT,
-        LifecycleState.CLOSED,
-    }),
-    LifecycleState.PENDING_EXERCISE_OR_ASSIGNMENT: frozenset({
-        LifecycleState.CLOSED,
-        LifecycleState.FAILED,
-    }),
+    LifecycleState.CONFIGURED: frozenset(
+        {
+            LifecycleState.WAITING_FOR_ENTRY,
+            LifecycleState.CANCELLED,
+            LifecycleState.FAILED,
+        }
+    ),
+    LifecycleState.WAITING_FOR_ENTRY: frozenset(
+        {
+            LifecycleState.ENTRY_SIGNALED,
+            LifecycleState.CANCELLED,
+            LifecycleState.FAILED,
+        }
+    ),
+    LifecycleState.ENTRY_SIGNALED: frozenset(
+        {
+            LifecycleState.ENTRY_PENDING,
+            LifecycleState.CANCELLED,
+            LifecycleState.FAILED,
+        }
+    ),
+    LifecycleState.ENTRY_PENDING: frozenset(
+        {
+            LifecycleState.PARTIALLY_OPEN,
+            LifecycleState.OPEN,
+            LifecycleState.CANCELLED,
+            LifecycleState.FAILED,
+        }
+    ),
+    LifecycleState.PARTIALLY_OPEN: frozenset(
+        {
+            LifecycleState.OPEN,
+            LifecycleState.CANCELLED,
+            LifecycleState.FAILED,
+        }
+    ),
+    LifecycleState.OPEN: frozenset(
+        {
+            LifecycleState.MANAGEMENT_PENDING,
+            LifecycleState.EXIT_SIGNALED,
+            LifecycleState.ROLL_SIGNALED,
+            LifecycleState.EXPIRED,
+            LifecycleState.FAILED,
+        }
+    ),
+    LifecycleState.MANAGEMENT_PENDING: frozenset(
+        {
+            LifecycleState.OPEN,
+            LifecycleState.EXIT_SIGNALED,
+            LifecycleState.ROLL_SIGNALED,
+            LifecycleState.FAILED,
+        }
+    ),
+    LifecycleState.EXIT_SIGNALED: frozenset(
+        {
+            LifecycleState.EXIT_PENDING,
+            LifecycleState.FAILED,
+        }
+    ),
+    LifecycleState.EXIT_PENDING: frozenset(
+        {
+            LifecycleState.PARTIALLY_CLOSED,
+            LifecycleState.CLOSED,
+            LifecycleState.FAILED,
+        }
+    ),
+    LifecycleState.PARTIALLY_CLOSED: frozenset(
+        {
+            LifecycleState.CLOSED,
+            LifecycleState.FAILED,
+        }
+    ),
+    LifecycleState.ROLL_SIGNALED: frozenset(
+        {
+            LifecycleState.ROLL_PENDING,
+            LifecycleState.FAILED,
+        }
+    ),
+    LifecycleState.ROLL_PENDING: frozenset(
+        {
+            LifecycleState.OPEN,
+            LifecycleState.PARTIALLY_OPEN,
+            LifecycleState.FAILED,
+        }
+    ),
+    LifecycleState.EXPIRED: frozenset(
+        {
+            LifecycleState.PENDING_EXERCISE_OR_ASSIGNMENT,
+            LifecycleState.CLOSED,
+        }
+    ),
+    LifecycleState.PENDING_EXERCISE_OR_ASSIGNMENT: frozenset(
+        {
+            LifecycleState.CLOSED,
+            LifecycleState.FAILED,
+        }
+    ),
     LifecycleState.CLOSED: frozenset(),
     LifecycleState.CANCELLED: frozenset(),
     LifecycleState.FAILED: frozenset(),
@@ -253,16 +281,13 @@ class StrategyStateMachine:
         allowed = _ALLOWED_TRANSITIONS[self.state]
         if next_state not in allowed:
             raise InvalidTransitionError(
-                "invalid transition: "
-                f"state={self.state.value} next_state={next_state.value}"
+                f"invalid transition: state={self.state.value} next_state={next_state.value}"
             )
 
     def _assert_guards(self, *, guard_results: tuple[GuardResult, ...]) -> None:
         failed = [item for item in guard_results if not item.passed]
         if failed:
-            reasons = ",".join(
-                f"{item.guard.value}:{item.reason_code}" for item in failed
-            )
+            reasons = ",".join(f"{item.guard.value}:{item.reason_code}" for item in failed)
             raise InvalidTransitionError(f"transition guards failed: {reasons}")
 
     def _assert_ordering(self, *, timestamp: datetime) -> None:

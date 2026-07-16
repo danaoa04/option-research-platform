@@ -406,9 +406,7 @@ class RiskLabQueryService:
                 for row in rows
             ]
 
-    def portfolio_results_read_model(
-        self, run_id: str
-    ) -> list[PortfolioScenarioResultReadModel]:
+    def portfolio_results_read_model(self, run_id: str) -> list[PortfolioScenarioResultReadModel]:
         with self.session_manager.session_scope() as session:
             rows = PortfolioScenarioResultQueryRepository(session).by_run(run_id)
             return [
@@ -514,9 +512,7 @@ class RiskLabQueryService:
                 for row in rows
             ]
 
-    def management_comparisons_read_model(
-        self, run_id: str
-    ) -> list[ManagementComparisonReadModel]:
+    def management_comparisons_read_model(self, run_id: str) -> list[ManagementComparisonReadModel]:
         with self.session_manager.session_scope() as session:
             rows = RiskManagementComparisonQueryRepository(session).by_run(run_id)
             return [

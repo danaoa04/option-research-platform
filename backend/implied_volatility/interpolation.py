@@ -118,9 +118,9 @@ class VolatilityCubeFramework:
         strike: float,
         implied_volatility: float,
     ) -> None:
-        self._cube.setdefault(symbol, {}).setdefault(valuation_date, {}).setdefault(
-            tenor_days, {}
-        )[strike] = implied_volatility
+        self._cube.setdefault(symbol, {}).setdefault(valuation_date, {}).setdefault(tenor_days, {})[
+            strike
+        ] = implied_volatility
 
     def get_surface(
         self,

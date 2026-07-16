@@ -59,9 +59,7 @@ class HistoricalVolatilityCalculator:
                     )
 
         annual_factor = (
-            252.0
-            if config.annualization == AnnualizationConvention.TRADING_DAYS_252
-            else 365.0
+            252.0 if config.annualization == AnnualizationConvention.TRADING_DAYS_252 else 365.0
         )
 
         if config.estimator == HistoricalVolEstimator.CLOSE_TO_CLOSE:

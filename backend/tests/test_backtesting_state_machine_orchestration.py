@@ -35,9 +35,7 @@ def test_state_machine_valid_and_invalid_transitions() -> None:
         next_state=LifecycleState.WAITING_FOR_ENTRY,
         timestamp=datetime(2026, 6, 1, 14, 30, tzinfo=UTC),
         trigger=TransitionTrigger.ENTRY_POLICY,
-        guard_results=(
-            GuardResult(guard=GuardName.DATA_AVAILABLE, passed=True, reason_code="ok"),
-        ),
+        guard_results=(GuardResult(guard=GuardName.DATA_AVAILABLE, passed=True, reason_code="ok"),),
         action_plan=(
             ActionPlan(action=ActionName.CREATE_ENTRY_PLAN, payload={"mode": "simultaneous"}),
         ),
@@ -58,9 +56,7 @@ def test_state_machine_valid_and_invalid_transitions() -> None:
                     reason_code="ok",
                 ),
             ),
-            action_plan=(
-                ActionPlan(action=ActionName.ACTIVATE_POSITION),
-            ),
+            action_plan=(ActionPlan(action=ActionName.ACTIVATE_POSITION),),
             data_snapshot_reference="snap-2",
         )
 

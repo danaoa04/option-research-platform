@@ -216,8 +216,7 @@ class BacktestStrategyInstanceRepository(_BulkImmutableRepository):
             select(BacktestStrategyInstanceRecord)
             .where(
                 BacktestStrategyInstanceRecord.run_row_id == run_row_id,
-                BacktestStrategyInstanceRecord.strategy_instance_id
-                == strategy_instance_id,
+                BacktestStrategyInstanceRecord.strategy_instance_id == strategy_instance_id,
                 BacktestStrategyInstanceRecord.as_of_timestamp <= as_of,
             )
             .order_by(BacktestStrategyInstanceRecord.as_of_timestamp.desc())
@@ -241,8 +240,7 @@ class BacktestPositionInstanceRepository(_BulkImmutableRepository):
             select(BacktestPositionInstanceRecord)
             .where(
                 BacktestPositionInstanceRecord.run_row_id == run_row_id,
-                BacktestPositionInstanceRecord.position_instance_id
-                == position_instance_id,
+                BacktestPositionInstanceRecord.position_instance_id == position_instance_id,
                 BacktestPositionInstanceRecord.as_of_timestamp <= as_of,
             )
             .order_by(BacktestPositionInstanceRecord.as_of_timestamp.desc())
@@ -265,8 +263,7 @@ class BacktestStateTransitionRepository(_BulkImmutableRepository):
             select(BacktestStateTransitionRecord)
             .where(
                 BacktestStateTransitionRecord.run_row_id == run_row_id,
-                BacktestStateTransitionRecord.strategy_instance_id
-                == strategy_instance_id,
+                BacktestStateTransitionRecord.strategy_instance_id == strategy_instance_id,
             )
             .order_by(BacktestStateTransitionRecord.sequence_number.asc())
         )

@@ -67,9 +67,7 @@ class PortfolioConstraintEngine:
                         threshold=constraint.threshold,
                         passed=False,
                         reason=(
-                            f"{constraint.metric_key} "
-                            f"{constraint.operator} "
-                            f"{constraint.threshold}"
+                            f"{constraint.metric_key} {constraint.operator} {constraint.threshold}"
                         ),
                         candidate_id=None,
                     )

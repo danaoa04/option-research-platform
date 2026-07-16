@@ -134,11 +134,7 @@ class BacktestAsOfQueryService:
         reports: tuple[dict[str, Any], ...],
     ) -> tuple[dict[str, Any], ...]:
         as_of_ts = _ensure_aware(as_of)
-        return tuple(
-            item
-            for item in reports
-            if _ensure_aware(item.get("timestamp")) <= as_of_ts
-        )
+        return tuple(item for item in reports if _ensure_aware(item.get("timestamp")) <= as_of_ts)
 
     def constraint_violations_as_of(
         self,
@@ -162,9 +158,7 @@ class BacktestAsOfQueryService:
     ) -> tuple[dict[str, Any], ...]:
         as_of_ts = _ensure_aware(as_of)
         return tuple(
-            item
-            for item in risk_history
-            if _ensure_aware(item.get("timestamp")) <= as_of_ts
+            item for item in risk_history if _ensure_aware(item.get("timestamp")) <= as_of_ts
         )
 
     def strategy_state_as_of(
@@ -225,9 +219,7 @@ class BacktestAsOfQueryService:
         strategy_instance_id: str,
     ) -> tuple[dict[str, Any], ...]:
         relevant = [
-            row
-            for row in rolls
-            if str(row.get("strategy_instance_id")) == strategy_instance_id
+            row for row in rolls if str(row.get("strategy_instance_id")) == strategy_instance_id
         ]
         return tuple(sorted(relevant, key=lambda row: _ensure_aware(row.get("created_at"))))
 
@@ -243,9 +235,7 @@ class BacktestAsOfQueryService:
             if str(row.get("strategy_instance_id", row.get("strategy_id", "")))
             == strategy_instance_id
         ]
-        return tuple(
-            sorted(relevant, key=lambda row: _ensure_aware(row.get("trigger_timestamp")))
-        )
+        return tuple(sorted(relevant, key=lambda row: _ensure_aware(row.get("trigger_timestamp"))))
 
     def open_and_closed_strategy_instances(
         self,
@@ -278,9 +268,7 @@ class BacktestAsOfQueryService:
     ) -> tuple[dict[str, Any], ...]:
         resolved = set(resolved_failure_keys)
         return tuple(
-            item
-            for item in integrity_failures
-            if str(item.get("failure_key", "")) not in resolved
+            item for item in integrity_failures if str(item.get("failure_key", "")) not in resolved
         )
 
     def residual_exposure_after_expiration(

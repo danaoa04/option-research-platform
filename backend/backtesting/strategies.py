@@ -174,9 +174,7 @@ def validate_definition(definition: MultiLegStrategyDefinition) -> None:
         raise StrategyDefinitionError("duplicate leg labels in strategy definition")
     for leg in definition.legs:
         if leg.quantity_ratio <= 0:
-            raise StrategyDefinitionError(
-                f"leg quantity ratio must be positive: {leg.label}"
-            )
+            raise StrategyDefinitionError(f"leg quantity ratio must be positive: {leg.label}")
         for dependency in (
             *leg.entry_dependencies,
             *leg.exit_dependencies,
@@ -274,18 +272,10 @@ class LegSelectionEngine:
             ]
         if policy.policy_type is SelectionPolicyType.LIQUIDITY:
             minimum = float(policy.parameters.get("minimum_liquidity", 0.0))
-            return [
-                item
-                for item in candidates
-                if (item.liquidity_score or 0.0) >= minimum
-            ]
+            return [item for item in candidates if (item.liquidity_score or 0.0) >= minimum]
         if policy.policy_type is SelectionPolicyType.QUALITY_SCORE:
             minimum = float(policy.parameters.get("minimum_quality", 0.0))
-            return [
-                item
-                for item in candidates
-                if (item.quality_score or 0.0) >= minimum
-            ]
+            return [item for item in candidates if (item.quality_score or 0.0) >= minimum]
         if policy.policy_type is SelectionPolicyType.PERCENT_ITM_OTM:
             percent_threshold = float(policy.parameters.get("percent", 0.0))
             direction = str(policy.parameters.get("direction", "otm"))

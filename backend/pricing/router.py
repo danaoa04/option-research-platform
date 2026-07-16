@@ -74,6 +74,4 @@ class PricingModelRouter:
                 f"underlying_type={request.underlying_type.value}"
             )
 
-        raise PricingValidationError(
-            "ambiguous or unsupported contract metadata for model routing"
-        )
+        raise PricingValidationError("ambiguous or unsupported contract metadata for model routing")

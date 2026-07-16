@@ -113,10 +113,13 @@ def test_asof_queries_nearest_prior_and_comparisons() -> None:
     assert as_of.value.timestamp == datetime(2026, 6, 1, 15, 0, tzinfo=UTC)
 
     positions: tuple[PositionState, ...] = ()
-    assert service.open_positions_as_of(
-        as_of=datetime(2026, 6, 1, 15, 30, tzinfo=UTC),
-        positions=positions,
-    ) == ()
+    assert (
+        service.open_positions_as_of(
+            as_of=datetime(2026, 6, 1, 15, 30, tzinfo=UTC),
+            positions=positions,
+        )
+        == ()
+    )
 
     audit = guard.audit_lookup(
         lookup_key="quotes",

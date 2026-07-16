@@ -29,7 +29,6 @@ def sqlite_manager():
         engine.dispose()
 
 
-
 def _sample_run() -> ValidationRunDTO:
     created_at = datetime(2026, 1, 12, 15, 30, tzinfo=UTC)
     return ValidationRunDTO(
@@ -48,7 +47,6 @@ def _sample_run() -> ValidationRunDTO:
         metadata={"source": "fixture"},
         created_at=created_at,
     )
-
 
 
 def _sample_candidate_results() -> list[ValidationCandidateResultDTO]:
@@ -85,7 +83,6 @@ def _sample_candidate_results() -> list[ValidationCandidateResultDTO]:
     ]
 
 
-
 def _sample_folds() -> list[ValidationFoldDTO]:
     return [
         ValidationFoldDTO(
@@ -107,7 +104,6 @@ def _sample_folds() -> list[ValidationFoldDTO]:
             warnings=["low sample size"],
         ),
     ]
-
 
 
 def test_strategy_validation_persistence_round_trip(
@@ -132,7 +128,6 @@ def test_strategy_validation_persistence_round_trip(
     assert [fold.split_id for fold in stored_folds] == ["fold-1", "fold-2"]
     assert stored_results[0].robustness_score == {"score": 0.77}
     assert stored_folds[1].warnings == ["low sample size"]
-
 
 
 def test_validation_checksum_is_order_stable() -> None:

@@ -327,9 +327,7 @@ class ValidationEngine:
             if method == "block":
                 samples.append(_block_bootstrap(values, block_size=block_size, rng=rng))
             elif method == "stationary":
-                samples.append(
-                    _stationary_bootstrap(values, block_size=block_size, rng=rng)
-                )
+                samples.append(_stationary_bootstrap(values, block_size=block_size, rng=rng))
             else:
                 samples.append([values[rng.randrange(len(values))] for _ in values])
         means = [_mean(sample) for sample in samples]

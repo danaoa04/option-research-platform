@@ -116,9 +116,7 @@ class BacktestBenchmarkRunner:
                 guard_results=(
                     GuardResult(guard=GuardName.DATA_AVAILABLE, passed=True, reason_code="ok"),
                 ),
-                action_plan=(
-                    ActionPlan(action=ActionName.CREATE_ENTRY_PLAN, payload={}),
-                ),
+                action_plan=(ActionPlan(action=ActionName.CREATE_ENTRY_PLAN, payload={}),),
                 data_snapshot_reference=f"snap-{idx}",
             )
         elapsed = perf_counter() - start

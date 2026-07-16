@@ -142,11 +142,14 @@ def validate_request(
     if market_price <= 0.0:
         raise ImpliedVolatilityValidationError("market price must be positive")
 
-    intrinsic = intrinsic_value(
-        pricing_request.spot,
-        pricing_request.strike,
-        pricing_request.option_type,
-    ) * pricing_request.multiplier
+    intrinsic = (
+        intrinsic_value(
+            pricing_request.spot,
+            pricing_request.strike,
+            pricing_request.option_type,
+        )
+        * pricing_request.multiplier
+    )
 
     theoretical_upper = _theoretical_upper_bound(request, model_name, t)
 

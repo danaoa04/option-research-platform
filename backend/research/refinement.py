@@ -34,7 +34,7 @@ class DeterministicRefinementEngine:
             scored,
             key=lambda row: (-float(row.metrics.get(objective, 0.0)), row.case.case_id),
         )
-        top = ordered[:max(top_k, 1)]
+        top = ordered[: max(top_k, 1)]
 
         refined: dict[str, tuple[float | int | str, ...]] = {}
         for key, values in grid.parameters.items():

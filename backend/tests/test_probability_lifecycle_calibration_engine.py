@@ -126,8 +126,7 @@ def test_historical_probability_outputs_are_labeled_and_confident() -> None:
 
     assert report.probability_of_profit.probability_type == "historical_probability_of_profit"
     assert (
-        report.target_profit_probability.probability_type
-        == "historical_target_profit_probability"
+        report.target_profit_probability.probability_type == "historical_target_profit_probability"
     )
     assert report.probability_of_profit.sample_size == 3
     assert report.probability_of_profit.confidence_interval is not None
