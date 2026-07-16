@@ -18,3 +18,14 @@
 - [ ] Sprint 11C backtest, experiment, optimization, walk-forward, and CPCV views
 - [ ] Sprint 11D portfolio, risk lab, replay, and institutional reports
 - [ ] Sprint 11E volatility research and interactive 3D surface
+
+## Sprint 11B strategy research workflow
+
+- [x] Typed underlying, expiration, option-chain, contract, leg, policy, preview, and workspace models
+- [x] Deterministic synthetic equity, ETF, index, earnings, stale, and incomplete-quote fixtures
+- [x] Calls/strike/puts chain table with sticky headers/strike, ATM and moneyness states, and accessible selection
+- [x] Strategy templates, explicit leg roles, add/remove controls, and duplicate-leg prevention
+- [x] Synthetic premium, Greeks, liquidity, payoff-summary, margin, policy, and diagnostics boundaries
+- [x] Typed abortable strategy API client boundary for chain, validation, previews, and workspace saves
+- [x] Strategy workspace route and deterministic frontend interaction test
+- [ ] Backend endpoint wiring for live chain, pricing, Greeks, margin, policies, and workspace persistence

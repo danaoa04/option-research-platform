@@ -73,3 +73,15 @@ authorization and confirmation boundaries; secrets never enter browser storage.
 Keyboard foundations reserve Command/Ctrl-K for the launcher and support semantic link/button/table
 navigation today. Refresh, selected-job opening, dialogs, and provider-tab switching extend through
 the existing hotkey boundary as those interactions become live.
+
+## Strategy workspace
+
+Sprint 11B uses a responsive split workspace: chain research on the left and the typed strategy
+draft on the right. Calls and puts remain text-labelled and do not depend on colour. Contract rows
+carry provider, certification, quote quality, exercise, settlement, multiplier, and adjusted status.
+Immediate fixture premium and Greek aggregation is labelled synthetic and must be reconciled with
+backend preview contracts before research use. Missing quotes never produce a net premium.
+
+Leg roles are explicit and survive ordering changes. Policy presets are fixture defaults, not advice
+or guarantees. Backend validation remains authoritative for structure, margin, assignment, pricing,
+roll conflicts, and workspace persistence.

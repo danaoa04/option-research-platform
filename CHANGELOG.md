@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 11B typed option-chain and strategy models, synthetic chain fixtures, a professional
+  calls/puts explorer, template-driven multi-leg builder, payoff/Greeks/liquidity/policy preview
+  boundaries, strategy API contracts, responsive styling, and frontend interaction coverage.
+
 - Added Sprint 11A React/Vite/Tauri desktop foundation with a professional research-workstation
   shell, strict typed provider API client, explicit offline demo mode, provider/job/alert views,
   operational route boundaries, accessible design tokens, frontend tests, and build commands.
