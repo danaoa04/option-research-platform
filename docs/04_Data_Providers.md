@@ -105,3 +105,23 @@ Provider consensus requires three or more observations and a strict majority. Cr
 exercise, settlement, and adjusted-deliverable conflicts remain unresolved. Schema-aware monitoring
 calculates failure, retry, pagination, quarantine, divergence, identity, stale-data, and checksum
 rates without delivering external alerts.
+
+## Production runtime controls
+
+Sprint 10E introduces a central network policy whose default is `offline`. Fixture and cached
+operations remain available without credentials; authenticated metadata and download modes require
+explicit provider authorization. Licensed samples register metadata and checksums without retaining
+content or paths by default. Deterministic schedules, worker leases, health, freshness, alert
+deduplication, retention dry runs, gap records, and operational-readiness reports are exposed through
+backend contracts. Provider endpoints remain configuration-driven and unvalidated until a user
+supplies credentials and licensed samples.
+
+```mermaid
+flowchart LR
+  P[Network policy] --> A{Authorized?}
+  A -->|no| O[Offline fixture/cache path]
+  A -->|yes| C[Credential presence validation]
+  C --> S[Scheduled job and worker lease]
+  S --> H[Health, freshness, alerts]
+  H --> R[Operational readiness]
+```

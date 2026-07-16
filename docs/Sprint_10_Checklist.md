@@ -77,3 +77,14 @@
 - [x] Schema-aware monitoring snapshots and structured alerts
 - [x] Opt-in deterministic fixture benchmark boundary
 - [x] No network, proprietary data, secrets, fabricated IV, or fabricated Greeks
+
+## Sprint 10E production runtime
+
+- [x] Deny-by-default network policy with metadata/download authorization separation
+- [x] Credential-presence and licensed-sample metadata boundaries without persisted secrets/content
+- [x] Deterministic schedules, duplicate-run prevention, worker leases, and heartbeats
+- [x] Provider health, freshness, deduplicated alerts, gaps, and readiness contracts
+- [x] Dry-run retention cleanup with path and symlink safety
+- [x] Additive migration `0022_provider_runtime_operations` and SQLite round-trip test
+- [x] CLI/API runtime command and service boundaries
+- [ ] User validation of authenticated endpoints, credentials, and licensed provider schemas

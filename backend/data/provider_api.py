@@ -9,6 +9,13 @@ from backend.data.integration.export import export_html, export_json
 
 from .provider_monitoring import ProviderMonitoringSnapshot, calculate_monitoring
 from .provider_operations import ProviderJobStatus, ProviderOperationsService
+from .provider_runtime import (
+    AlertService,
+    NetworkPolicy,
+    ProviderSchedule,
+    SchedulerService,
+    calculate_health,
+)
 from .providers import CboeProvider, DatabentoProvider, OratsProvider, PolygonProvider
 from .reconciliation import (
     ConsensusResult,
@@ -35,6 +42,9 @@ class ApiResponse:
 class ProviderApiService:
     def __init__(self, operations: ProviderOperationsService | None = None) -> None:
         self.operations = operations or ProviderOperationsService()
+        self.network_policy = NetworkPolicy()
+        self.scheduler = SchedulerService()
+        self.alerts = AlertService()
 
     def providers(self) -> ApiResponse:
         return ApiResponse("1.0.0", tuple(sorted(PROVIDERS)))
@@ -93,6 +103,24 @@ class ProviderApiService:
     def monitoring(self, provider: str, **metrics: int) -> ApiResponse:
         snapshot: ProviderMonitoringSnapshot = calculate_monitoring(provider, **metrics)
         return ApiResponse("1.0.0", snapshot)
+
+    def network_policy_status(self) -> ApiResponse:
+        return ApiResponse("1.0.0", self.network_policy)
+
+    def schedules(self) -> ApiResponse:
+        values = tuple(sorted(self.scheduler.schedules.values(), key=lambda item: item.schedule_id))
+        return ApiResponse("1.0.0", values)
+
+    def create_schedule(self, schedule: ProviderSchedule) -> ApiResponse:
+        self.scheduler.add(schedule)
+        return ApiResponse("1.0.0", schedule)
+
+    def health(self, provider: str, metrics: dict[str, float]) -> ApiResponse:
+        return ApiResponse("1.0.0", calculate_health(provider, metrics))
+
+    def alert_history(self) -> ApiResponse:
+        values = tuple(sorted(self.alerts.alerts.values(), key=lambda item: item.fingerprint))
+        return ApiResponse("1.0.0", values)
 
     def export_json(self, value: Any) -> str:
         return export_json(value, pretty=True, redact=True)

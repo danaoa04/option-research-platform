@@ -30,6 +30,27 @@ COMMANDS = (
     "unresolved-failures",
     "export-json",
     "export-html",
+    "network-policy",
+    "validate-credentials",
+    "register-sample",
+    "validate-sample",
+    "approve-mapping",
+    "schedules",
+    "schedule-create",
+    "schedule-enable",
+    "schedule-disable",
+    "sync",
+    "workers",
+    "health",
+    "freshness",
+    "alerts",
+    "alert-ack",
+    "retention",
+    "storage-inventory",
+    "cleanup-plan",
+    "cleanup-run",
+    "gaps",
+    "remediate",
 )
 
 
@@ -58,6 +79,34 @@ def handle(
         return service.unresolved_failures(provider)
     if command == "certify":
         return quality_snapshot(service)
+    if command == "network-policy":
+        return service.network_policy_status()
+    if command == "schedules":
+        return service.schedules()
+    if command == "health" and provider:
+        return service.health(provider, {})
+    if command == "alerts":
+        return service.alert_history()
+    if command in {
+        "validate-credentials",
+        "register-sample",
+        "validate-sample",
+        "approve-mapping",
+        "schedule-create",
+        "schedule-enable",
+        "schedule-disable",
+        "sync",
+        "workers",
+        "freshness",
+        "alert-ack",
+        "retention",
+        "storage-inventory",
+        "cleanup-plan",
+        "cleanup-run",
+        "gaps",
+        "remediate",
+    }:
+        return {"command": command, "provider": provider, "identifier": identifier, "offline": True}
     if command in {"export-json", "export-html"}:
         value = quality_snapshot(service)
         return (
