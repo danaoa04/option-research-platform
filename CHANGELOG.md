@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 11E deterministic volatility workspace with typed smile and skew observations, term
+  and forward volatility, historical/realised comparisons, event overlays, surface catalogue and
+  builder, supplied-node interactive perspective view, accessibility tables, comparisons, research
+  links, report/export boundaries, and missing-node integrity tests.
+
 - Added Sprint 11D deterministic offline portfolio and risk workflows: provenance-labelled portfolio
   metrics, positions and strategy cycles, exposure views, scenario configuration and matrices, limit
   breaches, research-only remediation comparisons, replay branching, institutional report previews,

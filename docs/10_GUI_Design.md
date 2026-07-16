@@ -94,6 +94,16 @@ The interface repeatedly identifies fixture portfolios and model-derived scenari
 launch and replay branch creation require deliberate input. Research remediation preferences cannot
 be converted into orders.
 
+## Sprint 11E volatility workspace
+
+The volatility workspace uses tabbed overview, smile, skew, term, historical, surface, comparison,
+builder, and report views. Raw, interpolated, extrapolated, failed, and missing states use both text
+and distinct visual treatment. Every chart has a semantic table or structured summary.
+
+The perspective surface supports supplied-node selection, labelled axes, camera rotation/reset,
+visual modes, and missing-region disclosure. Its complete node table is the authoritative fallback,
+so WebGL or motion is never required to access the research data.
+
 
 ## Sprint 8A UI Requirements
 

@@ -160,3 +160,13 @@ American diagnostics extension:
 
 - Surface interpolation is deterministic and policy-based; no stochastic surface model calibration is included in this sprint.
 - Spread optimizer, PoP optimizer, and walk-forward optimizer are still future scope.
+# Sprint 11E workspace integration
+
+The volatility GUI consumes existing implied-volatility observations, solver status, smile nodes,
+surface nodes, historical estimators, and quality diagnostics. Pricing, solving, smoothing,
+interpolation, extrapolation, calibration, and arbitrage checks remain backend responsibilities.
+
+Synthetic fixture surfaces contain 15 explicit grid locations: 14 supplied IV values and one
+missing node. The frontend creates visual geometry for the 14 values only. Interpolated and
+extrapolated nodes are labelled, missing regions remain absent, and checksums are displayed in node
+details and catalogues.

@@ -87,6 +87,17 @@ drafts remain separate from server state in a dedicated local-storage key.
 management candidates, replay events, and report history. It never imports Python models or embeds
 pricing, aggregation, limit, ranking, or narrative-generation logic.
 
+### Sprint 11E volatility boundary
+
+`VolatilityClient` provides abort-aware workspace, surface-validation/build, and report-preview
+operations. Typed frontend records preserve backend concepts for solver convergence, smile axes,
+total variance, forward-variance rejection, node kind, calibration, quality, and checksums.
+
+No chart dependency was added. The current offline perspective renderer uses semantic HTML, SVG,
+and CSS transforms over supplied nodes only, avoiding telemetry, CDN resources, and bundle-heavy
+WebGL dependencies. A production WebGL renderer remains a Sprint 11F decision after profiling; the
+node table and 2D views remain mandatory fallbacks regardless of renderer choice.
+
 Typed contracts and TODO placeholders are defined for:
 
 - health

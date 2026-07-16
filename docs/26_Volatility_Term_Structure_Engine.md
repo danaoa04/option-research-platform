@@ -255,3 +255,17 @@ The following capabilities are explicitly deferred beyond Sprint 4F:
 - ML-driven parameter search
 - Distributed optimization orchestration
 - Hyperparameter walk-forward optimizer tuning
+# Sprint 11E presentation contract
+
+The desktop presents backend-provided ATM term points, realised/historical references, event
+premiums, classifications, and adjacent-expiration forward-volatility diagnostics. It never derives
+forward variance in the browser. Negative forward variance is shown as rejected with its diagnostic,
+rather than converted into a volatility value.
+
+```mermaid
+flowchart LR
+    Nodes[Certified expiration nodes] --> TotalVariance[Backend total variance]
+    TotalVariance --> Classify[Term classification]
+    TotalVariance --> Forward[Forward variance validation]
+    Forward --> UI[Typed term and forward read models]
+```

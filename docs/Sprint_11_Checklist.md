@@ -17,7 +17,7 @@
 - [x] Sprint 11B option chain, strategy builder, payoff/Greeks, and policy editors
 - [x] Sprint 11C offline backtest, experiment, optimization, walk-forward, and CPCV presentation views
 - [x] Sprint 11D offline portfolio, risk lab, replay, and institutional-report presentation
-- [ ] Sprint 11E volatility research and interactive 3D surface
+- [x] Sprint 11E offline volatility research and supplied-node surface explorer
 
 ## Sprint 11B strategy research workflow
 
@@ -54,3 +54,16 @@
 - [x] Institutional report history, semantic preview, provenance, limitations, and export boundaries
 - [x] Abort-aware typed fixture API client and deterministic frontend interaction tests
 - [ ] Production API/query hooks, durable workspace mutations, polling, virtualization, and desktop saves
+
+## Sprint 11E volatility research workflow
+
+- [x] Typed synthetic overview with provider, snapshot, certification, freshness, and metric provenance
+- [x] Smile axes, raw/interpolated/extrapolated node labels, selection, detail, and table alternative
+- [x] Skew summaries, comparability warnings, term classification, and forward-variance rejection
+- [x] Historical/realised estimator presentation, IV premium caveat, and event overlays
+- [x] Surface catalogue, comparison, quality warnings, and explicit unmatched coverage
+- [x] Explicit-confirmation surface builder using backend-supported model vocabulary
+- [x] Interactive supplied-node perspective explorer, camera reset, missing-region labels, and full table
+- [x] Strategy, optimization, scenario, replay, reporting, and deterministic export boundaries
+- [x] Abort-aware fixture API client and tests protecting missing-node and extrapolation semantics
+- [ ] Production WebGL renderer, API hooks, durable workspaces, virtualization, and licensed-data policy wiring
