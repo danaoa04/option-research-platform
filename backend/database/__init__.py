@@ -124,6 +124,7 @@ from .dtos import (
     ExperimentComparisonDTO,
     ExperimentDTO,
     HistoricalScenarioMetadataDTO,
+    InstitutionalResearchArtifactDTO,
     InterestRateCurveDTO,
     NormalizedCorporateActionDTO,
     OptimizationCandidateResultDTO,
@@ -209,6 +210,7 @@ from .execution_calibration import (
     deterministic_execution_calibration_checksum,
 )
 from .ingestion import BulkIngestionService, ImportResult, IngestionConfig, UpsertPolicy
+from .institutional_research import InstitutionalResearchPersistenceService
 from .margining import (
     BacktestMarginPersistenceService,
     BacktestMarginQueryService,
@@ -417,6 +419,7 @@ __all__ = [
     "ImportResult",
     "IngestionConfig",
     "InterestRateCurveDTO",
+    "InstitutionalResearchArtifactDTO",
     "OptionContractDTO",
     "OptimizationCandidateResultDTO",
     "OptimizationMutationError",
@@ -471,6 +474,7 @@ __all__ = [
     "RecordValidator",
     "ResearchMutationError",
     "ResearchPersistenceService",
+    "InstitutionalResearchPersistenceService",
     "ReplayWorkspaceMutationError",
     "ReplayWorkspacePersistenceService",
     "ReplayWorkspaceQueryService",

@@ -3369,6 +3369,29 @@ class WorkspaceMetadataRecord(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class InstitutionalResearchArtifactRecord(Base):
+    """Immutable, versioned payloads for analytics, reports, and validation views."""
+
+    __tablename__ = "institutional_research_artifacts"
+    __table_args__ = (
+        UniqueConstraint("artifact_id"),
+        Index("ix_institutional_artifacts_experiment", "experiment_id", "artifact_kind"),
+        Index("ix_institutional_artifacts_created", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    artifact_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    experiment_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    artifact_kind: Mapped[str] = mapped_column(String(64), nullable=False)
+    schema_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    payload_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata", JSON, nullable=False, default=dict
+    )
+    replay_links: Mapped[list[dict[str, str]]] = mapped_column(JSON, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class BacktestAccountConfigurationRecord(Base):
     __tablename__ = "backtest_account_configurations"
     __table_args__ = (

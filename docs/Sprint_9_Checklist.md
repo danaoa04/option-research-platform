@@ -24,3 +24,24 @@
 - Replay workspace persistence is deterministic and offline only; no live API or broker dependencies are introduced.
 - New typed read-model methods in risk queries are additive and do not remove existing dict-style methods.
 - Replay decision explanations currently store structured JSON payloads and rely on upstream policy/explainer producers for semantic detail.
+
+## Sprint 9C - Institutional Research Layer
+
+- [x] Added offline portfolio analytics for returns, rolling risk metrics, capture ratios, trade outcomes, capital/margin efficiency, and lifecycle frequencies.
+- [x] Added dimension-preserving attribution, portfolio diagnostics, strategy comparison, robustness evidence, and an explainable research score that remains unavailable when required evidence is missing.
+- [x] Added versioned backend contracts for analytics, attribution, diagnostics, research score, validation dashboard, reports, and completed workspace views.
+- [x] Added versioned institutional research artifact persistence and migration `0019_institutional_research_layer.py`; artifact kinds cover analytics snapshots, attribution summaries, research scores, robustness reports, diagnostics, reports, layouts, validation summaries, and workspace history.
+- [x] Report artifacts retain typed links to replay decisions, scenarios, rolls, assignments, optimization, and validation events.
+- [x] Added deterministic analytics and artifact round-trip tests. All outputs remain offline and research-only.
+
+```mermaid
+flowchart LR
+    Replay[Replay / Experiments] --> Analytics[Portfolio Analytics]
+    Replay --> Attribution[Attribution & Diagnostics]
+    Analytics --> Robustness[Robustness & Validation]
+    Attribution --> Robustness
+    Robustness --> Score[Research Quality Score]
+    Score --> Reports[Institutional Report Contracts]
+    Reports --> Artifacts[(Versioned Research Artifacts)]
+    Artifacts --> Workspace[Research Workspace]
+```

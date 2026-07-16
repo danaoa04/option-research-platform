@@ -1,6 +1,15 @@
 """Calendar and multi-expiry research analytics package."""
 
 from .analytics import HistoricalAnalyticsEngine
+from .api_contracts import (
+    AnalyticsContractV1,
+    AttributionContractV1,
+    DiagnosticsContractV1,
+    ReportContractV1,
+    ResearchScoreContractV1,
+    ValidationDashboardContractV1,
+    WorkspaceContractV1,
+)
 from .benchmarks import CalendarResearchBenchmarkRunner, ResearchBenchmarkResult
 from .calibration import CalibrationBucket, CalibrationDiagnostics, ScoreCalibrationEngine
 from .engine import CalendarResearchEngine
@@ -13,6 +22,23 @@ from .exceptions import (
     SparseSampleWarningError,
 )
 from .expected_value import ExpectedValueComparison, ExpectedValueEngine, ExpectedValueResult
+from .institutional import (
+    AnalyticsSnapshot,
+    AttributionEngine,
+    PortfolioAnalyticsEngine,
+    PortfolioDiagnosticsEngine,
+    ResearchObservation,
+    ResearchScore,
+    ResearchScoreEngine,
+    RobustnessEngine,
+    RobustnessReport,
+    StrategyComparisonEngine,
+    audit_decision,
+)
+from .institutional_benchmarks import (
+    InstitutionalResearchBenchmarkResult,
+    InstitutionalResearchBenchmarkRunner,
+)
 from .lifecycle import (
     LifecycleEvaluationResult,
     LifecycleEvent,
@@ -61,6 +87,10 @@ from .strategies import StrategyFactory, normalize_dte_targets
 from .sweep import ParameterSweepEngine
 
 __all__ = [
+    "AnalyticsContractV1",
+    "AnalyticsSnapshot",
+    "AttributionContractV1",
+    "AttributionEngine",
     "CalendarOpportunityScorer",
     "CalendarResearchBenchmarkRunner",
     "CalendarResearchEngine",
@@ -69,6 +99,7 @@ __all__ = [
     "CalibrationError",
     "DEFAULT_DTE_BUCKETS",
     "DeterministicRefinementEngine",
+    "DiagnosticsContractV1",
     "ExpectedValueComparison",
     "ExpectedValueEngine",
     "ExpectedValueResult",
@@ -80,6 +111,8 @@ __all__ = [
     "HistoricalRegimeEngine",
     "HistoricalRegimeFlag",
     "HistoricalRegimeRecord",
+    "InstitutionalResearchBenchmarkResult",
+    "InstitutionalResearchBenchmarkRunner",
     "LifecycleEvaluationResult",
     "LifecycleEvent",
     "LifecyclePolicyConfig",
@@ -97,6 +130,8 @@ __all__ = [
     "ParameterSweepCase",
     "ParameterSweepEngine",
     "ParameterSweepGrid",
+    "PortfolioAnalyticsEngine",
+    "PortfolioDiagnosticsEngine",
     "ProbabilityResult",
     "ProbabilityType",
     "RankingCandidate",
@@ -106,7 +141,14 @@ __all__ = [
     "RegimeConditionedRankingEngine",
     "RefinementError",
     "ResearchBenchmarkResult",
+    "ResearchObservation",
+    "ResearchScore",
+    "ResearchScoreContractV1",
+    "ResearchScoreEngine",
     "ResearchValidationError",
+    "ReportContractV1",
+    "RobustnessEngine",
+    "RobustnessReport",
     "ScoredSweepCase",
     "ScoreCalibrationEngine",
     "SparseSampleWarningError",
@@ -114,7 +156,11 @@ __all__ = [
     "StrategyLeg",
     "StrategyStatePoint",
     "StrategyStateSeries",
+    "StrategyComparisonEngine",
     "StrategyType",
+    "ValidationDashboardContractV1",
+    "WorkspaceContractV1",
+    "audit_decision",
     "to_model_outcomes_as_states",
     "normalize_dte_targets",
 ]

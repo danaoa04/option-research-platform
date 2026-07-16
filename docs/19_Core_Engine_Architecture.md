@@ -879,3 +879,21 @@ flowchart LR
 ```
 
 Known limitations: research-only assumptions, deterministic offline behavior, and no live broker/API connectivity.
+
+## Sprint 9C Institutional Research Extension
+
+The institutional research layer is additive to replay and experiment workspaces. It consumes recorded observations, preserving attribution dimensions and replay references; it does not connect live providers or brokers. A research-quality score is emitted only when each required evidence component is present, avoiding fabricated confidence.
+
+```mermaid
+flowchart LR
+    Observations --> Analytics
+    Observations --> Attribution
+    Observations --> Diagnostics
+    Analytics --> Robustness
+    Attribution --> Reports
+    Diagnostics --> Reports
+    Robustness --> Quality[Research Score]
+    Quality --> Reports
+    Reports --> Store[(Institutional Research Artifacts)]
+    Store --> Workspace
+```

@@ -2428,3 +2428,15 @@ class WorkspaceMetadataDTO:
     workspace_key: str
     value_json: dict[str, Any]
     created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class InstitutionalResearchArtifactDTO:
+    artifact_id: str
+    experiment_id: str
+    artifact_kind: str
+    schema_version: str
+    payload_json: dict[str, Any]
+    metadata_json: dict[str, Any]
+    replay_links: list[dict[str, str]]
+    created_at: datetime
