@@ -130,6 +130,24 @@ class PerformanceAnalytics:
     capital_utilization: float
 
 
+@dataclass(slots=True, frozen=True)
+class RollAnalyticsResult:
+    roll_count: int
+    average_credit: float
+    average_debit: float
+    cumulative_credit: float
+    cumulative_debit: float
+    cumulative_fees: float
+
+
+@dataclass(slots=True, frozen=True)
+class ConversionAnalyticsResult:
+    conversion_count: int
+    cumulative_cost: float
+    success_rate: float
+    failure_rate: float
+
+
 @dataclass(slots=True)
 class BacktestAnalyticsService:
     guard: NoLookAheadGuard
@@ -359,6 +377,53 @@ class BacktestAnalyticsService:
             payoff_ratio=payoff_ratio,
             expectancy=expectancy,
             capital_utilization=capital_utilization,
+        )
+
+    def roll_analytics(
+        self,
+        *,
+        roll_rows: tuple[dict[str, Any], ...],
+    ) -> RollAnalyticsResult:
+        credits = [
+            float(item.get("estimated_net_credit_or_debit", 0.0))
+            for item in roll_rows
+            if float(item.get("estimated_net_credit_or_debit", 0.0)) > 0
+        ]
+        debits = [
+            abs(float(item.get("estimated_net_credit_or_debit", 0.0)))
+            for item in roll_rows
+            if float(item.get("estimated_net_credit_or_debit", 0.0)) < 0
+        ]
+        fees = [float(item.get("fees", 0.0)) for item in roll_rows]
+        return RollAnalyticsResult(
+            roll_count=len(roll_rows),
+            average_credit=(sum(credits) / len(credits)) if credits else 0.0,
+            average_debit=(sum(debits) / len(debits)) if debits else 0.0,
+            cumulative_credit=sum(credits),
+            cumulative_debit=sum(debits),
+            cumulative_fees=sum(fees),
+        )
+
+    def conversion_analytics(
+        self,
+        *,
+        conversion_rows: tuple[dict[str, Any], ...],
+    ) -> ConversionAnalyticsResult:
+        if not conversion_rows:
+            return ConversionAnalyticsResult(
+                conversion_count=0,
+                cumulative_cost=0.0,
+                success_rate=0.0,
+                failure_rate=0.0,
+            )
+        costs = [float(item.get("conversion_cost", 0.0)) for item in conversion_rows]
+        compatible = [bool(item.get("compatible", False)) for item in conversion_rows]
+        success_rate = sum(1 for item in compatible if item) / len(compatible)
+        return ConversionAnalyticsResult(
+            conversion_count=len(conversion_rows),
+            cumulative_cost=sum(costs),
+            success_rate=success_rate,
+            failure_rate=1.0 - success_rate,
         )
 
     def as_of(

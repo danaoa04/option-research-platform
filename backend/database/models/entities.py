@@ -1549,6 +1549,773 @@ class StrategyPolicyChecksumRecord(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class RollPolicyRegistryRecord(Base):
+    __tablename__ = "roll_policy_registry"
+    __table_args__ = (
+        UniqueConstraint("canonical_identifier"),
+        Index("ix_roll_policy_registry_family", "default_priority", "canonical_identifier"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    canonical_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    version: Mapped[str] = mapped_column(String(48), nullable=False)
+    aliases_json: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    supported_strategy_families: Mapped[list[str]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    supported_lifecycle_states: Mapped[list[str]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    supported_exercise_styles: Mapped[list[str]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    supported_settlement_types: Mapped[list[str]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    required_market_data: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    required_volatility_data: Mapped[list[str]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    parameter_schema_json: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    default_priority: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    plugin_namespace: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    deprecated: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    replacement_identifier: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    known_limitations: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class RollPolicyAliasRecord(Base):
+    __tablename__ = "roll_policy_aliases"
+    __table_args__ = (
+        UniqueConstraint("alias"),
+        Index("ix_roll_policy_aliases_identifier", "canonical_identifier", "alias"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    canonical_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    alias: Mapped[str] = mapped_column(String(160), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class BacktestRollRequestRecord(Base):
+    __tablename__ = "backtest_roll_requests"
+    __table_args__ = (
+        UniqueConstraint("run_id", "request_id"),
+        Index("ix_backtest_roll_requests_run_ts", "run_id", "requested_timestamp"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    request_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    strategy_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    position_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    source_legs_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    preserved_legs_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    close_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+    target_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+    target_expiration_policy: Mapped[str] = mapped_column(String(128), nullable=False)
+    target_strike_policy: Mapped[str] = mapped_column(String(128), nullable=False)
+    requested_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    trigger: Mapped[str] = mapped_column(String(128), nullable=False)
+    reason_code: Mapped[str] = mapped_column(String(128), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+
+class BacktestRollCandidateRecord(Base):
+    __tablename__ = "backtest_roll_candidates"
+    __table_args__ = (
+        UniqueConstraint("run_id", "candidate_id"),
+        Index("ix_backtest_roll_candidates_run", "run_id", "request_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    request_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    candidate_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    roll_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    target_legs_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    estimated_net_credit_or_debit: Mapped[Decimal | None] = mapped_column(
+        Numeric(20, 8),
+        nullable=True,
+    )
+    liquidity_score: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    quality_score: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    diagnostics_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestRollEligibilityRecord(Base):
+    __tablename__ = "backtest_roll_eligibility_results"
+    __table_args__ = (
+        UniqueConstraint("run_id", "eligibility_id"),
+        Index("ix_backtest_roll_eligibility_run", "run_id", "request_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    request_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    candidate_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    eligibility_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    eligible: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    rejections_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    diagnostics_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestRollExecutionRecord(Base):
+    __tablename__ = "backtest_roll_executions"
+    __table_args__ = (
+        UniqueConstraint("run_id", "execution_id"),
+        Index("ix_backtest_roll_executions_run", "run_id", "plan_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    execution_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    plan_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    request_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    execution_style: Mapped[str] = mapped_column(String(64), nullable=False)
+    all_or_none_research: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    sequential_legging: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    requested_net_price: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+
+class BacktestRollFillRecord(Base):
+    __tablename__ = "backtest_roll_fills"
+    __table_args__ = (
+        UniqueConstraint("run_id", "execution_id", "fill_timestamp", "leg_label"),
+        Index("ix_backtest_roll_fills_run_ts", "run_id", "fill_timestamp"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    execution_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    leg_label: Mapped[str] = mapped_column(String(128), nullable=False)
+    fill_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    fill_quantity: Mapped[int] = mapped_column(Integer, nullable=False)
+    fill_price: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    fees: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    slippage: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    diagnostics_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestPartialRollStateRecord(Base):
+    __tablename__ = "backtest_partial_roll_states"
+    __table_args__ = (
+        UniqueConstraint("run_id", "state_id"),
+        Index("ix_backtest_partial_roll_states_run", "run_id", "plan_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    state_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    plan_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    temporary_naked_exposure: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    residual_quantities_json: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    risk_escalated: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    timeout_seconds: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+
+class BacktestRollReconciliationRecord(Base):
+    __tablename__ = "backtest_roll_reconciliations"
+    __table_args__ = (
+        UniqueConstraint("run_id", "reconciliation_id"),
+        Index("ix_backtest_roll_reconciliations_run", "run_id", "plan_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    reconciliation_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    plan_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    status: Mapped[str] = mapped_column(String(64), nullable=False)
+    retry_scheduled: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    cancel_scheduled: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    fallback_close_scheduled: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    state_transition: Mapped[str] = mapped_column(String(64), nullable=False)
+    recorded_temporary_exposure: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    diagnostics_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestBasisTransferRecord(Base):
+    __tablename__ = "backtest_basis_transfers"
+    __table_args__ = (
+        UniqueConstraint("run_id", "basis_transfer_id"),
+        Index("ix_backtest_basis_transfers_run", "run_id", "plan_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    basis_transfer_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    plan_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    original_basis: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    cumulative_credits: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    cumulative_debits: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    fees: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    realized_pnl: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    unrealized_pnl: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    basis_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestConversionPlanRecord(Base):
+    __tablename__ = "backtest_conversion_plans"
+    __table_args__ = (
+        UniqueConstraint("run_id", "conversion_id"),
+        Index("ix_backtest_conversion_plans_run", "run_id", "strategy_instance_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    conversion_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    source_strategy: Mapped[str] = mapped_column(String(128), nullable=False)
+    target_strategy: Mapped[str] = mapped_column(String(128), nullable=False)
+    legs_closed_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    legs_preserved_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    legs_opened_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    conversion_cost: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    compatible: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    warnings_json: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    reproducibility_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestConversionExecutionRecord(Base):
+    __tablename__ = "backtest_conversion_executions"
+    __table_args__ = (
+        UniqueConstraint("run_id", "execution_id"),
+        Index("ix_backtest_conversion_executions_run", "run_id", "conversion_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    execution_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    conversion_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    execution_status: Mapped[str] = mapped_column(String(64), nullable=False)
+    execution_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class BacktestManagementComparisonRecord(Base):
+    __tablename__ = "backtest_management_comparisons"
+    __table_args__ = (
+        UniqueConstraint("run_id", "comparison_id"),
+        Index("ix_backtest_management_comparisons_run", "run_id", "strategy_instance_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    comparison_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    strategy_instance_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    alternatives_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    selected_action: Mapped[str] = mapped_column(String(64), nullable=False)
+    diagnostics_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class BacktestRollAnalyticsRecord(Base):
+    __tablename__ = "backtest_roll_analytics"
+    __table_args__ = (
+        UniqueConstraint("run_id", "analytics_id"),
+        Index("ix_backtest_roll_analytics_run_ts", "run_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    analytics_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    roll_metrics_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class BacktestConversionAnalyticsRecord(Base):
+    __tablename__ = "backtest_conversion_analytics"
+    __table_args__ = (
+        UniqueConstraint("run_id", "analytics_id"),
+        Index("ix_backtest_conversion_analytics_run_ts", "run_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    analytics_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    conversion_metrics_json: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyManagementOptimizerContractRecord(Base):
+    __tablename__ = "strategy_management_optimizer_contracts"
+    __table_args__ = (
+        UniqueConstraint("contract_id"),
+        Index("ix_strategy_mgmt_optimizer_contracts_strategy", "strategy_identifier", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    contract_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    strategy_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    contract_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyManagementChecksumRecord(Base):
+    __tablename__ = "strategy_management_checksums"
+    __table_args__ = (
+        UniqueConstraint("checksum_key"),
+        Index("ix_strategy_management_checksums_created", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    checksum_key: Mapped[str] = mapped_column(String(160), nullable=False)
+    checksum_value: Mapped[str] = mapped_column(String(256), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class RiskFactorDefinitionRecord(Base):
+    __tablename__ = "risk_factor_definitions"
+    __table_args__ = (
+        UniqueConstraint("factor_id"),
+        Index("ix_risk_factor_definitions_factor", "factor_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    factor_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    unit: Mapped[str] = mapped_column(String(64), nullable=False)
+    shock_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    supported_instruments: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    supported_aggregation: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    transformation_rules: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    validation_rules: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    known_limitations: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class RiskScenarioDefinitionRecord(Base):
+    __tablename__ = "risk_scenario_definitions"
+    __table_args__ = (
+        UniqueConstraint("scenario_id"),
+        Index("ix_risk_scenario_definitions_family", "scenario_family", "scenario_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    scenario_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    name: Mapped[str] = mapped_column(String(160), nullable=False)
+    scenario_family: Mapped[str] = mapped_column(String(64), nullable=False)
+    description: Mapped[str] = mapped_column(String(400), nullable=False)
+    source_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class RiskScenarioVersionRecord(Base):
+    __tablename__ = "risk_scenario_versions"
+    __table_args__ = (
+        UniqueConstraint("scenario_id", "version"),
+        Index("ix_risk_scenario_versions_scenario", "scenario_id", "version"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    scenario_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    version: Mapped[str] = mapped_column(String(64), nullable=False)
+    valuation_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    horizon_seconds: Mapped[Decimal] = mapped_column(Numeric(20, 8), nullable=False)
+    shock_ordering: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    dependencies: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    market_regime_assumptions: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    execution_assumptions: Mapped[dict[str, Any]] = mapped_column(
+        JSON, nullable=False, default=dict
+    )
+    margin_assumptions: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    data_quality_assumptions: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    affected_symbols: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    affected_sectors: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    affected_strategy_families: Mapped[list[str]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    probability_metadata: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    reproducibility_metadata: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class RiskScenarioShockRecord(Base):
+    __tablename__ = "risk_scenario_shocks"
+    __table_args__ = (
+        UniqueConstraint("scenario_id", "version", "ordering", "factor_id"),
+        Index("ix_risk_scenario_shocks_scenario", "scenario_id", "version"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    scenario_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    version: Mapped[str] = mapped_column(String(64), nullable=False)
+    ordering: Mapped[int] = mapped_column(Integer, nullable=False)
+    factor_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    shock_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    magnitude: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata", JSON, nullable=False, default=dict
+    )
+
+
+class RiskScenarioRunRecord(Base):
+    __tablename__ = "risk_scenario_runs"
+    __table_args__ = (
+        UniqueConstraint("run_id"),
+        Index("ix_risk_scenario_runs_ts", "created_at", "scenario_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    portfolio_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    scenario_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    scenario_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    as_of_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    software_git_commit: Mapped[str] = mapped_column(String(64), nullable=False)
+    schema_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    failures: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata", JSON, nullable=False, default=dict
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class RiskInstrumentScenarioResultRecord(Base):
+    __tablename__ = "risk_instrument_scenario_results"
+    __table_args__ = (
+        UniqueConstraint("run_id", "instrument_id"),
+        Index("ix_risk_instrument_results_run", "run_id", "instrument_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    instrument_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    strategy_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    original_value: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    shocked_value: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    value_change: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    original_greeks: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    shocked_greeks: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    model_used: Mapped[str] = mapped_column(String(128), nullable=False)
+    convergence_diagnostics: Mapped[dict[str, Any]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    quality_warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+
+
+class RiskStrategyScenarioResultRecord(Base):
+    __tablename__ = "risk_strategy_scenario_results"
+    __table_args__ = (
+        UniqueConstraint("run_id", "strategy_id"),
+        Index("ix_risk_strategy_results_run", "run_id", "strategy_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    strategy_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    pnl_impact: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    greeks_impact: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    margin_impact: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    buying_power_impact: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    assignment_risk_change: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    exercise_risk_change: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    dividend_risk_change: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    liquidity_impact: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    management_policy_triggers: Mapped[list[str]] = mapped_column(
+        JSON, nullable=False, default=list
+    )
+    roll_eligibility_changes: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    residual_exposure: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class RiskPortfolioScenarioResultRecord(Base):
+    __tablename__ = "risk_portfolio_scenario_results"
+    __table_args__ = (
+        UniqueConstraint("run_id", "portfolio_id"),
+        Index("ix_risk_portfolio_results_run", "run_id", "portfolio_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    portfolio_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    portfolio_pnl: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    portfolio_return: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    greeks: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    expected_shortfall: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    margin: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    buying_power: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    cash: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    concentration: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    liquidity: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    assignment_exposure: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    liquidation_requirement: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+
+
+class RiskScenarioGreeksImpactRecord(Base):
+    __tablename__ = "risk_scenario_greeks_impacts"
+    __table_args__ = (
+        UniqueConstraint("run_id", "scope", "scope_id"),
+        Index("ix_risk_greeks_impacts_run", "run_id", "scope"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    scope: Mapped[str] = mapped_column(String(64), nullable=False)
+    scope_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    delta_change: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    gamma_change: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    theta_change: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    vega_change: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    rho_change: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+
+
+class RiskScenarioMarginImpactRecord(Base):
+    __tablename__ = "risk_scenario_margin_impacts"
+    __table_args__ = (
+        UniqueConstraint("run_id", "scope", "scope_id"),
+        Index("ix_risk_margin_impacts_run", "run_id", "scope"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    scope: Mapped[str] = mapped_column(String(64), nullable=False)
+    scope_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    pre_margin: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    post_margin: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    excess_liquidity: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    deficit: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    liquidation_requirement: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    candidate_liquidation_plans: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+
+
+class RiskScenarioLiquidityImpactRecord(Base):
+    __tablename__ = "risk_scenario_liquidity_impacts"
+    __table_args__ = (
+        UniqueConstraint("run_id", "scope", "scope_id"),
+        Index("ix_risk_liquidity_impacts_run", "run_id", "scope"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    scope: Mapped[str] = mapped_column(String(64), nullable=False)
+    scope_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    spread_multiplier: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    stale_quote_rate: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    no_fill_probability: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    diagnostics_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class RiskScenarioMatrixRecord(Base):
+    __tablename__ = "risk_scenario_matrices"
+    __table_args__ = (
+        UniqueConstraint("run_id", "matrix_id", "row_key", "column_key"),
+        Index("ix_risk_scenario_matrices_run", "run_id", "matrix_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    matrix_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    row_key: Mapped[str] = mapped_column(String(128), nullable=False)
+    column_key: Mapped[str] = mapped_column(String(128), nullable=False)
+    payload_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class RiskAttributionRecord(Base):
+    __tablename__ = "risk_attributions"
+    __table_args__ = (
+        UniqueConstraint("run_id", "attribution_id"),
+        Index("ix_risk_attributions_run", "run_id", "attribution_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    attribution_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    components_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    unexplained_residual: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    approximate: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
+
+class RiskLimitBreachRecord(Base):
+    __tablename__ = "risk_limit_breaches"
+    __table_args__ = (
+        UniqueConstraint("run_id", "metric"),
+        Index("ix_risk_limit_breaches_run", "run_id", "severity"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    metric: Mapped[str] = mapped_column(String(128), nullable=False)
+    observed: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    threshold: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    severity: Mapped[str] = mapped_column(String(64), nullable=False)
+    remediation_candidates: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+
+
+class RiskManagementComparisonRecord(Base):
+    __tablename__ = "risk_management_comparisons"
+    __table_args__ = (
+        UniqueConstraint("run_id", "comparison_id"),
+        Index("ix_risk_management_comparisons_run", "run_id", "comparison_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    comparison_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    alternatives_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON, nullable=False, default=list
+    )
+    selected_action: Mapped[str] = mapped_column(String(64), nullable=False)
+
+
+class HistoricalScenarioMetadataRecord(Base):
+    __tablename__ = "historical_scenario_metadata"
+    __table_args__ = (
+        UniqueConstraint("scenario_id"),
+        Index("ix_historical_scenario_metadata_family", "scenario_family", "scenario_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    scenario_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    scenario_family: Mapped[str] = mapped_column(String(64), nullable=False)
+    fixture_payload: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata", JSON, nullable=False, default=dict
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class RiskQualityDiagnosticRecord(Base):
+    __tablename__ = "risk_quality_diagnostics"
+    __table_args__ = (
+        UniqueConstraint("run_id", "diagnostic_id"),
+        Index("ix_risk_quality_diagnostics_run", "run_id", "severity"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    diagnostic_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    severity: Mapped[str] = mapped_column(String(64), nullable=False)
+    confidence: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    data_support: Mapped[Decimal] = mapped_column(Numeric(20, 10), nullable=False)
+    assumptions: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    model_limitations: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    missing_data_warnings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    calibration_status: Mapped[str] = mapped_column(String(64), nullable=False)
+
+
+class RiskReproducibilityChecksumRecord(Base):
+    __tablename__ = "risk_reproducibility_checksums"
+    __table_args__ = (
+        UniqueConstraint("checksum_key"),
+        Index("ix_risk_reproducibility_checksums_created", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    checksum_key: Mapped[str] = mapped_column(String(160), nullable=False)
+    checksum_value: Mapped[str] = mapped_column(String(256), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata", JSON, nullable=False, default=dict
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class BacktestStrategyInstanceRecord(Base):
     __tablename__ = "backtest_strategy_instances"
     __table_args__ = (

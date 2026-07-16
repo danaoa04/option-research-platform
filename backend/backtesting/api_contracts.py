@@ -174,3 +174,71 @@ class StrategyPolicyConflictContractV1:
     schema_version: str
     run_id: str
     conflicts: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class RollPolicyCatalogueContractV1:
+    schema_version: str
+    policies: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class RollRequestContractV1:
+    schema_version: str
+    request: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class RollPreviewContractV1:
+    schema_version: str
+    preview: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class RollEligibilityContractV1:
+    schema_version: str
+    eligibility: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class RollPlanContractV1:
+    schema_version: str
+    plan: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class ConversionPreviewContractV1:
+    schema_version: str
+    conversion: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class ManagementComparisonContractV1:
+    schema_version: str
+    comparison: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class PMCCRollAnalysisContractV1:
+    schema_version: str
+    analysis: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class CalendarRollAnalysisContractV1:
+    schema_version: str
+    analysis: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class RollHistoryContractV1:
+    schema_version: str
+    run_id: str
+    rows: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayRollEventContractV1:
+    schema_version: str
+    run_id: str
+    event: dict[str, Any]

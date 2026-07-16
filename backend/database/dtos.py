@@ -1391,6 +1391,433 @@ class StrategyPolicyChecksumDTO:
 
 
 @dataclass(slots=True, frozen=True)
+class RollPolicyRegistryDTO:
+    canonical_identifier: str
+    version: str
+    aliases_json: list[str]
+    supported_strategy_families: list[str]
+    supported_lifecycle_states: list[str]
+    supported_exercise_styles: list[str]
+    supported_settlement_types: list[str]
+    required_market_data: list[str]
+    required_volatility_data: list[str]
+    parameter_schema_json: dict[str, Any]
+    default_priority: int
+    status: str
+    plugin_namespace: str | None
+    deprecated: bool
+    replacement_identifier: str | None
+    known_limitations: list[str]
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class RollPolicyAliasDTO:
+    canonical_identifier: str
+    alias: str
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestRollRequestV2DTO:
+    run_id: str
+    request_id: str
+    strategy_identifier: str
+    strategy_instance_id: str
+    position_identifier: str
+    source_legs_json: list[dict[str, Any]]
+    preserved_legs_json: list[dict[str, Any]]
+    close_quantity: int
+    target_quantity: int
+    target_expiration_policy: str
+    target_strike_policy: str
+    requested_timestamp: datetime
+    trigger: str
+    reason_code: str
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestRollCandidateDTO:
+    run_id: str
+    request_id: str
+    candidate_id: str
+    roll_type: str
+    target_legs_json: list[dict[str, Any]]
+    estimated_net_credit_or_debit: Decimal | None
+    liquidity_score: Decimal
+    quality_score: Decimal
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestRollEligibilityV2DTO:
+    run_id: str
+    request_id: str
+    candidate_id: str
+    eligibility_id: str
+    eligible: bool
+    rejections_json: list[dict[str, Any]]
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestRollExecutionV2DTO:
+    run_id: str
+    execution_id: str
+    plan_id: str
+    request_id: str
+    execution_style: str
+    all_or_none_research: bool
+    sequential_legging: bool
+    requested_net_price: Decimal | None
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestRollFillV2DTO:
+    run_id: str
+    execution_id: str
+    leg_label: str
+    fill_timestamp: datetime
+    fill_quantity: int
+    fill_price: Decimal | None
+    fees: Decimal
+    slippage: Decimal
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestPartialRollStateDTO:
+    run_id: str
+    state_id: str
+    plan_id: str
+    temporary_naked_exposure: bool
+    residual_quantities_json: dict[str, Any]
+    risk_escalated: bool
+    timeout_seconds: Decimal
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestRollReconciliationV2DTO:
+    run_id: str
+    reconciliation_id: str
+    plan_id: str
+    status: str
+    retry_scheduled: bool
+    cancel_scheduled: bool
+    fallback_close_scheduled: bool
+    state_transition: str
+    recorded_temporary_exposure: bool
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestBasisTransferDTO:
+    run_id: str
+    basis_transfer_id: str
+    plan_id: str
+    original_basis: Decimal
+    cumulative_credits: Decimal
+    cumulative_debits: Decimal
+    fees: Decimal
+    realized_pnl: Decimal
+    unrealized_pnl: Decimal
+    basis_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestConversionPlanV2DTO:
+    run_id: str
+    conversion_id: str
+    strategy_instance_id: str
+    source_strategy: str
+    target_strategy: str
+    legs_closed_json: list[dict[str, Any]]
+    legs_preserved_json: list[dict[str, Any]]
+    legs_opened_json: list[dict[str, Any]]
+    conversion_cost: Decimal | None
+    compatible: bool
+    warnings_json: list[str]
+    reproducibility_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestConversionExecutionDTO:
+    run_id: str
+    execution_id: str
+    conversion_id: str
+    execution_status: str
+    execution_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestManagementComparisonV2DTO:
+    run_id: str
+    comparison_id: str
+    strategy_instance_id: str
+    alternatives_json: list[dict[str, Any]]
+    selected_action: str
+    diagnostics_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestRollAnalyticsV2DTO:
+    run_id: str
+    analytics_id: str
+    roll_metrics_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class BacktestConversionAnalyticsV2DTO:
+    run_id: str
+    analytics_id: str
+    conversion_metrics_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyManagementOptimizerContractDTO:
+    contract_id: str
+    strategy_identifier: str
+    contract_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyManagementChecksumDTO:
+    checksum_key: str
+    checksum_value: str
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class RiskFactorDefinitionDTO:
+    factor_id: str
+    unit: str
+    shock_type: str
+    supported_instruments: list[str]
+    supported_aggregation: list[str]
+    transformation_rules: list[str]
+    validation_rules: list[str]
+    known_limitations: list[str]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class RiskScenarioDefinitionDTO:
+    scenario_id: str
+    name: str
+    scenario_family: str
+    description: str
+    source_metadata: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class RiskScenarioVersionDTO:
+    scenario_id: str
+    version: str
+    valuation_timestamp: datetime
+    horizon_seconds: Decimal
+    shock_ordering: list[str]
+    dependencies: list[str]
+    market_regime_assumptions: dict[str, Any]
+    execution_assumptions: dict[str, Any]
+    margin_assumptions: dict[str, Any]
+    data_quality_assumptions: dict[str, Any]
+    affected_symbols: list[str]
+    affected_sectors: list[str]
+    affected_strategy_families: list[str]
+    probability_metadata: dict[str, Any]
+    reproducibility_metadata: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class RiskScenarioShockDTO:
+    scenario_id: str
+    version: str
+    ordering: int
+    factor_id: str
+    shock_type: str
+    magnitude: Decimal
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class RiskScenarioRunDTO:
+    run_id: str
+    portfolio_id: str
+    scenario_id: str
+    scenario_version: str
+    as_of_timestamp: datetime
+    software_git_commit: str
+    schema_version: str
+    warnings: list[str]
+    failures: list[str]
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class RiskInstrumentScenarioResultDTO:
+    run_id: str
+    instrument_id: str
+    strategy_id: str
+    original_value: Decimal
+    shocked_value: Decimal
+    value_change: Decimal
+    original_greeks: dict[str, Any]
+    shocked_greeks: dict[str, Any]
+    model_used: str
+    convergence_diagnostics: dict[str, Any]
+    quality_warnings: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class RiskStrategyScenarioResultDTO:
+    run_id: str
+    strategy_id: str
+    pnl_impact: Decimal
+    greeks_impact: dict[str, Any]
+    margin_impact: Decimal
+    buying_power_impact: Decimal
+    assignment_risk_change: Decimal
+    exercise_risk_change: Decimal
+    dividend_risk_change: Decimal
+    liquidity_impact: Decimal
+    management_policy_triggers: list[str]
+    roll_eligibility_changes: list[str]
+    residual_exposure: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class RiskPortfolioScenarioResultDTO:
+    run_id: str
+    portfolio_id: str
+    portfolio_pnl: Decimal
+    portfolio_return: Decimal
+    greeks: dict[str, Any]
+    expected_shortfall: Decimal
+    margin: Decimal
+    buying_power: Decimal
+    cash: Decimal
+    concentration: dict[str, Any]
+    liquidity: Decimal
+    assignment_exposure: Decimal
+    liquidation_requirement: Decimal
+    warnings: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class RiskScenarioGreeksImpactDTO:
+    run_id: str
+    scope: str
+    scope_id: str
+    delta_change: Decimal
+    gamma_change: Decimal
+    theta_change: Decimal
+    vega_change: Decimal
+    rho_change: Decimal
+
+
+@dataclass(slots=True, frozen=True)
+class RiskScenarioMarginImpactDTO:
+    run_id: str
+    scope: str
+    scope_id: str
+    pre_margin: Decimal
+    post_margin: Decimal
+    excess_liquidity: Decimal
+    deficit: Decimal
+    liquidation_requirement: Decimal
+    candidate_liquidation_plans: list[dict[str, Any]]
+
+
+@dataclass(slots=True, frozen=True)
+class RiskScenarioLiquidityImpactDTO:
+    run_id: str
+    scope: str
+    scope_id: str
+    spread_multiplier: Decimal
+    stale_quote_rate: Decimal
+    no_fill_probability: Decimal
+    diagnostics_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class RiskScenarioMatrixPointDTO:
+    run_id: str
+    matrix_id: str
+    row_key: str
+    column_key: str
+    payload_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class RiskAttributionDTO:
+    run_id: str
+    attribution_id: str
+    components_json: dict[str, Any]
+    unexplained_residual: Decimal
+    approximate: bool
+
+
+@dataclass(slots=True, frozen=True)
+class RiskLimitBreachDTO:
+    run_id: str
+    metric: str
+    observed: Decimal
+    threshold: Decimal
+    severity: str
+    remediation_candidates: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class RiskManagementComparisonDTO:
+    run_id: str
+    comparison_id: str
+    alternatives_json: list[dict[str, Any]]
+    selected_action: str
+
+
+@dataclass(slots=True, frozen=True)
+class HistoricalScenarioMetadataDTO:
+    scenario_id: str
+    scenario_family: str
+    fixture_payload: dict[str, Any]
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class RiskQualityDiagnosticDTO:
+    run_id: str
+    diagnostic_id: str
+    severity: str
+    confidence: Decimal
+    data_support: Decimal
+    assumptions: list[str]
+    model_limitations: list[str]
+    missing_data_warnings: list[str]
+    calibration_status: str
+
+
+@dataclass(slots=True, frozen=True)
+class RiskReproducibilityChecksumDTO:
+    checksum_key: str
+    checksum_value: str
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
 class BacktestStrategyInstanceDTO:
     strategy_instance_id: str
     strategy_id: str

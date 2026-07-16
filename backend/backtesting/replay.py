@@ -30,6 +30,8 @@ class ReplaySnapshot:
     pending_fills: tuple[dict[str, Any], ...]
     lifecycle_state: str
     source_checksums: dict[str, str]
+    roll_context: dict[str, Any] = field(default_factory=dict)
+    conversion_context: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True, frozen=True)
@@ -42,6 +44,19 @@ class ReplayInspection:
     lifecycle_decisions: tuple[dict[str, Any], ...]
     portfolio_state: dict[str, Any]
     execution_context: dict[str, Any] = field(default_factory=dict)
+    roll_candidates: tuple[dict[str, Any], ...] = ()
+    roll_eligibility_failures: tuple[dict[str, Any], ...] = ()
+    expected_improvement_components: tuple[dict[str, Any], ...] = ()
+    selected_roll: dict[str, Any] = field(default_factory=dict)
+    competing_actions: tuple[dict[str, Any], ...] = ()
+    estimated_credit_or_debit: float | None = None
+    actual_research_fill: dict[str, Any] = field(default_factory=dict)
+    basis_update: dict[str, Any] = field(default_factory=dict)
+    state_transition: dict[str, Any] = field(default_factory=dict)
+    post_roll_greeks: dict[str, float] = field(default_factory=dict)
+    post_roll_margin: dict[str, Any] = field(default_factory=dict)
+    post_roll_pnl: dict[str, Any] = field(default_factory=dict)
+    conversion_path: tuple[dict[str, Any], ...] = ()
 
 
 @dataclass(slots=True)
@@ -115,6 +130,19 @@ class BacktestReplayEngine:
         lifecycle_decisions: tuple[dict[str, Any], ...],
         portfolio_state: dict[str, Any],
         execution_context: dict[str, Any] | None = None,
+        roll_candidates: tuple[dict[str, Any], ...] = (),
+        roll_eligibility_failures: tuple[dict[str, Any], ...] = (),
+        expected_improvement_components: tuple[dict[str, Any], ...] = (),
+        selected_roll: dict[str, Any] | None = None,
+        competing_actions: tuple[dict[str, Any], ...] = (),
+        estimated_credit_or_debit: float | None = None,
+        actual_research_fill: dict[str, Any] | None = None,
+        basis_update: dict[str, Any] | None = None,
+        state_transition: dict[str, Any] | None = None,
+        post_roll_greeks: dict[str, float] | None = None,
+        post_roll_margin: dict[str, Any] | None = None,
+        post_roll_pnl: dict[str, Any] | None = None,
+        conversion_path: tuple[dict[str, Any], ...] = (),
     ) -> ReplayInspection | None:
         if not self.events or self.cursor >= len(self.events):
             return None
@@ -128,6 +156,19 @@ class BacktestReplayEngine:
             lifecycle_decisions=lifecycle_decisions,
             portfolio_state=portfolio_state,
             execution_context=execution_context or {},
+            roll_candidates=roll_candidates,
+            roll_eligibility_failures=roll_eligibility_failures,
+            expected_improvement_components=expected_improvement_components,
+            selected_roll=selected_roll or {},
+            competing_actions=competing_actions,
+            estimated_credit_or_debit=estimated_credit_or_debit,
+            actual_research_fill=actual_research_fill or {},
+            basis_update=basis_update or {},
+            state_transition=state_transition or {},
+            post_roll_greeks=post_roll_greeks or {},
+            post_roll_margin=post_roll_margin or {},
+            post_roll_pnl=post_roll_pnl or {},
+            conversion_path=conversion_path,
         )
 
     def create_snapshot(
@@ -144,6 +185,8 @@ class BacktestReplayEngine:
         pending_fills: tuple[dict[str, Any], ...],
         lifecycle_state: str,
         source_checksums: dict[str, str],
+        roll_context: dict[str, Any] | None = None,
+        conversion_context: dict[str, Any] | None = None,
     ) -> ReplaySnapshot | None:
         if not self.events:
             return None
@@ -162,6 +205,8 @@ class BacktestReplayEngine:
             pending_fills=pending_fills,
             lifecycle_state=lifecycle_state,
             source_checksums=source_checksums,
+            roll_context=roll_context or {},
+            conversion_context=conversion_context or {},
         )
         self.snapshots.append(snapshot)
         return snapshot
