@@ -122,3 +122,12 @@ All notable changes to this project will be documented in this file.
 - Added strategy-library DTOs, ORM records, repositories, query services, and checksum support.
 - Added Alembic migration 0014_strategy_library_foundation for strategy registry and analytics persistence tables.
 - Preserved legacy backtesting strategy compile interfaces while enabling Sprint 8A registry compilation for non-legacy identifiers.
+
+## Sprint 8B - Strategy Policy Library Foundation
+
+- Added `backend/backtesting/strategy_policy_library.py` with configurable, composable, versioned policy families for entry/exit/management/earnings/dividend/roll rules.
+- Added policy-set evaluation with deterministic diagnostics, conflict-resolution integration, and reproducibility checksum support.
+- Added strategy-policy persistence/query stack in `backend/database/strategy_policy_library.py` and `backend/database/repositories/strategy_policy_library.py`.
+- Added ORM entities, DTOs, and Alembic migration `0015_strategy_policy_library_foundation.py` for policy registry, aliases, policy sets, evaluations, conflicts, and checksums.
+- Added Sprint 8B typed API contracts for policy catalog, policy sets, evaluations, and conflict diagnostics.
+- Added deterministic Sprint 8B tests for policy foundation, persistence round-trip, and migration upgrade/downgrade.

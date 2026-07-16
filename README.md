@@ -195,3 +195,16 @@ Sprint 7C boundaries:
 - Added structural validation and payoff summary services for multi-leg strategy definitions (research-only/offline).
 - Added persistence/query layer and Alembic migration 0014 for strategy-library metadata and results.
 - Added opt-in benchmarks and deterministic test coverage for registry, persistence, migration, checksum, and API contracts.
+
+## Sprint 8B - Strategy Policy Library Foundation
+
+- Added strategy-aware policy families (entry, exit, management, earnings, dividend, roll) in `backend/backtesting/strategy_policy_library.py`.
+- Added composable policy sets with versioning, aliasing, deterministic diagnostics, and conflict-resolution outputs.
+- Added persistence/query support for policy registry, policy sets, evaluations, and conflicts in `backend/database`.
+- Added migration `0015_strategy_policy_library_foundation.py` and typed API contracts for policy catalog and run diagnostics.
+
+Sprint 8B boundaries:
+
+- No live broker/API execution.
+- No hard-coded strategy behavior inside the event loop.
+- Policy decisions remain configurable, testable, and replayable.

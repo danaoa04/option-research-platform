@@ -147,3 +147,30 @@ class CustomStrategyCreationContractV1:
     schema_version: str
     strategy_id: str
     definition: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyPolicyCatalogueContractV1:
+    schema_version: str
+    policies: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyPolicySetContractV1:
+    schema_version: str
+    strategy_identifier: str
+    policy_set: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyPolicyEvaluationContractV1:
+    schema_version: str
+    run_id: str
+    evaluations: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyPolicyConflictContractV1:
+    schema_version: str
+    run_id: str
+    conflicts: tuple[dict[str, Any], ...]

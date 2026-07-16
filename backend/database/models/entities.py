@@ -1396,6 +1396,159 @@ class StrategyTemplateChecksumRecord(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class StrategyPolicyRegistryRecord(Base):
+    __tablename__ = "strategy_policy_registry"
+    __table_args__ = (
+        UniqueConstraint("policy_id"),
+        Index("ix_strategy_policy_registry_family", "policy_family", "policy_name"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    policy_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    policy_name: Mapped[str] = mapped_column(String(160), nullable=False)
+    policy_family: Mapped[str] = mapped_column(String(48), nullable=False)
+    policy_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    priority: Mapped[int] = mapped_column(Integer, nullable=False)
+    parameters_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    required_data: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    supported_strategies: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    tags: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    deprecated: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    replacement_policy_id: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyPolicyAliasRecord(Base):
+    __tablename__ = "strategy_policy_aliases"
+    __table_args__ = (
+        UniqueConstraint("alias"),
+        Index("ix_strategy_policy_aliases_policy", "policy_id", "alias"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    policy_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    alias: Mapped[str] = mapped_column(String(160), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyPolicySetVersionRecord(Base):
+    __tablename__ = "strategy_policy_set_versions"
+    __table_args__ = (
+        UniqueConstraint("set_id", "set_version"),
+        Index(
+            "ix_strategy_policy_set_versions_strategy",
+            "strategy_identifier",
+            "set_id",
+            "set_version",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    set_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    set_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    strategy_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    conflict_mode: Mapped[str] = mapped_column(String(48), nullable=False)
+    entry_policies: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    exit_policies: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    management_policies: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    earnings_policies: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    dividend_policies: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    roll_policies: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyPolicyEvaluationRecord(Base):
+    __tablename__ = "strategy_policy_evaluations"
+    __table_args__ = (
+        UniqueConstraint("run_id", "evaluation_id"),
+        Index("ix_strategy_policy_evaluations_run_ts", "run_id", "event_timestamp"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    evaluation_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    strategy_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    policy_set_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    policy_set_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    policy_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    policy_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    policy_family: Mapped[str] = mapped_column(String(48), nullable=False)
+    passed: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    reason_code: Mapped[str] = mapped_column(String(128), nullable=False)
+    observed_values_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    thresholds_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    diagnostics_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    confidence: Mapped[Decimal] = mapped_column(Numeric(8, 6), nullable=False)
+    required_data_present: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    data_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    event_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+
+class StrategyPolicyConflictRecord(Base):
+    __tablename__ = "strategy_policy_conflicts"
+    __table_args__ = (
+        UniqueConstraint("run_id", "conflict_id"),
+        Index("ix_strategy_policy_conflicts_run_ts", "run_id", "event_timestamp"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    conflict_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    strategy_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    policy_set_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    policy_set_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    conflict_mode: Mapped[str] = mapped_column(String(48), nullable=False)
+    winning_policy_id: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    matched_signals_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON,
+        nullable=False,
+        default=list,
+    )
+    diagnostics: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    event_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyPolicyChecksumRecord(Base):
+    __tablename__ = "strategy_policy_checksums"
+    __table_args__ = (
+        UniqueConstraint("checksum_key"),
+        Index("ix_strategy_policy_checksums_created", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    checksum_key: Mapped[str] = mapped_column(String(160), nullable=False)
+    checksum_value: Mapped[str] = mapped_column(String(256), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class BacktestStrategyInstanceRecord(Base):
     __tablename__ = "backtest_strategy_instances"
     __table_args__ = (

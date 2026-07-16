@@ -1307,6 +1307,90 @@ class StrategyTemplateChecksumDTO:
 
 
 @dataclass(slots=True, frozen=True)
+class StrategyPolicyRegistryDTO:
+    policy_id: str
+    policy_name: str
+    policy_family: str
+    policy_version: str
+    priority: int
+    parameters_json: dict[str, Any]
+    required_data: list[str]
+    supported_strategies: list[str]
+    tags: list[str]
+    deprecated: bool
+    replacement_policy_id: str | None
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyPolicyAliasDTO:
+    policy_id: str
+    alias: str
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyPolicySetVersionDTO:
+    set_id: str
+    set_version: str
+    strategy_identifier: str
+    conflict_mode: str
+    entry_policies: list[str]
+    exit_policies: list[str]
+    management_policies: list[str]
+    earnings_policies: list[str]
+    dividend_policies: list[str]
+    roll_policies: list[str]
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyPolicyEvaluationDTO:
+    run_id: str
+    evaluation_id: str
+    strategy_identifier: str
+    policy_set_id: str
+    policy_set_version: str
+    policy_id: str
+    policy_version: str
+    policy_family: str
+    passed: bool
+    reason_code: str
+    observed_values_json: dict[str, Any]
+    thresholds_json: dict[str, Any]
+    diagnostics_json: list[dict[str, Any]]
+    confidence: Decimal
+    required_data_present: bool
+    data_timestamp: datetime
+    event_timestamp: datetime
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyPolicyConflictDTO:
+    run_id: str
+    conflict_id: str
+    strategy_identifier: str
+    policy_set_id: str
+    policy_set_version: str
+    conflict_mode: str
+    winning_policy_id: str | None
+    matched_signals_json: list[dict[str, Any]]
+    diagnostics: list[str]
+    event_timestamp: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyPolicyChecksumDTO:
+    checksum_key: str
+    checksum_value: str
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
 class BacktestStrategyInstanceDTO:
     strategy_instance_id: str
     strategy_id: str

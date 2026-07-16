@@ -132,6 +132,12 @@ from .dtos import (
     StrategyOptimizerContractDTO,
     StrategyParameterSchemaDTO,
     StrategyPayoffSummaryDTO,
+    StrategyPolicyAliasDTO,
+    StrategyPolicyChecksumDTO,
+    StrategyPolicyConflictDTO,
+    StrategyPolicyEvaluationDTO,
+    StrategyPolicyRegistryDTO,
+    StrategyPolicySetVersionDTO,
     StrategyRiskClassificationDTO,
     StrategyTemplateAliasDTO,
     StrategyTemplateChecksumDTO,
@@ -182,6 +188,12 @@ from .strategy_library import (
     StrategyLibraryPersistenceService,
     StrategyLibraryQueryService,
     deterministic_strategy_template_checksum,
+)
+from .strategy_policy_library import (
+    StrategyPolicyMutationError,
+    StrategyPolicyPersistenceService,
+    StrategyPolicyQueryService,
+    deterministic_strategy_policy_state_checksum,
 )
 from .strategy_validation import (
     StrategyValidationPersistenceService,
@@ -299,6 +311,12 @@ __all__ = [
     "StrategyCompatibilityMetadataDTO",
     "StrategyOptimizerContractDTO",
     "StrategyTemplateChecksumDTO",
+    "StrategyPolicyRegistryDTO",
+    "StrategyPolicyAliasDTO",
+    "StrategyPolicySetVersionDTO",
+    "StrategyPolicyEvaluationDTO",
+    "StrategyPolicyConflictDTO",
+    "StrategyPolicyChecksumDTO",
     "BacktestTransitionGuardDTO",
     "BacktestValuationDTO",
     "BulkIngestionService",
@@ -375,5 +393,9 @@ __all__ = [
     "StrategyLibraryPersistenceService",
     "StrategyLibraryQueryService",
     "deterministic_strategy_template_checksum",
+    "StrategyPolicyMutationError",
+    "StrategyPolicyPersistenceService",
+    "StrategyPolicyQueryService",
+    "deterministic_strategy_policy_state_checksum",
     "deterministic_backtest_run_checksum",
 ]
