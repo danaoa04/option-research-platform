@@ -96,6 +96,30 @@ No unavailable backend endpoints are called in this phase.
 - Documentation includes Mermaid diagrams.
 - Existing functionality remains unchanged.
 
+## Sprint 11A runtime architecture
+
+```mermaid
+flowchart LR
+    T[Tauri restricted lifecycle commands] --> R[React workstation shell]
+    R --> C[Typed cancellable API client]
+    C -->|offline preference| F[Synthetic fixture repository]
+    C -->|API v1 and request ID| B[Local Python backend]
+    R --> Q[Query and cache boundary]
+    R --> U[Local non-secret UI preferences]
+```
+
+Tauri owns desktop lifecycle presentation, not provider business logic. The browser layer can only
+request typed backend operations and never receives provider secrets. Offline demo mode is the
+default and labels every fixture view as synthetic. The Tauri capability surface intentionally
+excludes unrestricted shell execution.
+
+The shell provides primary navigation, application/backend/provider status, command-launcher and
+keyboard-hook boundaries, global workspace content, and a status bar. Provider operations are the
+only fully implemented Sprint 11A feature; later research routes render intentional placeholders.
+
+Frontend commands are `make frontend-install`, `make frontend-lint`, `make frontend-typecheck`,
+`make frontend-test`, and `make frontend-build`.
+
 
 ## Sprint 8A API Surface for GUI
 

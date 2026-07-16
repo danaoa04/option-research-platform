@@ -1,6 +1,9 @@
-// Frontend architecture entrypoint.
-// TODO: In GUI implementation phase, render React root and providers.
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { App } from "./app/App";
+import "./theme/app.css";
 
-export { createFrontendBootstrap } from "./app/bootstrap";
-export { createPlaceholderApiClient } from "./api/client";
-export { PluginRegistry } from "./plugins/registry";
+const root=document.getElementById("root");
+if(!root)throw new Error("Application root is missing");
+ReactDOM.createRoot(root).render(<React.StrictMode><BrowserRouter><App/></BrowserRouter></React.StrictMode>);

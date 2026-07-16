@@ -1,0 +1,2 @@
+import { describe,expect,it } from "vitest";import { createProviderApiClient } from "../api/providerClient";
+describe("provider api client",()=>{it("serves deterministic offline fixtures",async()=>{const client=createProviderApiClient({baseUrl:"http://127.0.0.1:8000",apiVersion:"v1",timeoutMs:1000,offlineDemo:true});expect((await client.providers())[0]?.id).toBe("orats");expect((await client.compatibility()).compatible).toBe(true);});});

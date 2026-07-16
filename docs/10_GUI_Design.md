@@ -63,3 +63,13 @@ flowchart LR
 ## Sprint 8A UI Requirements
 
 GUI strategy catalogue should present canonical identifier, aliases, template family, risk class, validation output, and payoff preview in read-only research context.
+# Sprint 11A provider workstation
+
+The desktop uses a restrained research-terminal language: dense tables, aligned numerics, explicit
+status colours, visible keyboard focus, reduced-motion support, and system light/dark palettes.
+Synthetic data is always marked. Destructive cleanup and network-policy changes require backend
+authorization and confirmation boundaries; secrets never enter browser storage.
+
+Keyboard foundations reserve Command/Ctrl-K for the launcher and support semantic link/button/table
+navigation today. Refresh, selected-job opening, dialogs, and provider-tab switching extend through
+the existing hotkey boundary as those interactions become live.

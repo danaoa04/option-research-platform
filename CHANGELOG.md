@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 11A React/Vite/Tauri desktop foundation with a professional research-workstation
+  shell, strict typed provider API client, explicit offline demo mode, provider/job/alert views,
+  operational route boundaries, accessible design tokens, frontend tests, and build commands.
+
 - Added Sprint 10E deny-by-default network policy, credential/sample metadata boundaries,
   deterministic scheduling and worker leases, provider health/freshness, deduplicated alerts,
   retention safety, operational readiness, expanded CLI/API contracts, and migration `0022`.

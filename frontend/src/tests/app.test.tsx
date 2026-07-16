@@ -1,0 +1,2 @@
+import { render,screen } from "@testing-library/react";import { MemoryRouter } from "react-router-dom";import { describe,expect,it } from "vitest";import { App } from "../app/App";
+describe("desktop application",()=>{it("labels fixture data and exposes workstation navigation",()=>{render(<MemoryRouter><App/></MemoryRouter>);expect(screen.getByText(/Synthetic demo data/)).toBeInTheDocument();expect(screen.getByRole("navigation",{name:"Primary navigation"})).toBeInTheDocument();expect(screen.getByText("Provider readiness")).toBeInTheDocument();});});

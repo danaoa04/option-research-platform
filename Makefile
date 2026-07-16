@@ -1,7 +1,7 @@
 PYTHON ?= python3
 VENV ?= .venv
 
-.PHONY: setup lint format test docs
+.PHONY: setup lint format test docs frontend-install frontend-lint frontend-typecheck frontend-test frontend-build
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -20,3 +20,18 @@ test:
 
 docs:
 	@echo "Documentation build placeholder"
+
+frontend-install:
+	cd frontend && npm install
+
+frontend-lint:
+	cd frontend && npm run lint
+
+frontend-typecheck:
+	cd frontend && npm run typecheck
+
+frontend-test:
+	cd frontend && npm run test
+
+frontend-build:
+	cd frontend && npm run build
