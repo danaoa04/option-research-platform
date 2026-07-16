@@ -31,3 +31,8 @@ Position and leg state contracts capture:
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+
+## Sprint 8A Strategy Registry
+
+Strategy templates are now represented as versioned canonical records with aliases, family metadata, compatibility constraints, and optimizer contracts.

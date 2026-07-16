@@ -187,3 +187,11 @@ Sprint 7C boundaries:
 - No live order execution.
 - No official broker-fee or margin parity claims.
 - Market-impact modeling remains a research placeholder.
+
+
+## Sprint 8A - Strategy Library Foundation
+
+- Added a deterministic strategy template registry with canonical identifiers, aliases, versioning, and deprecation metadata.
+- Added structural validation and payoff summary services for multi-leg strategy definitions (research-only/offline).
+- Added persistence/query layer and Alembic migration 0014 for strategy-library metadata and results.
+- Added opt-in benchmarks and deterministic test coverage for registry, persistence, migration, checksum, and API contracts.

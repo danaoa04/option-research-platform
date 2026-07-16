@@ -39,3 +39,8 @@ flowchart TD
 - Plugins must not access backend database types directly.
 - Plugin failures should be isolated with fallback UI.
 - Plugin contracts should be versioned for compatibility checks.
+
+
+## Sprint 8A Plugin Registry Hooks
+
+Strategy template plugins can register namespaced templates with override collision controls and deterministic discovery semantics.

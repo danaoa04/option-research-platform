@@ -167,3 +167,8 @@ Portfolio allocation and strategy-selection are added as a downstream determinis
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+
+## Sprint 8A Research Workflow Support
+
+Research workflows can now request canonical strategy payloads, validate leg structures, and persist reproducible strategy-definition artifacts.

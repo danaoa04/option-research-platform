@@ -860,3 +860,19 @@ The core architecture now includes a portfolio allocation and strategy-selection
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+
+## Sprint 8A Architecture Update
+
+```mermaid
+flowchart LR
+    Registry[Strategy Template Registry] --> Compiler[Template Compiler]
+    Registry --> Validator[Structure Validator]
+    Compiler --> Payoff[Payoff Analyzer]
+    Validator --> Contracts[API Contracts V1]
+    Payoff --> Contracts
+    Registry --> Persistence[Strategy Library Persistence Service]
+    Persistence --> DB[(Strategy Library Tables)]
+```
+
+Known limitations: research-only assumptions, deterministic offline behavior, and no live broker/API connectivity.

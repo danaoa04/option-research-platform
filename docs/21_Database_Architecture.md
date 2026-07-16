@@ -153,3 +153,9 @@ Portfolio allocation runs are now persisted as normalized run artifacts.
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+
+## Sprint 8A Persistence Layer
+
+New services: StrategyLibraryPersistenceService and StrategyLibraryQueryService.
+New repositories provide deterministic upsert and query pathways for strategy-library entities and related analytics metadata.

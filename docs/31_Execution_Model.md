@@ -41,3 +41,8 @@ Rejections:
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+
+## Sprint 8A Execution Boundary
+
+Sprint 8A strategy-library additions are intentionally execution-agnostic and do not introduce live broker/API coupling.

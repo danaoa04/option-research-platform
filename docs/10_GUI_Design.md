@@ -58,3 +58,8 @@ flowchart LR
 - No complete GUI implementation in this phase.
 - No direct database-model binding from UI components.
 - No live API integrations beyond typed placeholders.
+
+
+## Sprint 8A UI Requirements
+
+GUI strategy catalogue should present canonical identifier, aliases, template family, risk class, validation output, and payoff preview in read-only research context.

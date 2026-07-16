@@ -162,3 +162,9 @@ Strategy analytics are now consumed by the portfolio selection layer to produce:
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+
+## Sprint 8A Payoff and Risk Outputs
+
+Added deterministic payoff summary generation (max P/L, breakevens, slope regions, discontinuities, assignment/dividend sensitivity flags).
+Added strategy risk classification and optimizer compatibility payloads.

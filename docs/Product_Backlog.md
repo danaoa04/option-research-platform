@@ -97,3 +97,9 @@ The product backlog is organized into epics that reflect the agreed scope of the
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+
+## Sprint 8A Completion Notes
+
+- Completed: strategy library foundation, persistence schema, query services, and baseline tests/benchmarks.
+- Next: Sprint 8B should focus on richer parameterization UX, migration utilities for strategy evolution, and portfolio-level optimization tie-ins.

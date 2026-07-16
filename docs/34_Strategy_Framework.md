@@ -110,3 +110,8 @@ As-of query semantics remain nearest-prior and deterministic.
 - Assignment/exercise settlement is represented as pending state only
 - Margin compatibility remains placeholder metadata
 - Roll credit/debit values are estimates from research context only
+
+
+## Sprint 8A Strategy Library Foundation
+
+Expanded template catalogue coverage across directional, vertical, iron, butterfly/condor, volatility, calendar/diagonal, covered/replacement, ratio/backspread, lizard variants, arbitrage placeholders, and custom shells.

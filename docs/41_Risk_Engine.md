@@ -36,3 +36,8 @@ Outputs per candidate:
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+
+## Sprint 8A Risk Classification Inputs
+
+Risk engine interfaces now include strategy-library risk classification metadata and payoff-derived risk characteristics.

@@ -93,3 +93,8 @@ Benchmark execution remains opt-in via RUN_OPT_IN_BENCHMARKS=1.
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+
+## Sprint 8A Portfolio Compatibility
+
+Portfolio workflows can consume strategy compatibility metadata (account types, lifecycle policies, roll policies, required data constraints).

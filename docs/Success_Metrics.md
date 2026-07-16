@@ -107,3 +107,10 @@ Success for the platform will be measured through engineering quality, research 
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+
+## Sprint 8A Metrics
+
+- Quality gate: make lint = pass, make test = pass.
+- Determinism: checksum and migration tests added for strategy-library foundation.
+- Coverage expansion: registry, validation, payoff, persistence, API contracts, and benchmark opt-in behavior.

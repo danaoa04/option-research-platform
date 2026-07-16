@@ -1155,6 +1155,247 @@ class BacktestStrategyTemplateRecord(Base):
     )
 
 
+class StrategyTemplateRegistryRecord(Base):
+    __tablename__ = "strategy_template_registry"
+    __table_args__ = (
+        UniqueConstraint("canonical_identifier"),
+        Index("ix_strategy_template_registry_family", "strategy_family", "strategy_name"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    canonical_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    strategy_name: Mapped[str] = mapped_column(String(160), nullable=False)
+    strategy_family: Mapped[str] = mapped_column(String(80), nullable=False)
+    version: Mapped[str] = mapped_column(String(48), nullable=False)
+    supported_underlyings: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    supported_exercise_styles: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    supported_settlement_styles: Mapped[list[str]] = mapped_column(
+        JSON, nullable=False, default=list
+    )
+    supported_account_types: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    required_data: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    supported_lifecycle_policies: Mapped[list[str]] = mapped_column(
+        JSON, nullable=False, default=list
+    )
+    supported_roll_policies: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    known_limitations: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    deprecated: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    replacement_identifier: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    plugin_namespace: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyTemplateVersionRecord(Base):
+    __tablename__ = "strategy_template_versions"
+    __table_args__ = (
+        UniqueConstraint("canonical_identifier", "template_version"),
+        Index("ix_strategy_template_versions_id", "canonical_identifier", "template_version"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    canonical_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    template_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    schema_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    parameter_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    definition_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    migration_hook: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyTemplateAliasRecord(Base):
+    __tablename__ = "strategy_template_aliases"
+    __table_args__ = (
+        UniqueConstraint("alias"),
+        Index("ix_strategy_template_aliases_identifier", "canonical_identifier", "alias"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    canonical_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    alias: Mapped[str] = mapped_column(String(160), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyParameterSchemaRecord(Base):
+    __tablename__ = "strategy_parameter_schemas"
+    __table_args__ = (
+        UniqueConstraint("canonical_identifier", "template_version"),
+        Index(
+            "ix_strategy_parameter_schemas_identifier", "canonical_identifier", "template_version"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    canonical_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    template_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    schema_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyDefinitionDocumentRecord(Base):
+    __tablename__ = "strategy_definition_documents"
+    __table_args__ = (
+        UniqueConstraint("strategy_definition_id"),
+        Index(
+            "ix_strategy_definition_documents_template", "canonical_identifier", "template_version"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    strategy_definition_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    canonical_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    template_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    parameters_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    reproducibility_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyDefinitionLegRecord(Base):
+    __tablename__ = "strategy_definition_legs"
+    __table_args__ = (
+        UniqueConstraint("strategy_definition_id", "leg_label"),
+        Index("ix_strategy_definition_legs_definition", "strategy_definition_id", "leg_label"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    strategy_definition_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    leg_label: Mapped[str] = mapped_column(String(120), nullable=False)
+    leg_kind: Mapped[str] = mapped_column(String(32), nullable=False)
+    direction: Mapped[str] = mapped_column(String(32), nullable=False)
+    quantity_ratio: Mapped[int] = mapped_column(Integer, nullable=False)
+    strike: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    expiration: Mapped[date | None] = mapped_column(Date, nullable=True)
+    option_type: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+
+
+class StrategyValidationResultRecord(Base):
+    __tablename__ = "strategy_validation_results"
+    __table_args__ = (
+        UniqueConstraint("strategy_definition_id"),
+        Index("ix_strategy_validation_results_status", "validation_status", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    strategy_definition_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    validation_status: Mapped[str] = mapped_column(String(32), nullable=False)
+    errors_json: Mapped[list[dict[str, Any]]] = mapped_column(JSON, nullable=False, default=list)
+    warnings_json: Mapped[list[dict[str, Any]]] = mapped_column(JSON, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyPayoffSummaryRecord(Base):
+    __tablename__ = "strategy_payoff_summaries"
+    __table_args__ = (
+        UniqueConstraint("strategy_definition_id"),
+        Index("ix_strategy_payoff_summaries_definition", "strategy_definition_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    strategy_definition_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    payoff_grid_json: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSON, nullable=False, default=list
+    )
+    maximum_profit: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    maximum_loss: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    breakevens_json: Mapped[list[float]] = mapped_column(JSON, nullable=False, default=list)
+    defined_risk: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    capital_at_risk: Mapped[Decimal | None] = mapped_column(Numeric(20, 8), nullable=True)
+    credit_or_debit: Mapped[str] = mapped_column(String(16), nullable=False)
+    slope_regions_json: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    discontinuities_json: Mapped[list[float]] = mapped_column(JSON, nullable=False, default=list)
+    residual_exposure_json: Mapped[dict[str, Any]] = mapped_column(
+        JSON, nullable=False, default=dict
+    )
+    assignment_sensitive: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    dividend_sensitive: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    warnings_json: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyRiskClassificationRecord(Base):
+    __tablename__ = "strategy_risk_classifications"
+    __table_args__ = (
+        UniqueConstraint("canonical_identifier", "template_version"),
+        Index(
+            "ix_strategy_risk_classifications_identifier",
+            "canonical_identifier",
+            "template_version",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    canonical_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    template_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    risk_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyCompatibilityMetadataRecord(Base):
+    __tablename__ = "strategy_compatibility_metadata"
+    __table_args__ = (
+        UniqueConstraint("canonical_identifier", "template_version"),
+        Index("ix_strategy_compatibility_identifier", "canonical_identifier", "template_version"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    canonical_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    template_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    compatibility_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyOptimizerContractRecord(Base):
+    __tablename__ = "strategy_optimizer_contracts"
+    __table_args__ = (
+        UniqueConstraint("canonical_identifier", "template_version"),
+        Index(
+            "ix_strategy_optimizer_contracts_identifier", "canonical_identifier", "template_version"
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    canonical_identifier: Mapped[str] = mapped_column(String(160), nullable=False)
+    template_version: Mapped[str] = mapped_column(String(48), nullable=False)
+    contract_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class StrategyTemplateChecksumRecord(Base):
+    __tablename__ = "strategy_template_checksums"
+    __table_args__ = (
+        UniqueConstraint("checksum_key"),
+        Index("ix_strategy_template_checksums_created", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    checksum_key: Mapped[str] = mapped_column(String(160), nullable=False)
+    checksum_value: Mapped[str] = mapped_column(String(256), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class BacktestStrategyInstanceRecord(Base):
     __tablename__ = "backtest_strategy_instances"
     __table_args__ = (

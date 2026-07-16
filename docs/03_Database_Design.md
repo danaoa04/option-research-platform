@@ -179,3 +179,9 @@ Design rules:
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+
+## Sprint 8A Strategy Library Schema
+
+Added normalized tables for template registry, versioning, aliases, parameter schema, definition documents/legs, validation results, payoff summaries, risk classes, compatibility metadata, optimizer contracts, and checksums.
+Migration: 0014_strategy_library_foundation (upgrade/downgrade covered by automated tests).

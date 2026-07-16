@@ -153,3 +153,8 @@ Optimization and validation outputs now feed a downstream portfolio allocation s
 - Promoted and robust candidates become portfolio eligibility inputs.
 - Deterministic objective and constraint metadata are persisted alongside portfolio runs.
 - Portfolio selection remains a research boundary and does not connect to brokers or live execution.
+
+
+## Sprint 8A Optimizer Contract Support
+
+Optimizer integration now includes per-template parameter contract metadata and compatibility ranges for systematic search.

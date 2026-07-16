@@ -95,3 +95,8 @@ No unavailable backend endpoints are called in this phase.
 - New pages and charts can be registered without changing core application logic.
 - Documentation includes Mermaid diagrams.
 - Existing functionality remains unchanged.
+
+
+## Sprint 8A API Surface for GUI
+
+Added V1 API contracts for strategy catalogue/detail, parameter schemas, validation results, payoff previews, risk classes, optimizer compatibility, and custom strategy creation.

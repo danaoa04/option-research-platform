@@ -116,21 +116,56 @@ def compile_template(
     template_name: str,
     metadata: dict[str, Any] | None = None,
 ) -> MultiLegStrategyDefinition:
+    # Preserve legacy behavior for existing public template names.
     definition = _TEMPLATE_BUILDERS.get(template_name)
-    if definition is None:
-        raise StrategyDefinitionError(f"unknown strategy template: {template_name}")
-    strategy = definition()
-    if metadata:
-        merged = dict(strategy.metadata)
-        merged.update(metadata)
-        strategy = MultiLegStrategyDefinition(
-            name=strategy.name,
-            legs=strategy.legs,
-            validation_rules=strategy.validation_rules,
-            metadata=merged,
+    if definition is not None:
+        strategy = definition()
+        if metadata:
+            merged = dict(strategy.metadata)
+            merged.update(metadata)
+            strategy = MultiLegStrategyDefinition(
+                name=strategy.name,
+                legs=strategy.legs,
+                validation_rules=strategy.validation_rules,
+                metadata=merged,
+            )
+        validate_definition(strategy)
+        return strategy
+
+    # For non-legacy names, allow Sprint 8A strategy-library identifiers.
+    try:
+        from .strategy_library import (
+            StrategyLibraryError,
+            compile_strategy_template,
+            default_strategy_template_registry,
         )
-    validate_definition(strategy)
-    return strategy
+
+        try:
+            return compile_strategy_template(
+                template_name=template_name,
+                metadata=metadata,
+            )
+        except StrategyLibraryError:
+            registry = default_strategy_template_registry()
+            match = next(
+                (
+                    item.canonical_identifier
+                    for item in registry.discover(include_deprecated=True)
+                    if item.name == template_name
+                ),
+                None,
+            )
+            if match is None:
+                raise
+            return compile_strategy_template(
+                template_name=match,
+                metadata=metadata,
+                registry=registry,
+            )
+    except StrategyLibraryError as exc:
+        raise StrategyDefinitionError(f"unknown strategy template: {template_name}") from exc
+    except Exception as exc:
+        raise StrategyDefinitionError(f"unknown strategy template: {template_name}") from exc
 
 
 def validate_definition(definition: MultiLegStrategyDefinition) -> None:
@@ -721,7 +756,7 @@ def _synthetic_covered_call() -> MultiLegStrategyDefinition:
     )
 
 
-_TEMPLATE_BUILDERS: dict[str, Callable[[], MultiLegStrategyDefinition]] = {
+_LEGACY_TEMPLATE_BUILDERS: dict[str, Callable[[], MultiLegStrategyDefinition]] = {
     "covered_call": _covered_call,
     "cash_secured_put": _cash_secured_put,
     "bull_put_spread": _bull_put_spread,
@@ -741,6 +776,11 @@ _TEMPLATE_BUILDERS: dict[str, Callable[[], MultiLegStrategyDefinition]] = {
     "pmcc": _pmcc,
     "synthetic_covered_call": _synthetic_covered_call,
 }
+
+
+_TEMPLATE_BUILDERS: dict[str, Callable[[], MultiLegStrategyDefinition]] = dict(
+    _LEGACY_TEMPLATE_BUILDERS
+)
 
 
 STRATEGY_TEMPLATE_NAMES: tuple[str, ...] = tuple(sorted(_TEMPLATE_BUILDERS.keys()))

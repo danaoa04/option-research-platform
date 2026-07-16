@@ -1176,6 +1176,137 @@ class BacktestStrategyTemplateDTO:
 
 
 @dataclass(slots=True, frozen=True)
+class StrategyTemplateRegistryDTO:
+    canonical_identifier: str
+    strategy_name: str
+    strategy_family: str
+    version: str
+    supported_underlyings: list[str]
+    supported_exercise_styles: list[str]
+    supported_settlement_styles: list[str]
+    supported_account_types: list[str]
+    required_data: list[str]
+    supported_lifecycle_policies: list[str]
+    supported_roll_policies: list[str]
+    known_limitations: list[str]
+    deprecated: bool
+    replacement_identifier: str | None
+    plugin_namespace: str | None
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyTemplateVersionDTO:
+    canonical_identifier: str
+    template_version: str
+    schema_version: str
+    parameter_version: str
+    definition_json: dict[str, Any]
+    migration_hook: str | None
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyTemplateAliasDTO:
+    canonical_identifier: str
+    alias: str
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyParameterSchemaDTO:
+    canonical_identifier: str
+    template_version: str
+    schema_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyDefinitionDocumentDTO:
+    strategy_definition_id: str
+    canonical_identifier: str
+    template_version: str
+    parameters_json: dict[str, Any]
+    metadata_json: dict[str, Any]
+    reproducibility_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyDefinitionLegDTO:
+    strategy_definition_id: str
+    leg_label: str
+    leg_kind: str
+    direction: str
+    quantity_ratio: int
+    strike: Decimal | None
+    expiration: date | None
+    option_type: str | None
+    metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyValidationResultDTO:
+    strategy_definition_id: str
+    validation_status: str
+    errors_json: list[dict[str, Any]]
+    warnings_json: list[dict[str, Any]]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyPayoffSummaryDTO:
+    strategy_definition_id: str
+    payoff_grid_json: list[dict[str, Any]]
+    maximum_profit: Decimal | None
+    maximum_loss: Decimal | None
+    breakevens_json: list[float]
+    defined_risk: bool
+    capital_at_risk: Decimal | None
+    credit_or_debit: str
+    slope_regions_json: list[str]
+    discontinuities_json: list[float]
+    residual_exposure_json: dict[str, Any]
+    assignment_sensitive: bool
+    dividend_sensitive: bool
+    warnings_json: list[str]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyRiskClassificationDTO:
+    canonical_identifier: str
+    template_version: str
+    risk_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyCompatibilityMetadataDTO:
+    canonical_identifier: str
+    template_version: str
+    compatibility_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyOptimizerContractDTO:
+    canonical_identifier: str
+    template_version: str
+    contract_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyTemplateChecksumDTO:
+    checksum_key: str
+    checksum_value: str
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
 class BacktestStrategyInstanceDTO:
     strategy_instance_id: str
     strategy_id: str

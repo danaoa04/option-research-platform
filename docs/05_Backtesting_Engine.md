@@ -38,3 +38,8 @@ flowchart TD
 - Full assignment, exercise settlement, and margin logic are deferred to Sprint 6B/7.
 - Baseline fill model is research-only and not realistic execution.
 - Broker connectivity and live execution are intentionally excluded.
+
+
+## Sprint 8A Integration
+
+Backtesting compile flow now supports Sprint 8A strategy-library identifiers while preserving legacy strategy template behavior for existing public names.

@@ -114,3 +114,11 @@ All notable changes to this project will be documented in this file.
 - Added Sprint 6C persistence schema migration `0010_backtest_analytics_replay_foundation.py` for strategy/portfolio analytics, attribution, reconstructed trades/cycles, replay snapshots, overlays, arbitration decisions, comparison runs, and export metadata.
 - Extended backtesting ORM models, DTO contracts, repositories, and persistence service wiring for Sprint 6C artifacts.
 - Added deterministic persistence and migration coverage for Sprint 6C in `backend/tests/test_backtesting_analytics_persistence.py` and extended migration checks in `backend/tests/test_backtesting_persistence.py`.
+
+
+## Sprint 8A - Complete Strategy Library Foundation
+
+- Introduced backend/backtesting/strategy_library.py as the core Strategy Library foundation.
+- Added strategy-library DTOs, ORM records, repositories, query services, and checksum support.
+- Added Alembic migration 0014_strategy_library_foundation for strategy registry and analytics persistence tables.
+- Preserved legacy backtesting strategy compile interfaces while enabling Sprint 8A registry compilation for non-legacy identifiers.

@@ -232,3 +232,9 @@ Boundaries remain unchanged:
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+
+## Sprint 8A Design Addendum
+
+Sprint 8A introduces a Strategy Library layer that separates template metadata, structural constraints, payoff surfaces, and optimizer contracts from execution-time orchestration.
+The design keeps legacy template compile interfaces stable and adds a compatibility bridge for canonical Sprint 8A identifiers.

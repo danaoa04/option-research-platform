@@ -92,3 +92,58 @@ class ComparisonContractV1:
     key: str
     table_rows: tuple[dict[str, Any], ...]
     chart_payload: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyTemplateCatalogueContractV1:
+    schema_version: str
+    templates: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyTemplateDetailContractV1:
+    schema_version: str
+    canonical_identifier: str
+    template: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyParameterSchemaContractV1:
+    schema_version: str
+    canonical_identifier: str
+    parameters: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyValidationContractV1:
+    schema_version: str
+    canonical_identifier: str
+    validation: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyPayoffPreviewContractV1:
+    schema_version: str
+    canonical_identifier: str
+    payoff_summary: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyRiskClassificationContractV1:
+    schema_version: str
+    canonical_identifier: str
+    risk_classification: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class StrategyOptimizerCompatibilityContractV1:
+    schema_version: str
+    canonical_identifier: str
+    optimizer_contract: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class CustomStrategyCreationContractV1:
+    schema_version: str
+    strategy_id: str
+    definition: dict[str, Any]
