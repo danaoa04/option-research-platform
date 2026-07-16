@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 10D.2 synthetic Cboe and Polygon fixture normalization/certification, shared
+  deterministic batch transport, migration 0020/0021 execution tests, all provider-pair comparison
+  coverage, multi-provider consensus, schema-aware monitoring, and opt-in fixture benchmarks.
+
 - Added Sprint 10D.1 executable provider CLI, typed provider API service, deterministic exports,
   lifecycle/query handlers, immutable provider operational artifacts, migration `0021`, and SQLite
   tests for redaction, checksum immutability, cancellation, resume, and job history.

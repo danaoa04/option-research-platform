@@ -66,3 +66,14 @@
 - [x] SQLite persistence, redaction, CLI, API, cancellation, resume, and checksum tests
 - [ ] Complete Cboe/Polygon fixture transports and schema-specific certification suites
 - [ ] External monitoring delivery (out of scope)
+
+## Sprint 10D.2 closure
+
+- [x] Shared offline batch transport with retry, cancellation, continuation, and checksum safety
+- [x] Versioned Cboe fixture normalization, validation, raw lineage, and certification
+- [x] Versioned Polygon fixture normalization, pagination, raw lineage, and certification
+- [x] Alembic 0020/0021 upgrade, insert/read, downgrade, and re-upgrade execution coverage
+- [x] All six provider-pair comparison paths and three-provider consensus
+- [x] Schema-aware monitoring snapshots and structured alerts
+- [x] Opt-in deterministic fixture benchmark boundary
+- [x] No network, proprietary data, secrets, fabricated IV, or fabricated Greeks

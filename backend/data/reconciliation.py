@@ -109,6 +109,84 @@ class MergePreview:
     explanation: tuple[str, ...]
 
 
+@dataclass(slots=True, frozen=True)
+class ConsensusResult:
+    agreeing_providers: tuple[str, ...]
+    dissenting_providers: tuple[str, ...]
+    consensus_fields: Mapping[str, Any]
+    unresolved_fields: tuple[str, ...]
+    field_provenance: Mapping[str, tuple[str, ...]]
+    policy_version: str
+    confidence: float
+    severity: DivergenceSeverity
+    warnings: tuple[str, ...]
+    checksum: str
+
+
+def consensus(
+    observations: tuple[ProviderObservation, ...],
+    policy: ReconciliationPolicy = ReconciliationPolicy(),
+) -> ConsensusResult:
+    if len(observations) < 3:
+        raise ValueError("Consensus requires at least three providers")
+    if len({item.identity.checksum for item in observations}) != 1:
+        raise ValueError("Consensus identity conflict requires manual review")
+    fields: dict[str, Any] = {}
+    provenance: dict[str, tuple[str, ...]] = {}
+    unresolved = []
+    agreeing: set[str] = set()
+    dissenting: set[str] = set()
+    for name in sorted({key for item in observations for key in item.fields}):
+        groups: dict[str, list[ProviderObservation]] = {}
+        for item in observations:
+            if item.fields.get(name) is not None:
+                key = json.dumps(item.fields[name], sort_keys=True, default=str)
+                groups.setdefault(key, []).append(item)
+        winner = (
+            max(
+                groups.values(),
+                key=lambda group: (
+                    len(group),
+                    -min(_rank(item.provider, policy) for item in group),
+                ),
+            )
+            if groups
+            else []
+        )
+        if len(winner) > len(observations) / 2:
+            fields[name] = winner[0].fields[name]
+            provenance[name] = tuple(sorted(item.provider for item in winner))
+            agreeing.update(provenance[name])
+            dissenting.update(item.provider for item in observations if item not in winner)
+        else:
+            unresolved.append(name)
+    critical = bool(set(unresolved) & set(policy.critical_fields))
+    confidence = len(agreeing) / len(observations)
+    severity = (
+        DivergenceSeverity.CRITICAL
+        if critical
+        else (DivergenceSeverity.MODERATE if unresolved else DivergenceSeverity.INFORMATIONAL)
+    )
+    payload = json.dumps(
+        {"fields": fields, "unresolved": unresolved, "policy": policy.version},
+        sort_keys=True,
+        default=str,
+    ).encode()
+    warnings = ("Critical metadata conflict was not auto-resolved",) if critical else ()
+    return ConsensusResult(
+        tuple(sorted(agreeing)),
+        tuple(sorted(dissenting)),
+        fields,
+        tuple(unresolved),
+        provenance,
+        policy.version,
+        confidence,
+        severity,
+        warnings,
+        hashlib.sha256(payload).hexdigest(),
+    )
+
+
 def reconcile(
     observations: tuple[ProviderObservation, ...],
     policy: ReconciliationPolicy = ReconciliationPolicy(),

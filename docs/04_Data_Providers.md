@@ -91,3 +91,17 @@ no ingestion business logic. Outputs use deterministic redacted JSON or self-con
 Migration `0021_provider_operations_completion` adds immutable typed operational artifacts indexed
 by provider, kind, job, and checksum for catalogues, capabilities, retries, synchronization,
 certifications, comparisons, reconciliation, monitoring, and export metadata.
+
+## Offline Cboe and Polygon fixtures
+
+Sprint 10D.2 adds a shared no-network batch transport with deterministic response checksums,
+continuations, cancellation, injectable retry backoff, and explicit missing/duplicate/stalled batch
+failures. Cboe profiles cover synthetic definitions, quotes, trades, settlement, and EOD chains;
+Polygon profiles cover contracts, quotes, trades, aggregates, dividends, and corporate actions.
+Unknown schemas are rejected. Raw payloads and source checksums are retained, and neither adapter
+fabricates implied volatility or Greeks.
+
+Provider consensus requires three or more observations and a strict majority. Critical multiplier,
+exercise, settlement, and adjusted-deliverable conflicts remain unresolved. Schema-aware monitoring
+calculates failure, retry, pagination, quarantine, divergence, identity, stale-data, and checksum
+rates without delivering external alerts.

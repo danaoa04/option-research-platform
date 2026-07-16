@@ -7,9 +7,16 @@ from typing import Any
 
 from backend.data.integration.export import export_html, export_json
 
+from .provider_monitoring import ProviderMonitoringSnapshot, calculate_monitoring
 from .provider_operations import ProviderJobStatus, ProviderOperationsService
 from .providers import CboeProvider, DatabentoProvider, OratsProvider, PolygonProvider
-from .reconciliation import ProviderObservation, ReconciliationPolicy, reconcile
+from .reconciliation import (
+    ConsensusResult,
+    ProviderObservation,
+    ReconciliationPolicy,
+    consensus,
+    reconcile,
+)
 
 PROVIDERS = {
     "orats": OratsProvider,
@@ -75,6 +82,17 @@ class ProviderApiService:
         policy: ReconciliationPolicy = ReconciliationPolicy(),
     ) -> ApiResponse:
         return ApiResponse("1.0.0", reconcile(observations, policy))
+
+    def compare(self, observations: tuple[ProviderObservation, ...]) -> ApiResponse:
+        return self.merge_preview(observations)
+
+    def consensus(self, observations: tuple[ProviderObservation, ...]) -> ApiResponse:
+        result: ConsensusResult = consensus(observations)
+        return ApiResponse("1.0.0", result)
+
+    def monitoring(self, provider: str, **metrics: int) -> ApiResponse:
+        snapshot: ProviderMonitoringSnapshot = calculate_monitoring(provider, **metrics)
+        return ApiResponse("1.0.0", snapshot)
 
     def export_json(self, value: Any) -> str:
         return export_json(value, pretty=True, redact=True)
