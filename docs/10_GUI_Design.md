@@ -59,6 +59,30 @@ flowchart LR
 - No direct database-model binding from UI components.
 - No live API integrations beyond typed placeholders.
 
+## Sprint 11C research workspace
+
+The research workspace uses one tabbed, narrow-window-safe surface for catalogue, configuration,
+results, trades, events, experiments, optimization, validation, and reports. Configuration is a
+four-stage progressive workflow with backward navigation and local draft restoration. A run stays
+disabled until the user explicitly acknowledges synthetic-data and dataset warnings.
+
+Charts include a text description and tabular alternative; differences and status never rely on
+colour alone. Progress uses native accessible status and progress semantics. Command/Ctrl-S saves
+the selected workspace tab, while Escape returns to the run catalogue.
+
+```mermaid
+flowchart LR
+    Strategy[Saved strategy] --> Dataset[Certified dataset]
+    Dataset --> Validate[Backend validation boundary]
+    Validate --> Confirm[Explicit confirmation]
+    Confirm --> Run[Backtest run]
+    Run --> Results[Results and trades]
+    Results --> Optimize[Optimization]
+    Optimize --> WF[Walk-forward]
+    WF --> CPCV[CPCV and robustness]
+    CPCV --> Report[Reproducible report]
+```
+
 
 ## Sprint 8A UI Requirements
 

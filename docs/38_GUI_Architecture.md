@@ -66,6 +66,16 @@ flowchart TD
 
 ## API Boundary Contracts
 
+Sprint 11C adds a `ResearchClient` boundary for catalogue, validation, and explicit run creation.
+Its offline implementation returns cloned deterministic fixtures, supports abort signals, and never
+claims to execute the backend engine. Research view models mirror backend run-summary, parameter
+space, walk-forward, objective, and constraint vocabulary. Quantitative scores are fixture payloads;
+the browser only formats and filters them.
+
+Draft configuration is intentionally separate from server state and stored under a dedicated local
+key. Production query hooks, server persistence, terminal-state polling, and large-table
+virtualization remain integration work rather than being simulated in the client.
+
 Typed contracts and TODO placeholders are defined for:
 
 - health

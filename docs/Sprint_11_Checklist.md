@@ -14,8 +14,8 @@
 
 ## Deferred
 
-- [ ] Sprint 11B option chain, strategy builder, payoff/Greeks, and policy editors
-- [ ] Sprint 11C backtest, experiment, optimization, walk-forward, and CPCV views
+- [x] Sprint 11B option chain, strategy builder, payoff/Greeks, and policy editors
+- [x] Sprint 11C offline backtest, experiment, optimization, walk-forward, and CPCV presentation views
 - [ ] Sprint 11D portfolio, risk lab, replay, and institutional reports
 - [ ] Sprint 11E volatility research and interactive 3D surface
 
@@ -29,3 +29,15 @@
 - [x] Typed abortable strategy API client boundary for chain, validation, previews, and workspace saves
 - [x] Strategy workspace route and deterministic frontend interaction test
 - [ ] Backend endpoint wiring for live chain, pricing, Greeks, margin, policies, and workspace persistence
+
+## Sprint 11C historical research workflow
+
+- [x] Routed backtest catalogue and explicit-launch multi-step configuration wizard
+- [x] Typed synthetic dataset compatibility, validation, execution, lifecycle, margin, and cost assumptions
+- [x] Run status, accessible progress, event timeline, summary, equity alternative, and trade table
+- [x] Experiment notes, comparison boundary, local draft restoration, and workspace keyboard save
+- [x] Parameter-space summary, deterministic optimization candidate table, and sensitivity caveat
+- [x] Walk-forward folds, CPCV metrics, robustness separation, and promotion gates
+- [x] Reproducibility identifiers, deterministic report preview, and fixture provenance warnings
+- [x] Abort-aware typed fixture client and frontend tests for validation and explicit confirmation
+- [ ] Production API wiring, persisted layouts/experiments, polling, virtualization, and licensed-data validation

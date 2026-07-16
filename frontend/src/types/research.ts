@@ -1,0 +1,11 @@
+export type RunStatus="running"|"completed"|"failed"|"cancelled";
+export type ValidationState="ready"|"ready_with_warnings"|"incomplete"|"invalid"|"unsupported";
+export interface DatasetChoice{id:string;provider:string;version:string;coverage:string;frequency:string;certification:"certified"|"conditional";quality:number;features:string[];warnings:string[];checksum:string;synthetic:boolean}
+export interface BacktestDraft{strategyId:string;datasetId:string;startDate:string;endDate:string;initialCapital:number;maxAllocation:number;entryDte:number;profitTarget:number;stopLoss:number;fillModel:"natural"|"midpoint"|"spread_capture";slippageBps:number;assignmentModel:boolean;settlementPolicy:"physical"|"cash";marginPolicy:string;commission:number;acknowledged:boolean}
+export interface ValidationMessage{code:string;severity:"error"|"warning"|"info";field:string;message:string}
+export interface BacktestRun{id:string;strategy:string;dataset:string;range:string;status:RunStatus;progress:number;stage:string;duration:string;netReturn:number|null;sharpe:number|null;drawdown:number|null;validation:ValidationState;checksum:string;tags:string[];synthetic:boolean}
+export interface RunEvent{id:string;at:string;type:string;severity:"info"|"warning"|"error";message:string}
+export interface TradeRow{id:string;symbol:string;opened:string;closed:string;netPnl:number;fees:number;slippage:number;mae:number;mfe:number;closeReason:string;quality:string;assignment:string;rolls:number}
+export interface CandidateRow{id:string;parameters:Record<string,string|number|boolean>;inSample:number;validation:number;test:number;drawdown:number;robustness:number;status:"promoted"|"review"|"rejected"}
+export interface FoldRow{id:string;train:string;validation:string;test:string;candidate:string;trainScore:number;validationScore:number;testScore:number;drift:string;status:string}
+export interface ResearchFixture{datasets:DatasetChoice[];runs:BacktestRun[];events:RunEvent[];trades:TradeRow[];candidates:CandidateRow[];folds:FoldRow[]}

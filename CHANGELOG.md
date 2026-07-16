@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 11C typed offline research workflows: backtest catalogue and wizard, dataset
+  compatibility warnings, run/results/trade/event views, experiments, deterministic optimization,
+  walk-forward and CPCV validation, robustness and promotion gates, reproducibility/report previews,
+  local drafts, accessible alternatives, and frontend regression coverage.
+
 - Added Sprint 11B typed option-chain and strategy models, synthetic chain fixtures, a professional
   calls/puts explorer, template-driven multi-leg builder, payoff/Greeks/liquidity/policy preview
   boundaries, strategy API contracts, responsive styling, and frontend interaction coverage.
