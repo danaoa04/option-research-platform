@@ -72,3 +72,15 @@ flowchart LR
 The fixture catalogue does not assert availability of any licensed Databento dataset. Option data
 support is dataset-, schema-, and license-dependent. Provider IV and Greeks are explicitly
 unsupported rather than synthesized. Native SDK/binary parsing remains an optional future adapter.
+
+## Cross-provider reconciliation
+
+Sprint 10D introduces immutable provider observations, deterministic contract identities,
+versioned precedence policies, absolute and relative divergence tolerances, and merge previews.
+Every selected field records its provider provenance. Identity conflicts require manual review;
+multiplier, exercise, settlement, and adjusted-deliverable conflicts are quarantined. Raw provider
+observations are never modified.
+
+Cboe and Polygon expose conservative metadata foundations only. Their licensed quote/trade access
+is not validated and live fetches fail explicitly. Migration `0020_provider_operations` adds the
+durable job, event, checkpoint, checksum, and unresolved-failure spine shared by all providers.

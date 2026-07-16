@@ -45,3 +45,14 @@
 - [x] ORATS-compatible shared operational service boundary
 - [ ] Durable SQL operational repository and Alembic migration
 - [ ] Provider CLI executable wiring and native Databento SDK transport
+
+## Sprint 10D reconciliation and provider foundations
+
+- [x] Deterministic cross-provider contract identity and observation model
+- [x] Versioned provider precedence, divergence tolerances, severity, and merge previews
+- [x] Field-level provenance with manual-review and quarantine outcomes
+- [x] Conservative Cboe and Polygon capability foundations
+- [x] Durable provider jobs, status events, checkpoints, checksums, and unresolved failures
+- [x] Alembic migration `0020_provider_operations` with downgrade
+- [ ] Licensed Cboe/Polygon transport and schema validation
+- [ ] Scheduled synchronization and operational alert delivery

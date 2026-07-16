@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 10D deterministic cross-provider identity reconciliation, versioned precedence,
+  divergence classification, provenance-preserving merge previews, conservative Cboe/Polygon
+  foundations, and durable provider job/event/checkpoint/failure persistence migration `0020`.
+
 - Added the Sprint 10C offline Databento adapter foundation and provider-neutral operational
   service with deterministic request identities, checkpoints, cancellation/resume, unresolved
   failures, continuation safety, effective-dated symbology, schema-specific normalization,
