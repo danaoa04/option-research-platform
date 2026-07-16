@@ -50,3 +50,25 @@ Only the synthetic `orats-eod-fixture-v1` schema is asserted. Intraday coverage,
 earnings, corporate actions, settlement/exercise metadata, and adjusted deliverables remain
 license-dependent and are explicitly reported as unsupported. A user must validate production
 credentials and licensed schemas before enabling live transport.
+
+## Databento and shared provider operations
+
+Sprint 10C adds a synthetic, offline Databento adapter and a provider-neutral operational service.
+Requests have deterministic checksums; batches expose continuation and response checksums; changed
+checkpoint content is rejected rather than overwriting lineage. Symbology resolution is effective-
+dated and rejects unresolved or ambiguous instruments.
+
+```mermaid
+flowchart LR
+  J[Shared provider job] --> R[Checksummed Databento request]
+  R --> T[Injected fixture/cache transport]
+  T --> B[Ordered batches and continuation]
+  B --> S[Effective-dated symbology]
+  S --> N[Schema-specific canonical record]
+  N --> L[Raw record and checksum lineage]
+  B --> F[Structured unresolved failure]
+```
+
+The fixture catalogue does not assert availability of any licensed Databento dataset. Option data
+support is dataset-, schema-, and license-dependent. Provider IV and Greeks are explicitly
+unsupported rather than synthesized. Native SDK/binary parsing remains an optional future adapter.

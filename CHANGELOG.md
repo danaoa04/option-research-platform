@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added the Sprint 10C offline Databento adapter foundation and provider-neutral operational
+  service with deterministic request identities, checkpoints, cancellation/resume, unresolved
+  failures, continuation safety, effective-dated symbology, schema-specific normalization,
+  sequence validation, raw lineage, and conservative capability states.
+
 - Added the offline-testable Sprint 10B ORATS historical-data adapter with typed catalogue and
   requests, conservative capabilities, injectable transport, retry/pagination checks, versioned
   normalization, raw vendor IV/Greeks preservation, quarantine, synchronization planning,

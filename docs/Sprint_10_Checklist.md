@@ -33,3 +33,15 @@
 - [x] Versioned API/export contracts and opt-in benchmark boundary
 - [ ] User production-credential and licensed-schema validation
 - [ ] Databento, Cboe, Polygon, cross-provider reconciliation, and scheduled monitoring
+
+## Sprint 10C Databento and operations
+
+- [x] Shared deterministic jobs, requests, checkpoints, cancellation, resume, and failures
+- [x] Conservative Databento capability states and synthetic dataset catalogue
+- [x] Checksummed request models and injectable continuation transport
+- [x] Effective-dated symbology with unresolved and ambiguity rejection
+- [x] Definition and top-of-book fixture normalization with raw lineage
+- [x] Stable event/sequence ordering, regression detection, and duplicate suppression
+- [x] ORATS-compatible shared operational service boundary
+- [ ] Durable SQL operational repository and Alembic migration
+- [ ] Provider CLI executable wiring and native Databento SDK transport
