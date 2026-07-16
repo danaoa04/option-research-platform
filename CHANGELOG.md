@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added the offline-testable Sprint 10B ORATS historical-data adapter with typed catalogue and
+  requests, conservative capabilities, injectable transport, retry/pagination checks, versioned
+  normalization, raw vendor IV/Greeks preservation, quarantine, synchronization planning,
+  completeness certification, provider/platform comparison hooks, and API/export contracts.
+
 - Added the Sprint 10A local historical-data integration foundation: explicit provider
   capabilities, environment credential resolution with redacted diagnostics, versioned schema
   profiles, deterministic CSV/gzip and optional Parquet ingestion, safe archive extraction,

@@ -27,3 +27,26 @@ The ORATS, Databento, Cboe, and Polygon profiles are integration placeholders. T
 make no claim of vendor schema accuracy until licensed samples have been validated. Authenticated
 downloads, pagination, provider rate limiting, scheduled synchronization, and automatic vendor
 schema detection remain later Sprint 10 work.
+
+## ORATS adapter
+
+Sprint 10B adds an injectable ORATS adapter under `backend.data.orats`. Production credentials
+remain environment-only; the adapter itself accepts a transport and never logs or owns a token.
+The deterministic fake transport supports fixture pages, retryable failures, cursors, cancellation,
+checksums, and rate-limit observations without sleeping or accessing the network.
+
+```mermaid
+flowchart LR
+  R[Validated request] --> T[Injected transport]
+  T --> P[Page and retry orchestration]
+  P --> S[Versioned ORATS schema]
+  S --> N[Canonical record plus raw vendor values]
+  N --> V{ORATS validation}
+  V -->|valid| C[Completeness and certification]
+  V -->|invalid| Q[Quarantine]
+```
+
+Only the synthetic `orats-eod-fixture-v1` schema is asserted. Intraday coverage, dividends,
+earnings, corporate actions, settlement/exercise metadata, and adjusted deliverables remain
+license-dependent and are explicitly reported as unsupported. A user must validate production
+credentials and licensed schemas before enabling live transport.

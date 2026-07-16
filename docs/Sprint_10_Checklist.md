@@ -20,3 +20,16 @@
 - [ ] Provider pagination, rate limiting, and scheduled synchronization
 - [ ] Automatic vendor schema-version detection and provider reconciliation
 - [ ] Full operational persistence/API/CLI and expanded market-calendar certification packs
+
+## Sprint 10B ORATS adapter
+
+- [x] Conservative ORATS capability declaration and fixture-backed catalogue
+- [x] Typed request validation and credential-free offline configuration
+- [x] Injectable transport with deterministic fixtures, retry, cancellation, and rate-limit state
+- [x] Page/cursor orchestration with duplicate, missing-page, and stalled-cursor detection
+- [x] Versioned schema rejection, normalization, raw vendor preservation, and contract identity
+- [x] ORATS IV/Greeks preservation and platform-comparison hooks
+- [x] ORATS validation, quarantine, completeness, certification, and synchronization planning
+- [x] Versioned API/export contracts and opt-in benchmark boundary
+- [ ] User production-credential and licensed-schema validation
+- [ ] Databento, Cboe, Polygon, cross-provider reconciliation, and scheduled monitoring
