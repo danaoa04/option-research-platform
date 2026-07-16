@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 9A risk-lab persistence/query foundation with migration `0017_risk_lab_foundation.py`, deterministic checksum support, and migration/persistence test coverage.
+- Added Sprint 9B replay workspace persistence foundation with migration `0018_replay_workspace_foundation.py` for sessions, branches, checkpoints, bookmarks, timeline events, annotations, filters, comparisons, diagnostics, reproducibility reports, decision explanations, experiments, and workspace metadata.
+- Added replay workspace repositories/services and deterministic replay workspace checksum utility in `backend/database/replay_workspace.py`.
+- Extended replay engine with additive session/branch/timeline capabilities and deterministic branch checksums.
+- Added additive Sprint 9B API contracts for scenario catalogue/detail/run/matrix/attribution and replay workspace session/branch/timeline/comparison/explanation payloads.
+- Added typed risk query read-model methods in `RiskLabQueryService` while preserving existing dict-based query method compatibility.
+- Added deterministic Sprint 9B tests for replay workspace persistence, replay workspace migration upgrade/downgrade, replay engine branch behavior, and opt-in replay workspace benchmark checksum path.
+
 - Expanded the repository into a production-style project skeleton.
 - Added backend, frontend, docs, config, database, docker, scripts, notebooks, and tests directories.
 - Added contributor and security policy files.

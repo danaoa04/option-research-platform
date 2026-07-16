@@ -41,3 +41,8 @@ Outputs per candidate:
 ## Sprint 8A Risk Classification Inputs
 
 Risk engine interfaces now include strategy-library risk classification metadata and payoff-derived risk characteristics.
+
+## Sprint 9B Typed Risk Query Read Models
+
+- Added typed read-model query paths for scenario catalogue, versions, runs, matrix points, attribution, limit breaches, management comparisons, metadata, and reproducibility checksums.
+- Existing dict-style query methods remain available for backward compatibility.

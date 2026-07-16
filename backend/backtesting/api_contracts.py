@@ -242,3 +242,98 @@ class ReplayRollEventContractV1:
     schema_version: str
     run_id: str
     event: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class ScenarioCatalogueContractV1:
+    schema_version: str
+    scenarios: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class ScenarioDetailContractV1:
+    schema_version: str
+    scenario_id: str
+    versions: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class ScenarioRunContractV1:
+    schema_version: str
+    run: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class ScenarioMatrixContractV1:
+    schema_version: str
+    run_id: str
+    matrix_id: str
+    rows: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class ScenarioAttributionContractV1:
+    schema_version: str
+    run_id: str
+    rows: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class ReplaySessionContractV1:
+    schema_version: str
+    session: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayBranchContractV1:
+    schema_version: str
+    session_id: str
+    branches: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayTimelineContractV1:
+    schema_version: str
+    session_id: str
+    branch_id: str
+    timeline: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayComparisonWorkspaceContractV1:
+    schema_version: str
+    session_id: str
+    comparisons: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayDecisionExplanationContractV1:
+    schema_version: str
+    session_id: str
+    branch_id: str
+    explanations: tuple[dict[str, Any], ...]
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayVisualizationContractV1:
+    """Stable backend payload for a future workspace view (no GUI dependency)."""
+
+    schema_version: str
+    session_id: str
+    branch_id: str
+    view: str
+    rows: tuple[dict[str, Any], ...]
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayReproducibilityContractV1:
+    schema_version: str
+    left_run_id: str
+    right_run_id: str
+    matching: bool
+    differing_events: tuple[dict[str, Any], ...] = ()
+    differing_policy_decisions: tuple[dict[str, Any], ...] = ()
+    differing_fills: tuple[dict[str, Any], ...] = ()
+    differing_scenarios: tuple[dict[str, Any], ...] = ()
+    differing_analytics: tuple[dict[str, Any], ...] = ()

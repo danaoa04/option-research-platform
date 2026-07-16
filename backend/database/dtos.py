@@ -2271,3 +2271,160 @@ class BacktestExecutionReproducibilityChecksumDTO:
     checksum_key: str
     checksum_value: str
     metadata_json: dict[str, Any]
+
+
+@dataclass(slots=True, frozen=True)
+class ReplaySessionDTO:
+    session_id: str
+    run_id: str
+    timeline_id: str
+    base_branch_id: str
+    status: str
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayBranchDTO:
+    session_id: str
+    branch_id: str
+    parent_branch_id: str | None
+    root_snapshot_id: str
+    decision_delta_json: dict[str, Any]
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayCheckpointDTO:
+    session_id: str
+    checkpoint_id: str
+    branch_id: str
+    event_index: int
+    snapshot_id: str
+    label: str
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayBookmarkDTO:
+    session_id: str
+    bookmark_id: str
+    branch_id: str
+    event_index: int
+    label: str
+    tags: list[str]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayEventDTO:
+    session_id: str
+    branch_id: str
+    event_sequence: int
+    event_timestamp: datetime
+    event_type: str
+    severity: str
+    strategy_id: str
+    symbol: str
+    scenario_id: str | None
+    policy_id: str | None
+    optimizer_id: str | None
+    tags: list[str]
+    payload_json: dict[str, Any]
+    event_checksum: str
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayAnnotationDTO:
+    session_id: str
+    annotation_id: str
+    branch_id: str
+    event_sequence: int
+    note_markdown: str
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayFilterDTO:
+    session_id: str
+    filter_id: str
+    branch_id: str
+    filter_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayComparisonDTO:
+    session_id: str
+    comparison_id: str
+    left_branch_id: str
+    right_branch_id: str
+    comparison_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayDiagnosticDTO:
+    session_id: str
+    diagnostic_id: str
+    branch_id: str
+    diagnostic_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class ReplayReproducibilityReportDTO:
+    session_id: str
+    report_id: str
+    left_run_id: str
+    right_run_id: str
+    status: str
+    report_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class DecisionExplanationDTO:
+    session_id: str
+    explanation_id: str
+    branch_id: str
+    event_sequence: int
+    decision_kind: str
+    explanation_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class ExperimentDTO:
+    experiment_id: str
+    hypothesis: str
+    configuration_json: dict[str, Any]
+    dataset_refs: list[str]
+    strategy_set: list[str]
+    optimization_set: list[str]
+    scenario_set: list[str]
+    replay_set: list[str]
+    notes: str
+    tags: list[str]
+    version: str
+    result_summary: dict[str, Any]
+    metadata_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class ExperimentComparisonDTO:
+    comparison_id: str
+    left_experiment_id: str
+    right_experiment_id: str
+    comparison_json: dict[str, Any]
+    created_at: datetime
+
+
+@dataclass(slots=True, frozen=True)
+class WorkspaceMetadataDTO:
+    workspace_key: str
+    value_json: dict[str, Any]
+    created_at: datetime

@@ -208,3 +208,11 @@ Sprint 8B boundaries:
 - No live broker/API execution.
 - No hard-coded strategy behavior inside the event loop.
 - Policy decisions remain configurable, testable, and replayable.
+
+## Sprint 9A/9B - Risk Lab and Replay Workspace Foundation
+
+- Added deterministic risk-lab persistence/query foundation with migration `0017_risk_lab_foundation.py`.
+- Added replay workspace and experiment persistence foundation with migration `0018_replay_workspace_foundation.py`.
+- Added replay workspace repositories/services for sessions, branches, timeline events, annotations, comparisons, diagnostics, explanations, and experiments.
+- Added additive typed read-model methods in `RiskLabQueryService` to reduce schema drift risk while preserving dict-style APIs.
+- Added deterministic offline tests for replay workspace persistence, migration compatibility, replay branch checksums, and opt-in benchmark checksum path.

@@ -159,3 +159,9 @@ Portfolio allocation runs are now persisted as normalized run artifacts.
 
 New services: StrategyLibraryPersistenceService and StrategyLibraryQueryService.
 New repositories provide deterministic upsert and query pathways for strategy-library entities and related analytics metadata.
+
+## Sprint 9B Replay Workspace Persistence Layer
+
+- Added migration `0018_replay_workspace_foundation` for replay sessions, branches, timeline events, annotations, filters, comparisons, diagnostics, reproducibility reports, decision explanations, experiments, experiment comparisons, and workspace metadata.
+- Added deterministic persistence/query services in `backend/database/replay_workspace.py`.
+- Added repository/query abstractions in `backend/database/repositories/replay_workspace.py`.

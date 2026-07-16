@@ -43,3 +43,22 @@ The loop is strategy-agnostic and only calls the stable lifecycle interface:
 - Added explicit transition guards/actions, partial-fill reconciliation, and roll-planning scaffolding.
 - Added PMCC/synthetic covered call and calendar/diagonal readiness metadata without live execution.
 - Preserved no-look-ahead and nearest-prior semantics across lifecycle and query services.
+
+## Sprint 9B Update
+
+- Added deterministic replay workspace extension with sessions, branches, checkpoints, bookmarks, annotations, and branch comparisons.
+- Added decision-intelligence payload support for explanation artifacts and branch-level diagnostics.
+- Added replay reproducibility report persistence for run-to-run parity validation.
+
+```mermaid
+flowchart LR
+	Events[Deterministic Event Stream] --> Session[Replay Session]
+	Session --> BranchMain[Main Branch]
+	Session --> BranchAlt[Alternative Branch]
+	BranchMain --> TimelineMain[Timeline Events]
+	BranchAlt --> TimelineAlt[Timeline Events]
+	TimelineMain --> Explain[Decision Explanations]
+	TimelineAlt --> Compare[Replay Comparisons]
+	Explain --> Reports[Reproducibility Reports]
+	Compare --> Reports
+```

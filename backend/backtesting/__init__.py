@@ -463,7 +463,7 @@ __all__ = [
     "RollEligibilityResult",
     "RollKind",
     "RollPlan",
-        "StrategyRollPlan",
+    "StrategyRollPlan",
     "RollPlanContractV1",
     "RollPolicyCatalogueContractV1",
     "RollPreviewContractV1",

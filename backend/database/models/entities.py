@@ -3119,6 +3119,256 @@ class BacktestExecutionReproducibilityChecksumRecord(Base):
     )
 
 
+class ReplaySessionRecord(Base):
+    __tablename__ = "replay_sessions"
+    __table_args__ = (
+        UniqueConstraint("session_id"),
+        Index("ix_replay_sessions_run", "run_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    timeline_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    base_branch_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column("metadata", JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ReplayBranchRecord(Base):
+    __tablename__ = "replay_branches"
+    __table_args__ = (
+        UniqueConstraint("session_id", "branch_id"),
+        Index("ix_replay_branches_session", "session_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    branch_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    parent_branch_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    root_snapshot_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    decision_delta_json: Mapped[dict[str, Any]] = mapped_column(
+        "decision_delta",
+        JSON,
+        nullable=False,
+        default=dict,
+    )
+    metadata_json: Mapped[dict[str, Any]] = mapped_column("metadata", JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ReplayCheckpointRecord(Base):
+    __tablename__ = "replay_checkpoints"
+    __table_args__ = (
+        UniqueConstraint("session_id", "checkpoint_id"),
+        Index("ix_replay_checkpoints_session", "session_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    checkpoint_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    branch_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    event_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    snapshot_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    label: Mapped[str] = mapped_column(String(256), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ReplayBookmarkRecord(Base):
+    __tablename__ = "replay_bookmarks"
+    __table_args__ = (
+        UniqueConstraint("session_id", "bookmark_id"),
+        Index("ix_replay_bookmarks_session", "session_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    bookmark_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    branch_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    event_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    label: Mapped[str] = mapped_column(String(256), nullable=False)
+    tags: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ReplayEventRecord(Base):
+    __tablename__ = "replay_events"
+    __table_args__ = (
+        UniqueConstraint("session_id", "branch_id", "event_sequence"),
+        Index("ix_replay_events_session_branch", "session_id", "branch_id", "event_sequence"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    branch_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    event_sequence: Mapped[int] = mapped_column(Integer, nullable=False)
+    event_timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    event_type: Mapped[str] = mapped_column(String(128), nullable=False)
+    severity: Mapped[str] = mapped_column(String(32), nullable=False)
+    strategy_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    symbol: Mapped[str] = mapped_column(String(32), nullable=False)
+    scenario_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    policy_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    optimizer_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    tags: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    payload_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    event_checksum: Mapped[str] = mapped_column(String(256), nullable=False)
+
+
+class ReplayAnnotationRecord(Base):
+    __tablename__ = "replay_annotations"
+    __table_args__ = (
+        UniqueConstraint("session_id", "annotation_id"),
+        Index("ix_replay_annotations_session", "session_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    annotation_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    branch_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    event_sequence: Mapped[int] = mapped_column(Integer, nullable=False)
+    note_markdown: Mapped[str] = mapped_column(Text, nullable=False)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column("metadata", JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ReplayFilterRecord(Base):
+    __tablename__ = "replay_filters"
+    __table_args__ = (
+        UniqueConstraint("session_id", "filter_id"),
+        Index("ix_replay_filters_session", "session_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    filter_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    branch_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    filter_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ReplayComparisonRecord(Base):
+    __tablename__ = "replay_comparisons"
+    __table_args__ = (
+        UniqueConstraint("session_id", "comparison_id"),
+        Index("ix_replay_comparisons_session", "session_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    comparison_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    left_branch_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    right_branch_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    comparison_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ReplayDiagnosticRecord(Base):
+    __tablename__ = "replay_diagnostics"
+    __table_args__ = (
+        UniqueConstraint("session_id", "diagnostic_id"),
+        Index("ix_replay_diagnostics_session", "session_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    diagnostic_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    branch_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    diagnostic_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ReplayReproducibilityReportRecord(Base):
+    __tablename__ = "replay_reproducibility_reports"
+    __table_args__ = (
+        UniqueConstraint("session_id", "report_id"),
+        Index("ix_replay_repro_reports_session", "session_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    report_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    left_run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    right_run_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    report_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class DecisionExplanationRecord(Base):
+    __tablename__ = "decision_explanations"
+    __table_args__ = (
+        UniqueConstraint("session_id", "explanation_id"),
+        Index("ix_decision_explanations_session", "session_id", "event_sequence"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    session_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    explanation_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    branch_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    event_sequence: Mapped[int] = mapped_column(Integer, nullable=False)
+    decision_kind: Mapped[str] = mapped_column(String(64), nullable=False)
+    explanation_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ExperimentRecord(Base):
+    __tablename__ = "experiments"
+    __table_args__ = (
+        UniqueConstraint("experiment_id"),
+        Index("ix_experiments_created", "created_at", "version"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    experiment_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    hypothesis: Mapped[str] = mapped_column(Text, nullable=False)
+    configuration_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    dataset_refs: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    strategy_set: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    optimization_set: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    scenario_set: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    replay_set: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    notes: Mapped[str] = mapped_column(Text, nullable=False)
+    tags: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    version: Mapped[str] = mapped_column(String(64), nullable=False)
+    result_summary: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    metadata_json: Mapped[dict[str, Any]] = mapped_column("metadata", JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class ExperimentComparisonRecord(Base):
+    __tablename__ = "experiment_comparisons"
+    __table_args__ = (
+        UniqueConstraint("comparison_id"),
+        Index(
+            "ix_experiment_comparisons_pair",
+            "left_experiment_id",
+            "right_experiment_id",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    comparison_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    left_experiment_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    right_experiment_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    comparison_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class WorkspaceMetadataRecord(Base):
+    __tablename__ = "workspace_metadata"
+    __table_args__ = (
+        UniqueConstraint("workspace_key"),
+        Index("ix_workspace_metadata_created", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    workspace_key: Mapped[str] = mapped_column(String(160), nullable=False)
+    value_json: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class BacktestAccountConfigurationRecord(Base):
     __tablename__ = "backtest_account_configurations"
     __table_args__ = (

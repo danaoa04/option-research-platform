@@ -43,3 +43,19 @@ flowchart LR
 - Minimum touch targets for mobile-friendly controls.
 - High-contrast compatibility for both theme modes.
 - Screen-reader labels for interactive workspace controls.
+
+## Sprint 9B Replay Workspace Extension
+
+- Replay session workspace artifacts now persist as deterministic offline records.
+- Workspace state includes sessions, branches, bookmarks, checkpoints, filters, annotations, comparisons, and decision explanations.
+- Experiment workspace tracks hypothesis metadata, scenario/replay sets, and comparison artifacts for reproducible research review.
+
+```mermaid
+flowchart TD
+    Workspace[Workspace Layout] --> ReplaySession[Replay Session]
+    ReplaySession --> Branches[Branch Graph]
+    Branches --> Notes[Annotations and Bookmarks]
+    Branches --> Decisions[Decision Explanations]
+    Workspace --> Experiments[Experiment Records]
+    Experiments --> Comparisons[Experiment Comparisons]
+```

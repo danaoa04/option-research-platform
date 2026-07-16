@@ -102,6 +102,9 @@ Provide normalized historical market data for options, equities, corporate actio
 - Validation engine
 - Configuration service
 
+#### Sprint 9B extension
+- Replay workspace and decision-intelligence persistence now capture branch-aware replay sessions, annotations, and experiment metadata for deterministic research review.
+
 #### Sprint 2 implementation status
 - Provider abstraction and registry are implemented under [backend/data/providers](../backend/data/providers).
 - Placeholder providers for ORATS, Databento, Polygon, and CBOE are scaffolded and raise a documented NotImplementedError for vendor-specific work.
