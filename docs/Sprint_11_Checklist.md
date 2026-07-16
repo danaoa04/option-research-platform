@@ -16,7 +16,7 @@
 
 - [x] Sprint 11B option chain, strategy builder, payoff/Greeks, and policy editors
 - [x] Sprint 11C offline backtest, experiment, optimization, walk-forward, and CPCV presentation views
-- [ ] Sprint 11D portfolio, risk lab, replay, and institutional reports
+- [x] Sprint 11D offline portfolio, risk lab, replay, and institutional-report presentation
 - [ ] Sprint 11E volatility research and interactive 3D surface
 
 ## Sprint 11B strategy research workflow
@@ -41,3 +41,16 @@
 - [x] Reproducibility identifiers, deterministic report preview, and fixture provenance warnings
 - [x] Abort-aware typed fixture client and frontend tests for validation and explicit confirmation
 - [ ] Production API wiring, persisted layouts/experiments, polling, virtualization, and licensed-data validation
+
+## Sprint 11D portfolio and decision analysis
+
+- [x] Typed fixture portfolio selector, provenance-labelled metrics, diagnostics, and event risk
+- [x] Filterable position table, position detail, strategy-cycle summary, and lineage checksums
+- [x] Exposure grouping, accessible Greek-contribution view, and tabular alternative
+- [x] Explicit-confirmation scenario builder, fixture catalogue, validation, and local draft state
+- [x] Keyboard-operable scenario matrix, selected-cell detail, and approximate attribution
+- [x] Visible risk-limit breaches and backend-ranked remediation comparisons with no-order boundary
+- [x] Replay timeline, structured decision explanation, immutable checksums, and branch creation
+- [x] Institutional report history, semantic preview, provenance, limitations, and export boundaries
+- [x] Abort-aware typed fixture API client and deterministic frontend interaction tests
+- [ ] Production API/query hooks, durable workspace mutations, polling, virtualization, and desktop saves

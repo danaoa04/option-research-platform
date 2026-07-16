@@ -76,6 +76,17 @@ Draft configuration is intentionally separate from server state and stored under
 key. Production query hooks, server persistence, terminal-state polling, and large-table
 virtualization remain integration work rather than being simulated in the client.
 
+### Sprint 11D risk boundary
+
+`RiskClient` adds abort-aware portfolio workspace, scenario validation/launch, replay-branch, and
+report-preview operations. Its fixture implementation clones deterministic payloads and rejects
+invalid shocks, unconfirmed runs, incomplete branches, and unsupported report requests. Scenario
+drafts remain separate from server state in a dedicated local-storage key.
+
+`RiskWorkspace` consumes typed presentation rows for positions, exposures, matrix cells, limits,
+management candidates, replay events, and report history. It never imports Python models or embeds
+pricing, aggregation, limit, ranking, or narrative-generation logic.
+
 Typed contracts and TODO placeholders are defined for:
 
 - health

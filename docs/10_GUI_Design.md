@@ -83,6 +83,17 @@ flowchart LR
     CPCV --> Report[Reproducible report]
 ```
 
+## Sprint 11D portfolio, risk, replay, and reports
+
+Sprint 11D extends the workstation with a single responsive decision-analysis surface. Critical
+breaches include text and severity, matrix cells are native keyboard-focusable buttons, exposure
+graphics include textual and tabular alternatives, replay events use a semantic timeline, and
+report previews use headings, navigation, tables, limitations, and provenance.
+
+The interface repeatedly identifies fixture portfolios and model-derived scenario values. Scenario
+launch and replay branch creation require deliberate input. Research remediation preferences cannot
+be converted into orders.
+
 
 ## Sprint 8A UI Requirements
 

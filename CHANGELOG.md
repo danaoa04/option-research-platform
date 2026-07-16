@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 11D deterministic offline portfolio and risk workflows: provenance-labelled portfolio
+  metrics, positions and strategy cycles, exposure views, scenario configuration and matrices, limit
+  breaches, research-only remediation comparisons, replay branching, institutional report previews,
+  typed fixture API boundaries, responsive styling, and frontend regression coverage.
+
 - Added Sprint 11C typed offline research workflows: backtest catalogue and wizard, dataset
   compatibility warnings, run/results/trade/event views, experiments, deterministic optimization,
   walk-forward and CPCV validation, robustness and promotion gates, reproducibility/report previews,

@@ -46,3 +46,24 @@ Risk engine interfaces now include strategy-library risk classification metadata
 
 - Added typed read-model query paths for scenario catalogue, versions, runs, matrix points, attribution, limit breaches, management comparisons, metadata, and reproducibility checksums.
 - Existing dict-style query methods remain available for backward compatibility.
+
+## Sprint 11D risk-lab presentation
+
+The desktop risk lab consumes the existing scenario catalogue, run, matrix, attribution, breach,
+management-comparison, and checksum read models. It does not reprice instruments, evaluate limits,
+rank remediation, or choose actions in the browser. Offline values are deterministic synthetic
+payloads and are labelled as calculated, model-derived, observed fixture state, or fixture metadata.
+
+```mermaid
+flowchart LR
+    Snapshot[Immutable portfolio snapshot] --> Validate[Backend scenario validation]
+    Validate --> Confirm[Explicit user confirmation]
+    Confirm --> Run[Scenario run]
+    Run --> Matrix[Matrix and attribution]
+    Matrix --> Limits[Risk-limit evaluation]
+    Limits --> Compare[Backend-ranked remediation comparison]
+    Compare --> Replay[Research replay branch]
+```
+
+Remediation selection records a research preference only. There is no broker, order staging,
+routing, or execution capability in this workspace, and scenario results are never forecasts.

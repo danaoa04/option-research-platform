@@ -78,6 +78,18 @@ Added tests:
 - backend/tests/test_portfolio_persistence.py
 - backend/tests/test_portfolio_benchmarks_opt_in.py
 
+## Sprint 11D portfolio workspace
+
+The portfolio workspace presents immutable fixture snapshots with explicit source timestamp,
+dataset certification, position count, checksum, and limitations. Summary metrics carry provenance
+labels. Position detail surfaces canonical identity, lineage, event relationship, liquidity,
+diagnostics, strategy-cycle state, and reproducibility without importing database entities into the
+frontend.
+
+Exposure charts are accessible summaries over backend-produced aggregation rows and include a
+tabular alternative. Group selection changes presentation only; aggregation and Greek calculation
+remain portfolio-engine responsibilities.
+
 Benchmark execution remains opt-in via RUN_OPT_IN_BENCHMARKS=1.
 
 ## Sprint 6A Backtesting Event Loop Foundation
