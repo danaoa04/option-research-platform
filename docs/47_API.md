@@ -25,6 +25,7 @@ New production requests use a shared transport with API version, request identif
 abort, structured error, idempotency, and resource-version support. Automatic retries are allowed
 only for safe reads. Mutations remain disabled during incompatibility or required migrations.
 
-The audit found `/health` mounted as the general compatibility endpoint. Most research, portfolio,
-replay, workspace, report, and volatility services are not mounted as versioned HTTP routes, so
-explicit fixture clients remain instead of invented production URLs.
+The production-safe boundary now mounts `/v1/health`, `/v1/compatibility`, and provider catalogue,
+capability, job-query, alert, and quality reads. Most research, portfolio, replay, workspace, report,
+and volatility services are still not mounted as versioned HTTP routes, so explicit fixture clients
+remain instead of invented production URLs. See `Sprint_11F2_Endpoint_Audit.md` for the inventory.

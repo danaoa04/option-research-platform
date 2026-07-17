@@ -1,3 +1,3 @@
-from ._compat import FastAPI
+from ._compat import APIRouter, FastAPI
 
-__all__ = ["FastAPI"]
+__all__ = ["APIRouter", "FastAPI"]

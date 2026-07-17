@@ -1,6 +1,8 @@
+from backend.api import router
 from fastapi import FastAPI
 
 app = FastAPI(title="QuantLab backend", version="0.1.0")
+app.include_router(router)
 
 
 @app.get("/health")
