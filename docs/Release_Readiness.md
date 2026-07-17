@@ -23,3 +23,8 @@ Current evidence supports local RC construction with warnings. It does not suppo
 Performance evidence is recorded per build: artifact-generation time, `.app` size when present,
 sidecar size, fixture metadata size, and packaged smoke evidence. These are measurements, not
 performance guarantees.
+
+Sprint 12C keeps public provider readiness blocked until live validation, entitlement evidence,
+licence review, provider-specific documentation, and restricted-export enforcement evidence exist.
+Fixture-only certification is useful release evidence for the validation layer, not proof of
+licensed provider correctness.

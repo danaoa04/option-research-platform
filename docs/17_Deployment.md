@@ -35,3 +35,8 @@ sequenceDiagram
   T->>S: application exit
   S->>D: flush and close
 ```
+
+Sprint 12C deployment boundary: packaged and local release checks must not include credentials,
+licensed provider payloads, or unrestricted restricted-data exports. Provider credentials are
+presence/status checked only unless an explicit live-validation run is authorized outside the
+standard credential-free gates.

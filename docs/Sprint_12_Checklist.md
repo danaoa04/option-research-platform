@@ -24,4 +24,18 @@
 
 ## Sprint 12C
 
-- [ ] Real-provider credential and licensed-data validation under explicit authorization
+- [x] Provider capability audit and conservative readiness model
+- [x] Typed provider configuration, credential-status, and redaction boundaries
+- [x] Licensed-data classifications and export enforcement
+- [x] Offline import safety checks and non-licensed synthetic example datasets
+- [x] Option contract normalization, quote validation, certification, and comparison reports
+- [x] Provider readiness reports that keep live validation unvalidated without evidence
+- [x] Credential-free deterministic provider/data-import/data-certification tests
+- [ ] Opt-in live provider validation with credentials and licence permission
+- [ ] macOS Keychain command surface beyond the documented secure boundary
+- [ ] Public provider-readiness claims
+
+Sprint 12D will focus on performance stress testing, large datasets, long-running
+backtests, high-volume chains, optimizer/WebGL scaling, profiling, and endurance
+reliability. Sprint 12C does not begin that stress work beyond targeted synthetic
+provider-validation measurements.

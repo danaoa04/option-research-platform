@@ -16,6 +16,21 @@ from .provider_runtime import (
     SchedulerService,
     calculate_health,
 )
+from .provider_validation import (
+    DataClassification,
+    ProviderConfiguration,
+    build_manifest,
+    certify_dataset,
+    credential_status,
+    enforce_export_policy,
+    export_decision,
+    lineage_event,
+    normalize_option_record,
+    performance_measurements,
+    provider_audit,
+    readiness_report,
+    validate_options,
+)
 from .providers import CboeProvider, DatabentoProvider, OratsProvider, PolygonProvider
 from .reconciliation import (
     ConsensusResult,
@@ -106,6 +121,91 @@ class ProviderApiService:
 
     def network_policy_status(self) -> ApiResponse:
         return ApiResponse("1.0.0", self.network_policy)
+
+    def provider_audit(self) -> ApiResponse:
+        return ApiResponse("1.0.0", provider_audit())
+
+    def validate_config(self, config: ProviderConfiguration) -> ApiResponse:
+        issues = config.validate()
+        return ApiResponse("1.0.0", {"valid": not issues, "issues": issues})
+
+    def credential_status(
+        self, provider: str, credential_reference: str | None = None
+    ) -> ApiResponse:
+        self._provider(provider)
+        return ApiResponse("1.0.0", credential_status(provider, credential_reference))
+
+    def licensing(self, classification: DataClassification, requested: str) -> ApiResponse:
+        return ApiResponse(
+            "1.0.0",
+            {
+                "classification": classification.value,
+                "requested_export": requested,
+                "decision": export_decision(classification, requested).value,
+            },
+        )
+
+    def enforce_export(self, classification: DataClassification, requested: str) -> ApiResponse:
+        enforce_export_policy(classification, requested)
+        return ApiResponse("1.0.0", {"allowed": True})
+
+    def validation_demo(self, provider: str) -> ApiResponse:
+        self._provider(provider)
+        raw = (
+            {
+                "option_identifier": "SPY260116C00450000",
+                "timestamp": "2026-01-15T16:00:00Z",
+                "bid": "1.10",
+                "ask": "1.20",
+                "last": "1.15",
+                "volume": "100",
+                "open_interest": "1000",
+                "multiplier": "100",
+                "exercise_style": "american",
+                "settlement_style": "physical",
+                "exchange": "synthetic",
+            },
+        )
+        records = tuple(normalize_option_record(provider, item) for item in raw)
+        manifest = build_manifest(
+            provider,
+            "synthetic_options",
+            tuple(item.raw_record for item in records),
+            classification=DataClassification.SYNTHETIC,
+        )
+        summary = validate_options(records)
+        certification = certify_dataset(provider, manifest, summary)
+        lineage = lineage_event(manifest, "certification", certification.metrics)
+        return ApiResponse(
+            "1.0.0",
+            {
+                "manifest": manifest,
+                "lineage": lineage,
+                "validation": summary,
+                "certification": certification,
+            },
+        )
+
+    def readiness_report(self, provider: str) -> ApiResponse:
+        demo = self.validation_demo(provider).data
+        report = readiness_report(
+            provider,
+            configuration_valid=True,
+            credentials=credential_status(provider, None),
+            certification=demo["certification"],
+            export_enforced=True,
+            gui_available=True,
+            live_validated=False,
+        )
+        return ApiResponse("1.0.0", report)
+
+    def performance_demo(self, provider: str) -> ApiResponse:
+        from datetime import UTC, datetime, timedelta
+
+        self._provider(provider)
+        started = datetime(2026, 7, 17, 12, tzinfo=UTC)
+        finished = started + timedelta(milliseconds=25)
+        return ApiResponse("1.0.0", performance_measurements(1, started, finished))
 
     def schedules(self) -> ApiResponse:
         values = tuple(sorted(self.scheduler.schedules.values(), key=lambda item: item.schedule_id))

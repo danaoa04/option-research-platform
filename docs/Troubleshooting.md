@@ -20,3 +20,11 @@ Reset boundary:
 - Destructive actions: create a fresh database or remove all local application data.
 - Before destructive reset: export workspaces, reports, diagnostics, database backup, and
   configuration.
+
+Provider setup troubleshooting:
+
+- Missing credentials should report provider-specific `not_configured` status without displaying
+  secret values.
+- Restricted/export-prohibited datasets should fail export with a policy error.
+- Live-provider tests should remain skipped unless explicit credentials and licence permission are
+  supplied.

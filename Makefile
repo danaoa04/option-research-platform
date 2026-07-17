@@ -2,7 +2,7 @@ PYTHON ?= python3
 VENV ?= .venv
 RUST_REMAP_ENV = CARGO_ENCODED_RUSTFLAGS=$$(printf '%s\037%s' '--remap-path-prefix=$(CURDIR)=.' '--remap-path-prefix='$$HOME'=~')
 
-.PHONY: setup lint format test docs frontend-install frontend-lint frontend-typecheck frontend-test frontend-build frontend-e2e quality desktop-check desktop-build backend-sidecar sidecar-check version-check release-audit release-manifest bundle-check release-check release-build rc-build clean-install-test upgrade-test recovery-test
+.PHONY: setup lint format test docs frontend-install frontend-lint frontend-typecheck frontend-test frontend-build frontend-e2e quality desktop-check desktop-build backend-sidecar sidecar-check version-check release-audit release-manifest bundle-check release-check release-build rc-build clean-install-test upgrade-test recovery-test provider-test data-import-test data-certification-test
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -88,6 +88,15 @@ upgrade-test: backend-sidecar
 
 recovery-test:
 	. $(VENV)/bin/activate && python -m scripts.recovery_test
+
+provider-test:
+	. $(VENV)/bin/activate && pytest backend/tests/test_provider_validation.py
+
+data-import-test:
+	. $(VENV)/bin/activate && pytest backend/tests/test_sprint10_local_integration.py backend/tests/test_provider_validation.py
+
+data-certification-test:
+	. $(VENV)/bin/activate && pytest backend/tests/test_provider_fixture_closure.py backend/tests/test_provider_validation.py
 
 quality: lint test frontend-lint frontend-typecheck frontend-test frontend-build desktop-check
 	git diff --check

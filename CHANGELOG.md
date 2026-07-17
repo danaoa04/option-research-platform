@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 12C offline provider-validation foundation with conservative provider audit, typed
+  provider configuration, credential-status reporting, licensed-data classifications, export
+  enforcement, dataset manifests, lineage events, option normalization, validation, certification,
+  provider comparison, readiness reporting, synthetic datasets, and provider-specific documentation.
+
 - Added Sprint 12B clean-profile/source-tree-independence validation, packaged upgrade and recovery
   evidence commands, richer migration backup metadata, explicit restore/cache/log/reset helpers, and
   installation, uninstall, recovery, and troubleshooting documentation.
@@ -215,3 +220,12 @@ All notable changes to this project will be documented in this file.
   and RC policy.
 - Deferred signing, notarization, clean-machine support, full legal review, and licensed-provider
   validation; this entry does not claim public release readiness.
+
+## Sprint 12C provider validation foundation
+
+- Added API and CLI surfaces for provider audit, credential status, validation demo, readiness, and
+  licensing decisions.
+- Added credential-free synthetic provider datasets and deterministic provider/data-import/data-
+  certification Make targets.
+- Live provider validation, licensed data review, signing/notarization, and public provider-readiness
+  claims remain deferred until explicit evidence is available.

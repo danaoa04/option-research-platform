@@ -125,3 +125,7 @@ flowchart LR
   S --> H[Health, freshness, alerts]
   H --> R[Operational readiness]
 ```
+
+Sprint 12C provider claims are conservative. ORATS, Databento, Cboe, and Polygon have offline
+validation/readiness contracts, but authenticated live-download readiness remains unvalidated until
+opt-in credentialed evidence and licence review are completed.

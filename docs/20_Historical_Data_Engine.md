@@ -114,3 +114,8 @@ flowchart LR
     Validate --> Store[Storage Layer]
     Store --> API[Access Interfaces]
 ```
+
+Sprint 12C extends the validation layer with synthetic option-contract normalization, quote-quality
+checks, dataset manifests, lineage events, certification reports, provider comparison, and
+restricted-export enforcement. Missing provider-only fields such as multipliers, settlement style,
+exercise style, adjusted deliverables, IV, or Greeks are not fabricated.

@@ -238,3 +238,11 @@ Sprint 8B boundaries:
 - Added replay workspace repositories/services for sessions, branches, timeline events, annotations, comparisons, diagnostics, explanations, and experiments.
 - Added additive typed read-model methods in `RiskLabQueryService` to reduce schema drift risk while preserving dict-style APIs.
 - Added deterministic offline tests for replay workspace persistence, migration compatibility, replay branch checksums, and opt-in benchmark checksum path.
+
+## Sprint 12C - Provider Validation Foundation
+
+- Added credential-safe provider validation for ORATS, Databento, Cboe, and Polygon boundaries.
+- Added licensed-data classifications, export enforcement, synthetic example datasets, option
+  normalization, certification, comparison, and evidence-based readiness reports.
+- Standard tests remain offline and credential-free; live-provider validation is opt-in and requires
+  explicit credentials and licence permission.

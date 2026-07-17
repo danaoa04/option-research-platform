@@ -10,6 +10,7 @@ from typing import Any
 from backend.data.integration.export import export_json
 
 from .provider_api import ProviderApiService, quality_snapshot
+from .provider_validation import DataClassification, ProviderConfiguration
 
 COMMANDS = (
     "list",
@@ -51,6 +52,12 @@ COMMANDS = (
     "cleanup-run",
     "gaps",
     "remediate",
+    "provider-audit",
+    "credential-status",
+    "licensing",
+    "validation-demo",
+    "readiness",
+    "performance",
 )
 
 
@@ -64,7 +71,13 @@ def handle(
     if command == "catalogue" and provider:
         return service.catalogue(provider)
     if command == "validate-config" and provider:
-        return {"provider": provider, "offline_fixture": True, "credentials_required": False}
+        config = ProviderConfiguration(
+            provider=provider,
+            environment="offline",
+            dataset="synthetic_options",
+            schema="fixture-v1",
+        )
+        return service.validate_config(config)
     if command == "jobs":
         return tuple(service.operations.jobs.values())
     if command == "job-status" and identifier:
@@ -81,6 +94,19 @@ def handle(
         return quality_snapshot(service)
     if command == "network-policy":
         return service.network_policy_status()
+    if command == "provider-audit":
+        return service.provider_audit()
+    if command == "credential-status" and provider:
+        return service.credential_status(provider)
+    if command == "licensing":
+        classification = DataClassification(identifier or DataClassification.UNKNOWN.value)
+        return service.licensing(classification, "json")
+    if command == "validation-demo" and provider:
+        return service.validation_demo(provider)
+    if command == "readiness" and provider:
+        return service.readiness_report(provider)
+    if command == "performance" and provider:
+        return service.performance_demo(provider)
     if command == "schedules":
         return service.schedules()
     if command == "health" and provider:

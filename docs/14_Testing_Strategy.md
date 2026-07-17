@@ -24,3 +24,12 @@ Sprint 12B commands:
   cleanup, and log rotation.
 
 External clean-machine validation remains separate from local clean-profile validation.
+
+Sprint 12C adds credential-free provider validation gates:
+
+- `make provider-test`
+- `make data-import-test`
+- `make data-certification-test`
+
+Live provider tests are skipped unless `ORP_LIVE_PROVIDER_TESTS` is explicitly set with provider
+credentials and licence permission.

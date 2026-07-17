@@ -1,0 +1,3 @@
+option_identifier,timestamp,bid,ask,last,volume,open_interest,multiplier,exercise_style,settlement_style,exchange
+SPY260116C00450000,2026-01-15T16:00:00Z,1.10,1.20,1.15,100,1000,100,american,physical,synthetic
+SPY260116P00450000,2026-01-15T16:00:00Z,1.05,1.14,1.08,90,800,100,american,physical,synthetic

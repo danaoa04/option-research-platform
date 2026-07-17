@@ -25,3 +25,8 @@ outside the release configuration and are not required for Sprint 12A validation
 Sprint 12B clean-profile tests redirect `HOME`, `TMPDIR`, app data, logs, cache, exports,
 workspaces, fixtures, and database state into disposable release-artifact paths. No test writes to
 the real user application-data directory.
+
+Sprint 12C provider configuration records provider id, environment, dataset, schema, symbol/date
+scope, retry/timeout/rate-limit settings, cache/import policy, licensing classification, export
+policy, and credential references. Secret values are not valid configuration values; use environment
+or OS-secret references instead.

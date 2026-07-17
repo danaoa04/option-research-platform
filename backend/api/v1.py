@@ -104,3 +104,23 @@ def provider_alerts() -> dict[str, object]:
 @router.get("/providers/quality")
 def provider_quality() -> dict[str, object]:
     return envelope(quality_snapshot(provider_service).data)
+
+
+@router.get("/providers/audit")
+def provider_audit() -> dict[str, object]:
+    return envelope(provider_service.provider_audit().data)
+
+
+@router.get("/providers/{provider}/credential-status")
+def provider_credential_status(provider: str) -> dict[str, object]:
+    return envelope(provider_service.credential_status(provider).data)
+
+
+@router.get("/providers/{provider}/validation-demo")
+def provider_validation_demo(provider: str) -> dict[str, object]:
+    return envelope(provider_service.validation_demo(provider).data)
+
+
+@router.get("/providers/{provider}/readiness")
+def provider_readiness(provider: str) -> dict[str, object]:
+    return envelope(provider_service.readiness_report(provider).data)

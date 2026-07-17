@@ -37,3 +37,7 @@ reports the application version, backend build identifier, compatibility state, 
 database migration readiness, sidecar readiness, build provenance, and supported endpoint inventory.
 The desktop treats a required migration or incompatible API as a guarded startup state rather than
 enabling unsafe mutations.
+
+Sprint 12C adds provider audit, credential-status, validation-demo, and readiness handlers under the
+versioned provider API. These handlers serialize typed reports through the common API envelope and
+return credential presence/status only, never raw secret values.

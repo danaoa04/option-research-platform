@@ -1,0 +1,12 @@
+{
+  "classification": "synthetic",
+  "dataset": "synthetic_options",
+  "dataset_version": "fixture-1",
+  "licence": "synthetic/offline",
+  "limitations": [
+    "Fixture data is not licensed provider data.",
+    "Fixture validation does not prove live provider readiness."
+  ],
+  "provider": "synthetic",
+  "schema_version": "1.0.0"
+}

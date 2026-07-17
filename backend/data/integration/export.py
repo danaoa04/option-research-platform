@@ -6,6 +6,7 @@ import hashlib
 import html
 import json
 from dataclasses import asdict, is_dataclass
+from datetime import date, datetime
 from enum import Enum
 from typing import Any, cast
 
@@ -51,6 +52,8 @@ def _convert(value: Any, *, redact: bool) -> Any:
         return _convert(asdict(cast(Any, value)), redact=redact)
     if isinstance(value, Enum):
         return value.value
+    if isinstance(value, datetime | date):
+        return value.isoformat()
     if isinstance(value, dict):
         return {
             str(key): (
