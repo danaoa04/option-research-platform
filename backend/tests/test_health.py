@@ -11,5 +11,5 @@ def test_health_endpoint() -> None:
     assert response.json() == {
         "status": "ok",
         "service": "QuantLab backend",
-        "version": "0.1.0",
+        "version": "1.0.0-rc.1",
     }

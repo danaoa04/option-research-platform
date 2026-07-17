@@ -2,10 +2,21 @@
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
+
 from backend.data.provider_api import ProviderApiService, quality_snapshot
+from backend.release.migration import MigrationManager
+from backend.release.provenance import collect_provenance
 from fastapi import APIRouter
 
-from .contracts import API_VERSION, BUILD_IDENTIFIER, ApiEnvelope, EndpointCapability
+from .contracts import (
+    API_VERSION,
+    APPLICATION_VERSION,
+    BUILD_IDENTIFIER,
+    ApiEnvelope,
+    EndpointCapability,
+)
 
 router = APIRouter(prefix=f"/{API_VERSION}")
 provider_service = ProviderApiService()
@@ -29,14 +40,22 @@ def envelope(data: object) -> dict[str, object]:
 @router.get("/health")
 def health() -> dict[str, object]:
     endpoints = sorted(route.path for route in router.routes)
+    database_path = os.environ.get("ORP_DATABASE_PATH")
+    migration_status = (
+        MigrationManager(Path(database_path)).status().value if database_path else "not_configured"
+    )
+    provenance = collect_provenance(
+        os.environ.get("ORP_RELEASE_PROFILE", "development")
+    ).serialize()
     return {
         "api_version": API_VERSION,
         "backend_build": BUILD_IDENTIFIER,
         "compatibility_status": "compatible",
-        "database_migration_status": "not_configured",
+        "build_provenance": provenance,
+        "database_migration_status": migration_status,
         "endpoints": endpoints,
         "fixture_mode_supported": True,
-        "migration_status": "not_configured",
+        "migration_status": migration_status,
         "schema_version": "1.0.0",
         "service": "Option Research Platform backend",
         "sidecar_ready": True,
@@ -47,7 +66,7 @@ def health() -> dict[str, object]:
             "provider job cancel",
             "provider job resume",
         ],
-        "version": "0.1.0",
+        "version": APPLICATION_VERSION,
     }
 
 

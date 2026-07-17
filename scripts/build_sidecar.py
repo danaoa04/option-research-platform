@@ -13,6 +13,8 @@ import time
 from pathlib import Path
 from urllib.request import urlopen
 
+from backend.release.config import load_release_config
+
 ROOT = Path(__file__).resolve().parents[1]
 TAURI_BIN = ROOT / "frontend" / "src-tauri" / "binaries"
 
@@ -30,10 +32,13 @@ def target_triple() -> str:
 
 
 def smoke_test(binary: Path) -> None:
+    release = load_release_config()
     with socket.socket() as reservation:
         reservation.bind(("127.0.0.1", 0))
         port = reservation.getsockname()[1]
     smoke_data = ROOT / "build" / "sidecar" / "smoke-data"
+    if smoke_data.exists():
+        shutil.rmtree(smoke_data)
     process = subprocess.Popen(
         [
             str(binary),
@@ -43,6 +48,12 @@ def smoke_test(binary: Path) -> None:
             str(port),
             "--app-data",
             str(smoke_data),
+            "--release-profile",
+            "release-candidate",
+            "--api-version",
+            release.versions.api_version,
+            "--protocol-version",
+            release.versions.sidecar_protocol_version,
             "--fixture-mode",
         ],
         stdin=subprocess.DEVNULL,
@@ -101,7 +112,7 @@ def main() -> int:
         capture_output=True,
         text=True,
     ).stdout.strip()
-    if version != "sprint-11f.2-local":
+    if version != load_release_config().versions.application_version:
         raise SystemExit(f"Unexpected sidecar version: {version}")
     smoke_test(target)
     print(target.relative_to(ROOT))

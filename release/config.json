@@ -1,0 +1,19 @@
+{
+  "application_data_directory": "Option Research Platform",
+  "application_name": "Option Research Platform",
+  "backend_startup_timeout_seconds": 15,
+  "bundle_identifier": "io.optionresearch.platform",
+  "database_filename": "option-research-platform.sqlite3",
+  "diagnostic_bundle_prefix": "orp-diagnostics",
+  "export_directory": "exports",
+  "fixture_directory": "fixtures",
+  "log_directory": "logs",
+  "maximum_export_bytes": 52428800,
+  "maximum_workspace_bytes": 5242880,
+  "minimum_macos_version": "12.0",
+  "release_channel": "rc",
+  "sidecar_executable_name": "orp-backend",
+  "supported_architectures": ["aarch64-apple-darwin"],
+  "workspace_directory": "workspaces",
+  "workspace_extension": "orp-workspace"
+}

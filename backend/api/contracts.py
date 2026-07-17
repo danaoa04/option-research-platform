@@ -7,9 +7,15 @@ from datetime import date, datetime
 from enum import Enum
 from typing import Any
 
-API_VERSION = "v1"
+from backend.release.config import load_release_config
+
+_RELEASE = load_release_config()
+APPLICATION_VERSION = _RELEASE.versions.application_version
+API_VERSION = _RELEASE.versions.api_version
 SCHEMA_VERSION = "1.0.0"
-BUILD_IDENTIFIER = "sprint-11f.2-local"
+BUILD_IDENTIFIER = (
+    f"orp-{APPLICATION_VERSION}-protocol-{_RELEASE.versions.sidecar_protocol_version}"
+)
 
 
 def deterministic_value(value: Any) -> Any:

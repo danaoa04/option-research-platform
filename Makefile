@@ -1,7 +1,8 @@
 PYTHON ?= python3
 VENV ?= .venv
+RUST_REMAP_ENV = CARGO_ENCODED_RUSTFLAGS=$$(printf '%s\037%s' '--remap-path-prefix=$(CURDIR)=.' '--remap-path-prefix='$$HOME'=~')
 
-.PHONY: setup lint format test docs frontend-install frontend-lint frontend-typecheck frontend-test frontend-build frontend-e2e quality desktop-check desktop-build backend-sidecar sidecar-check
+.PHONY: setup lint format test docs frontend-install frontend-lint frontend-typecheck frontend-test frontend-build frontend-e2e quality desktop-check desktop-build backend-sidecar sidecar-check version-check release-audit release-manifest bundle-check release-check release-build rc-build
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -40,19 +41,44 @@ frontend-e2e:
 	cd frontend && npm run test:e2e
 
 desktop-check:
-	cd frontend/src-tauri && cargo fmt --check
-	cd frontend/src-tauri && cargo clippy --all-targets --all-features -- -D warnings
-	cd frontend/src-tauri && cargo test
-	cd frontend/src-tauri && cargo check
+	cd frontend/src-tauri && $(RUST_REMAP_ENV) cargo fmt --check
+	cd frontend/src-tauri && $(RUST_REMAP_ENV) cargo clippy --all-targets --all-features -- -D warnings
+	cd frontend/src-tauri && $(RUST_REMAP_ENV) cargo test
+	cd frontend/src-tauri && $(RUST_REMAP_ENV) cargo check
 
 desktop-build: backend-sidecar
-	cd frontend && npm exec tauri build -- --no-bundle
+	cd frontend && $(RUST_REMAP_ENV) npm exec tauri build -- --no-bundle
 
 backend-sidecar:
-	. $(VENV)/bin/activate && python scripts/build_sidecar.py
+	. $(VENV)/bin/activate && python -m scripts.build_sidecar
 
 sidecar-check: backend-sidecar
 	frontend/src-tauri/binaries/orp-backend-$$(rustc -vV | sed -n 's/^host: //p') --version
+
+version-check:
+	. $(VENV)/bin/activate && python -m scripts.release_tool version-check
+
+release-audit: version-check
+	. $(VENV)/bin/activate && python -m scripts.release_tool release-audit
+
+release-manifest:
+	. $(VENV)/bin/activate && python -m scripts.release_tool manifest --profile development
+
+bundle-check:
+	. $(VENV)/bin/activate && python -m scripts.release_tool bundle-check
+
+release-check: release-audit
+	. $(VENV)/bin/activate && python -m scripts.release_tool release-check --profile development
+
+release-build: quality backend-sidecar
+	cd frontend && $(RUST_REMAP_ENV) npm exec tauri build -- --bundles app
+	. $(VENV)/bin/activate && python -m scripts.release_tool manifest --profile development
+	. $(VENV)/bin/activate && python -m scripts.release_tool bundle-check
+	. $(VENV)/bin/activate && python -m scripts.package_smoke
+
+rc-build:
+	. $(VENV)/bin/activate && python -m scripts.release_tool policy --profile release-candidate
+	$(MAKE) release-build
 
 quality: lint test frontend-lint frontend-typecheck frontend-test frontend-build desktop-check
 	git diff --check

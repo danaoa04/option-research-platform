@@ -1,11 +1,20 @@
 # PyInstaller definition for the fixed desktop backend executable.
 
+from pathlib import Path
+
+root = Path(SPECPATH).parent
+
 a = Analysis(
     ["sidecar.py"],
     pathex=["."],
     binaries=[],
-    datas=[],
-    hiddenimports=["backend.main"],
+    datas=[
+        (str(root / "backend/database/migrations"), "backend/database/migrations"),
+        (str(root / "release"), "release"),
+        (str(root / "LICENSE"), "."),
+        (str(root / "docs/Third_Party_Notices.md"), "docs"),
+    ],
+    hiddenimports=["backend.main", "backend.database.provider_operations"],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

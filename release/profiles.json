@@ -1,0 +1,7 @@
+{
+  "development": {"runtime_mode": "local_backend_offline", "fixture_available": true, "log_level": "debug", "diagnostics": "full", "provider_policy": "offline", "export_policy": "development", "updater": false, "webgl": true, "debug_tools": true, "source_maps": true, "telemetry": false},
+  "test": {"runtime_mode": "offline_demo", "fixture_available": true, "log_level": "warning", "diagnostics": "redacted", "provider_policy": "offline", "export_policy": "temporary", "updater": false, "webgl": false, "debug_tools": false, "source_maps": false, "telemetry": false},
+  "offline-demo": {"runtime_mode": "offline_demo", "fixture_available": true, "log_level": "info", "diagnostics": "redacted", "provider_policy": "offline", "export_policy": "user-approved", "updater": false, "webgl": true, "debug_tools": false, "source_maps": false, "telemetry": false},
+  "release-candidate": {"runtime_mode": "local_backend_offline", "fixture_available": true, "log_level": "info", "diagnostics": "redacted", "provider_policy": "explicit-credentials", "export_policy": "user-approved", "updater": false, "webgl": true, "debug_tools": false, "source_maps": false, "telemetry": false},
+  "production-release": {"runtime_mode": "local_backend_offline", "fixture_available": true, "log_level": "warning", "diagnostics": "redacted", "provider_policy": "explicit-credentials", "export_policy": "user-approved", "updater": false, "webgl": true, "debug_tools": false, "source_maps": false, "telemetry": false}
+}

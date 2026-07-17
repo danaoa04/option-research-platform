@@ -165,3 +165,14 @@ New repositories provide deterministic upsert and query pathways for strategy-li
 - Added migration `0018_replay_workspace_foundation` for replay sessions, branches, timeline events, annotations, filters, comparisons, diagnostics, reproducibility reports, decision explanations, experiments, experiment comparisons, and workspace metadata.
 - Added deterministic persistence/query services in `backend/database/replay_workspace.py`.
 - Added repository/query abstractions in `backend/database/repositories/replay_workspace.py`.
+
+## Sprint 12A Packaged Startup Layer
+
+- The desktop sidecar initializes a private application-data root with `logs`, `exports`,
+  `workspaces`, `fixtures`, and `cache` directories.
+- Startup writes redacted configuration, release metadata, fixture manifest, and crash-state files
+  atomically.
+- Fresh databases are bootstrapped to the current schema without market-data seeds.
+- Supported upgrades create deterministic backups before running Alembic.
+- Migration failures preserve recovery markers and block health readiness instead of silently
+  continuing.

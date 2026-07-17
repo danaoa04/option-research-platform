@@ -1,0 +1,14 @@
+{
+  "application_version": "1.0.0-rc.1",
+  "api_version": "v1",
+  "backend_version": "1.0.0-rc.1",
+  "database_schema_current": "0022_provider_runtime_operations",
+  "database_schema_minimum": "0018_replay_workspace_foundation",
+  "export_schema_version": "1.0.0",
+  "fixture_version": "1.0.0",
+  "frontend_version": "1.0.0-rc.1",
+  "report_schema_version": "1.0.0",
+  "sidecar_protocol_version": "1",
+  "workspace_schema_current": 1,
+  "workspace_schema_minimum": 1
+}

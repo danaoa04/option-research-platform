@@ -66,3 +66,10 @@ presentation payload. Import validation rejects incomplete or unsupported schema
 detection distinguishes local-newer, server-newer, checksum mismatch, deletion, and incompatible
 schemas; newer state is never silently overwritten. Autosave runs only for valid documents when
 compatibility permits mutations. Actual durable saves await mounted workspace HTTP handlers.
+
+## Sprint 12A compatibility
+
+Version 1 RC metadata declares workspace schema `1` as both the minimum and current compatible
+document schema. Diagnostic bundles include the workspace schema version, but no workspace payloads,
+credentials, full private paths, or licensed data. Workspace import/export behavior remains governed
+by the existing schema validator and desktop file-safety checks.

@@ -11,6 +11,14 @@ This document defines the production-quality database foundation for historical 
 - PostgreSQL-ready connection string and pooling settings for production deployment.
 - Alembic migration framework for schema evolution.
 
+## Sprint 12A packaged migration policy
+
+The packaged Version 1 sidecar treats Alembic `0022_provider_runtime_operations` as current and
+`0018_replay_workspace_foundation` as the oldest supported automatic upgrade. Fresh application-data
+directories are bootstrapped deterministically, supported older schemas receive a pre-migration
+backup and checksum metadata, and future, too-old, corrupt, or interrupted schemas block readiness.
+No plaintext credentials are persisted during application-data initialization or migration.
+
 ## Core Entities
 
 - `DataProvider`

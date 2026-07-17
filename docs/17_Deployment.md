@@ -12,3 +12,21 @@ parents, and temporary cleanup. CSP allows local assets and loopback backend con
 Rust checks, a release build, an unsigned macOS `.app` bundle, packaged startup, bundled-sidecar
 health, and shutdown were validated locally. Signing, notarization, and clean-machine cross-platform
 validation remain Sprint 12.
+
+Sprint 12A makes `release/version.json` canonical, adds fixed release profiles and dependency locks,
+and packages Alembic migrations, release defaults, synthetic fixture metadata, and notices into the
+sidecar. `make release-build` creates an unsigned local bundle; `make rc-build` additionally enforces
+a clean tree. Release artifacts and evidence are local and Git-ignored.
+
+```mermaid
+sequenceDiagram
+  participant T as Tauri
+  participant S as Fixed sidecar
+  participant D as App data and database
+  T->>S: fixed profile, API, protocol, migration arguments
+  S->>D: initialize safe directories and metadata
+  S->>D: inspect, backup, and migrate when supported
+  S-->>T: versioned health and readiness
+  T->>S: application exit
+  S->>D: flush and close
+```

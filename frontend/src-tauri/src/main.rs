@@ -5,19 +5,29 @@ use std::{
     path::{Path, PathBuf},
     process::{Child, Command, Stdio},
     sync::Mutex,
+    thread,
+    time::Duration,
 };
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
 
 const BACKEND_PORT: u16 = 8765;
 
-struct SidecarState(Mutex<Option<Child>>);
+struct SidecarState {
+    child: Mutex<Option<Child>>,
+    restart_count: Mutex<u8>,
+    last_exit_code: Mutex<Option<i32>>,
+}
 
 #[derive(Serialize)]
 struct BackendStatus {
     available: bool,
     mode: &'static str,
     api_version: &'static str,
+    protocol_version: &'static str,
+    startup_phase: &'static str,
+    restart_available: bool,
+    last_exit_code: Option<i32>,
 }
 
 #[derive(Serialize)]
@@ -29,16 +39,25 @@ struct SaveResult {
 
 #[tauri::command]
 fn backend_status(state: tauri::State<'_, SidecarState>) -> BackendStatus {
-    let available = state
-        .0
-        .lock()
-        .ok()
-        .and_then(|mut child| {
-            child
-                .as_mut()
-                .map(|process| process.try_wait().ok().flatten())
-        })
-        .is_some_and(|status| status.is_none());
+    let mut available = false;
+    if let Ok(mut child) = state.child.lock() {
+        if let Some(process) = child.as_mut() {
+            match process.try_wait() {
+                Ok(None) => available = true,
+                Ok(Some(status)) => {
+                    if let Ok(mut last_exit) = state.last_exit_code.lock() {
+                        *last_exit = status.code();
+                    }
+                    child.take();
+                }
+                Err(_) => {
+                    child.take();
+                }
+            };
+        }
+    }
+    let restart_count = state.restart_count.lock().map_or(3, |value| *value);
+    let last_exit_code = state.last_exit_code.lock().map_or(None, |value| *value);
     BackendStatus {
         available,
         mode: if available {
@@ -47,6 +66,14 @@ fn backend_status(state: tauri::State<'_, SidecarState>) -> BackendStatus {
             "degraded_backend"
         },
         api_version: "v1",
+        protocol_version: "1",
+        startup_phase: if available {
+            "ready"
+        } else {
+            "process_stopped"
+        },
+        restart_available: !available && restart_count < 3,
+        last_exit_code,
     }
 }
 
@@ -227,6 +254,16 @@ fn start_sidecar(app: &tauri::AppHandle) -> Result<Child, String> {
             app_data
                 .to_str()
                 .ok_or("Application data path is invalid")?,
+            "--release-profile",
+            "release-candidate",
+            "--api-version",
+            "v1",
+            "--protocol-version",
+            "1",
+            "--parent-pid",
+            &std::process::id().to_string(),
+            "--migration-policy",
+            "automatic",
             "--fixture-mode",
         ])
         .env_clear()
@@ -238,14 +275,65 @@ fn start_sidecar(app: &tauri::AppHandle) -> Result<Child, String> {
         .map_err(|_| "Unable to start fixed backend sidecar".into())
 }
 
+#[tauri::command]
+fn restart_sidecar(app: tauri::AppHandle) -> Result<BackendStatus, String> {
+    let state = app.state::<SidecarState>();
+    {
+        let child = state
+            .child
+            .lock()
+            .map_err(|_| "Sidecar state unavailable")?;
+        if child.is_some() {
+            return Err("Backend sidecar is already running".into());
+        }
+    }
+    let mut restart_count = state
+        .restart_count
+        .lock()
+        .map_err(|_| "Sidecar restart state unavailable")?;
+    if *restart_count >= 3 {
+        return Err("Backend restart limit reached; diagnostic recovery is required".into());
+    }
+    let child = start_sidecar(&app)?;
+    *restart_count += 1;
+    *state
+        .child
+        .lock()
+        .map_err(|_| "Sidecar state unavailable")? = Some(child);
+    drop(restart_count);
+    Ok(backend_status(state))
+}
+
+fn terminate_sidecar(child: &mut Child) {
+    #[cfg(unix)]
+    unsafe {
+        libc::kill(child.id() as i32, libc::SIGTERM);
+    }
+    for _ in 0..50 {
+        if child.try_wait().ok().flatten().is_some() {
+            return;
+        }
+        thread::sleep(Duration::from_millis(100));
+    }
+    let _ = child.kill();
+    let _ = child.wait();
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
-        .manage(SidecarState(Mutex::new(None)))
+        .manage(SidecarState {
+            child: Mutex::new(None),
+            restart_count: Mutex::new(0),
+            last_exit_code: Mutex::new(None),
+        })
         .setup(|app| {
             let child = start_sidecar(app.handle())?;
             let state = app.state::<SidecarState>();
-            *state.0.lock().map_err(|_| "Sidecar state unavailable")? = Some(child);
+            *state
+                .child
+                .lock()
+                .map_err(|_| "Sidecar state unavailable")? = Some(child);
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -254,16 +342,16 @@ fn main() {
             save_export,
             read_workspace_metadata,
             select_export_path,
-            select_workspace_file
+            select_workspace_file,
+            restart_sidecar
         ])
         .build(tauri::generate_context!())
         .expect("desktop runtime failed")
         .run(|app, event| {
             if matches!(event, tauri::RunEvent::ExitRequested { .. }) {
-                if let Ok(mut state) = app.state::<SidecarState>().0.lock() {
+                if let Ok(mut state) = app.state::<SidecarState>().child.lock() {
                     if let Some(mut child) = state.take() {
-                        let _ = child.kill();
-                        let _ = child.wait();
+                        terminate_sidecar(&mut child);
                     }
                 }
             }

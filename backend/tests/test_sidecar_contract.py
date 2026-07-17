@@ -9,7 +9,7 @@ from backend.sidecar import main, parser, prepare_app_data
 
 def test_sidecar_version_is_fixed(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["--version"]) == 0
-    assert capsys.readouterr().out.strip() == "sprint-11f.2-local"
+    assert capsys.readouterr().out.strip() == "1.0.0-rc.1"
 
 
 def test_sidecar_rejects_arbitrary_arguments() -> None:

@@ -29,3 +29,11 @@ The production-safe boundary now mounts `/v1/health`, `/v1/compatibility`, and p
 capability, job-query, alert, and quality reads. Most research, portfolio, replay, workspace, report,
 and volatility services are still not mounted as versioned HTTP routes, so explicit fixture clients
 remain instead of invented production URLs. See `Sprint_11F2_Endpoint_Audit.md` for the inventory.
+
+## Sprint 12A sidecar contract
+
+The packaged desktop starts the backend with API `v1` and sidecar protocol `1`. `/v1/health`
+reports the application version, backend build identifier, compatibility state, fixture support,
+database migration readiness, sidecar readiness, build provenance, and supported endpoint inventory.
+The desktop treats a required migration or incompatible API as a guarded startup state rather than
+enabling unsafe mutations.

@@ -31,6 +31,19 @@ Use the following workflow to get started:
 2. Install dependencies with `pip install -r requirements-dev.txt`.
 3. Run `make setup`, `make lint`, `make test`, and `make format`.
 
+## Version 1 Release Candidate
+
+Sprint 12A introduces the unsigned Apple Silicon `1.0.0-rc.1` release foundation. The canonical
+version source is `release/version.json`; `make version-check` verifies Python, frontend, Cargo,
+Tauri, lockfile, and generated frontend metadata synchronization. `make backend-sidecar` builds the
+isolated Python sidecar with packaged migrations, release defaults, notices, and synthetic fixture
+metadata. `make release-build` runs quality gates, builds the unsigned macOS app, generates release
+artifacts, inspects the bundle, and runs the packaged smoke test.
+
+Release artifacts are local and Git-ignored. Sprint 12A does not claim signing, notarization,
+clean-machine validation, Intel/Windows support, universal binaries, or licensed provider
+validation.
+
 ## Database Foundation
 
 The repository includes a production-oriented database foundation in `backend/database`:

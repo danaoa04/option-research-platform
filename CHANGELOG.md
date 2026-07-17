@@ -198,3 +198,16 @@ All notable changes to this project will be documented in this file.
 - Added ORM entities, DTOs, and Alembic migration `0015_strategy_policy_library_foundation.py` for policy registry, aliases, policy sets, evaluations, conflicts, and checksums.
 - Added Sprint 8B typed API contracts for policy catalog, policy sets, evaluations, and conflict diagnostics.
 - Added deterministic Sprint 8B tests for policy foundation, persistence round-trip, and migration upgrade/downgrade.
+# 1.0.0-rc.1 - Unreleased
+
+## Sprint 12A release foundation
+
+- Added canonical release versioning, validated profiles, safe build provenance, manifests,
+  checksums, dependency locks, and evidence-based readiness reporting.
+- Added packaged application-data initialization, guarded Alembic startup, migration backups,
+  sidecar protocol validation, resource packaging, and release orchestration.
+- Added an About/version interface, fixture/licence metadata, isolated sidecar smoke validation,
+  bundled release-resource checks, bundle inspection, artifact leak scanning, performance evidence,
+  and RC policy.
+- Deferred signing, notarization, clean-machine support, full legal review, and licensed-provider
+  validation; this entry does not claim public release readiness.

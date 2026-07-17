@@ -1,0 +1,8 @@
+{
+  "fixture_version": "1.0.0",
+  "licence": "Project synthetic fixtures; MIT project licence applies",
+  "licensed_data_included": false,
+  "personal_data_included": false,
+  "provider_credentials_included": false,
+  "workflows": ["providers", "strategy", "research", "portfolio-risk", "volatility"]
+}

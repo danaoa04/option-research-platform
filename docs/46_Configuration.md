@@ -9,3 +9,15 @@ include `VITE_BACKEND_URL`, `VITE_API_VERSION`, `VITE_REQUEST_TIMEOUT_MS`,
 
 Provider credentials and licensed-data secrets are never frontend configuration. Offline demo is an
 explicit mode and the application never silently switches to authenticated research.
+
+## Sprint 12A release configuration
+
+`release/version.json` is the canonical Version 1 source for application, backend, frontend, API,
+database, workspace, export, report, fixture, and sidecar protocol versions. `release/config.json`
+stores fixed bundle identifiers, safe application-data names, desktop size limits, and the audited
+Apple Silicon target. `release/profiles.json` defines development, test, offline-demo,
+release-candidate, and production-release behavior with telemetry disabled in every profile.
+
+The packaged sidecar accepts only fixed startup arguments for host, API version, protocol version,
+profile, migration policy, application-data path, and fixture mode. Provider credentials remain
+outside the release configuration and are not required for Sprint 12A validation.

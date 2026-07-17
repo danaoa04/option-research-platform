@@ -2,6 +2,14 @@
 
 Sprint 11F frontend tests cover runtime validation, request safety, explicit fixture fallback,
 workspace conflicts/imports, guarded autosave, terminal polling, redaction, and keyboard command
-navigation. `make quality` aggregates backend and frontend gates plus whitespace validation without
-credentials. `make desktop-check` runs Rust formatting and `cargo check` when Cargo is installed.
-Desktop E2E, sidecar smoke, packaged launch, and clean-machine tests remain unexecuted blockers.
+navigation. Sprint 12A adds release-foundation tests for canonical versions, profiles, redacted
+provenance, manifest validation, safe application-data initialization, fresh database bootstrap,
+future/old/interrupted schema rejection, and supported `0021` to `0022` migration with backup.
+
+`make quality` aggregates backend, frontend, Rust desktop checks, and whitespace validation without
+credentials. `make backend-sidecar` builds the isolated PyInstaller sidecar and smokes `/v1/health`
+in fixture mode. `make release-build` performs the local unsigned macOS app build, manifest
+generation, bundle inspection, and packaged smoke test.
+
+Clean-machine installation, signing/notarization validation, Intel/Windows builds, and licensed
+provider validation remain explicit Sprint 12B/12C blockers.
