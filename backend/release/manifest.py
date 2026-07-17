@@ -185,3 +185,36 @@ def default_readiness_report(profile: str = "release-candidate") -> ReleaseReadi
             ReadinessCategory("notarization", ReadinessStatus.INCOMPLETE, "deferred", False, True),
         ),
     )
+
+
+def clean_install_readiness_report(profile: str = "release-candidate") -> ReleaseReadinessReport:
+    version = load_release_config().versions.application_version
+    ready = ReadinessStatus.READY
+    warning = ReadinessStatus.READY_WITH_WARNINGS
+    incomplete = ReadinessStatus.INCOMPLETE
+    unvalidated = ReadinessStatus.UNVALIDATED
+    return ReleaseReadinessReport(
+        version,
+        profile,
+        (
+            ReadinessCategory("source_tree_independence", ready, "clean-install-test", True, True),
+            ReadinessCategory("first_launch", ready, "clean-install-test", True, True),
+            ReadinessCategory("app_data_initialization", ready, "clean-install-test", True, True),
+            ReadinessCategory("database_bootstrap", ready, "clean-install-test", True, True),
+            ReadinessCategory("migration", ready, "upgrade-test", True, True),
+            ReadinessCategory("backup", ready, "upgrade-test", True, True),
+            ReadinessCategory("rollback", warning, "recovery-test", False, True),
+            ReadinessCategory("reinstall", ready, "clean-install-test second launch", True, True),
+            ReadinessCategory("uninstall_documentation", ready, "docs/Uninstall.md", False, True),
+            ReadinessCategory("corrupt_state_recovery", warning, "recovery-test", False, True),
+            ReadinessCategory("shutdown", ready, "clean-install-test", True, True),
+            ReadinessCategory("orphan_prevention", ready, "clean-install-test", True, True),
+            ReadinessCategory("file_workflows", warning, "desktop command tests", False, True),
+            ReadinessCategory("clean_profile_ui", warning, "frontend tests", False, True),
+            ReadinessCategory(
+                "clean_machine_validation", unvalidated, "external machine", False, True
+            ),
+            ReadinessCategory("signing", incomplete, "deferred", False, True),
+            ReadinessCategory("notarization", incomplete, "deferred", False, True),
+        ),
+    )

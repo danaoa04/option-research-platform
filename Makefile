@@ -2,7 +2,7 @@ PYTHON ?= python3
 VENV ?= .venv
 RUST_REMAP_ENV = CARGO_ENCODED_RUSTFLAGS=$$(printf '%s\037%s' '--remap-path-prefix=$(CURDIR)=.' '--remap-path-prefix='$$HOME'=~')
 
-.PHONY: setup lint format test docs frontend-install frontend-lint frontend-typecheck frontend-test frontend-build frontend-e2e quality desktop-check desktop-build backend-sidecar sidecar-check version-check release-audit release-manifest bundle-check release-check release-build rc-build
+.PHONY: setup lint format test docs frontend-install frontend-lint frontend-typecheck frontend-test frontend-build frontend-e2e quality desktop-check desktop-build backend-sidecar sidecar-check version-check release-audit release-manifest bundle-check release-check release-build rc-build clean-install-test upgrade-test recovery-test
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -79,6 +79,15 @@ release-build: quality backend-sidecar
 rc-build:
 	. $(VENV)/bin/activate && python -m scripts.release_tool policy --profile release-candidate
 	$(MAKE) release-build
+
+clean-install-test: release-build
+	. $(VENV)/bin/activate && python -m scripts.clean_install_test
+
+upgrade-test: backend-sidecar
+	. $(VENV)/bin/activate && python -m scripts.upgrade_test
+
+recovery-test:
+	. $(VENV)/bin/activate && python -m scripts.recovery_test
 
 quality: lint test frontend-lint frontend-typecheck frontend-test frontend-build desktop-check
 	git diff --check

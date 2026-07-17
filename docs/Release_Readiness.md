@@ -6,10 +6,16 @@ release category. Failed quality, versions, migrations, sidecar, manifest, bundl
 evidence blocks an RC. Signing, notarization, clean-machine validation, critical security issues, and
 licensing issues block public release.
 
+Sprint 12B adds a clean-install readiness report for source-tree independence, first launch,
+application-data initialization, database bootstrap, migration, backup, rollback, reinstall,
+uninstall documentation, corrupt-state recovery, shutdown, orphan prevention, file workflows, and
+clean-profile UI coverage.
+
 Current evidence supports local RC construction with warnings. It does not support public release:
 
 - Apple Silicon macOS is the only built architecture.
-- Clean-machine and clean-user-profile testing is deferred to Sprint 12B.
+- Clean-profile local testing is validated by `make clean-install-test`; external clean-machine
+  validation remains unvalidated.
 - Signing and notarization are incomplete.
 - Complete third-party legal review is incomplete.
 - Real licensed provider validation is deferred to Sprint 12C.

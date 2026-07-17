@@ -24,5 +24,10 @@ are migrated without fabricated market-data seeds. Restore by closing the applic
 the failed database for diagnostics, verifying the backup checksum, and copying the backup to the
 configured database filename.
 
+Sprint 12B backup metadata includes source schema, target schema, checksum, size, creation time, and
+release version. Restore is a controlled workflow with explicit confirmation, checksum validation,
+current database backup where practical, atomic replacement, immutable recovery event, and restart
+requirement.
+
 Migration policies are automatic for the packaged RC and validate-only when explicitly selected for
 diagnostics. Downgrades are unsupported; committed migrations are immutable.

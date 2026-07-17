@@ -10,6 +10,7 @@ import shutil
 import sqlite3
 import stat
 from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
 
@@ -167,7 +168,14 @@ class MigrationManager:
         checksum = hashlib.sha256(backup.read_bytes()).hexdigest()
         _atomic_json(
             backup.with_suffix(f"{backup.suffix}.json"),
-            {"sha256": checksum, "source_revision": previous},
+            {
+                "created_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
+                "release_version": self.config.versions.application_version,
+                "sha256": checksum,
+                "size_bytes": backup.stat().st_size,
+                "source_revision": previous,
+                "target_revision": current,
+            },
         )
         return backup, checksum
 

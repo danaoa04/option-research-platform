@@ -16,6 +16,7 @@ from backend.release.config import (
 )
 from backend.release.manifest import (
     ReadinessStatus,
+    clean_install_readiness_report,
     create_manifest,
     default_readiness_report,
 )
@@ -138,3 +139,7 @@ def test_export_workspace_fixture_and_readiness_compatibility() -> None:
     assert report.release_candidate_ready is True
     assert report.public_release_ready is False
     assert any(item.status is ReadinessStatus.UNVALIDATED for item in report.categories)
+    clean_install = clean_install_readiness_report()
+    assert clean_install.release_candidate_ready is True
+    assert clean_install.public_release_ready is False
+    assert any(item.category == "source_tree_independence" for item in clean_install.categories)

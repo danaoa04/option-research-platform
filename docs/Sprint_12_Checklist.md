@@ -14,9 +14,13 @@
 
 ## Sprint 12B
 
-- [ ] Clean-machine installation and clean-profile initialization
-- [ ] Source-tree independence, upgrade from previous packaged build, rollback, uninstall/reinstall
-- [ ] User-facing installation and recovery troubleshooting
+- [x] Clean-profile initialization and source-tree independence evidence
+- [x] Fresh app-data and database bootstrap evidence
+- [x] Supported previous-version upgrade and backup evidence
+- [x] Recovery, rollback, corrupt-state, cache, and log evidence
+- [x] Uninstall, reinstall, retention, reset, and troubleshooting documentation
+- [ ] External clean-machine validation
+- [ ] Signing and notarization
 
 ## Sprint 12C
 

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 12B clean-profile/source-tree-independence validation, packaged upgrade and recovery
+  evidence commands, richer migration backup metadata, explicit restore/cache/log/reset helpers, and
+  installation, uninstall, recovery, and troubleshooting documentation.
+
 - Added Sprint 11F production-integration safety foundations: typed runtime modes and configuration,
   consolidated versioned HTTP transport, backend compatibility gating, workspace conflict/autosave
   primitives, adaptive polling, accessible command launcher, redacted diagnostics, restricted atomic

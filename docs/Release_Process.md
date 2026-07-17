@@ -26,6 +26,11 @@ Use `make release-check` for a dirty development audit, `make release-build` for
 development bundle, and `make rc-build` only from a clean tree. Artifacts are written under the
 Git-ignored `release-artifacts/` directory. Signing and notarization are not Sprint 12A claims.
 
+Sprint 12B adds `make clean-install-test`, `make upgrade-test`, and `make recovery-test`. These
+commands use disposable paths, copy or run packaged artifacts outside normal user data, and write
+evidence under `release-artifacts/clean-install/`, `release-artifacts/upgrade/`, and
+`release-artifacts/recovery/`.
+
 ## Semantic version boundaries
 
 - Application: SemVer, including `-rc.N` prereleases.

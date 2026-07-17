@@ -18,6 +18,11 @@ and packages Alembic migrations, release defaults, synthetic fixture metadata, a
 sidecar. `make release-build` creates an unsigned local bundle; `make rc-build` additionally enforces
 a clean tree. Release artifacts and evidence are local and Git-ignored.
 
+Sprint 12B validates clean-profile launch from a copied `.app`, source-tree independence, first-run
+application-data initialization, upgrade from a synthetic previous schema, recovery scenarios,
+reinstall with retained data, shutdown, and orphan prevention. External clean-machine validation,
+signing, and notarization remain unclaimed.
+
 ```mermaid
 sequenceDiagram
   participant T as Tauri

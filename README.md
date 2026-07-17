@@ -44,6 +44,15 @@ Release artifacts are local and Git-ignored. Sprint 12A does not claim signing, 
 clean-machine validation, Intel/Windows support, universal binaries, or licensed provider
 validation.
 
+Sprint 12B validation commands:
+
+1. `make clean-install-test`
+2. `make upgrade-test`
+3. `make recovery-test`
+
+These commands use disposable paths and write evidence under `release-artifacts/`. They validate
+local clean-profile behavior, not signed/notarized distribution or an external clean machine.
+
 ## Database Foundation
 
 The repository includes a production-oriented database foundation in `backend/database`:

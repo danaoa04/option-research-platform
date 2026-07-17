@@ -21,3 +21,7 @@ release-candidate, and production-release behavior with telemetry disabled in ev
 The packaged sidecar accepts only fixed startup arguments for host, API version, protocol version,
 profile, migration policy, application-data path, and fixture mode. Provider credentials remain
 outside the release configuration and are not required for Sprint 12A validation.
+
+Sprint 12B clean-profile tests redirect `HOME`, `TMPDIR`, app data, logs, cache, exports,
+workspaces, fixtures, and database state into disposable release-artifact paths. No test writes to
+the real user application-data directory.

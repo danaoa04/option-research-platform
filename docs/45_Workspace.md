@@ -73,3 +73,7 @@ Version 1 RC metadata declares workspace schema `1` as both the minimum and curr
 document schema. Diagnostic bundles include the workspace schema version, but no workspace payloads,
 credentials, full private paths, or licensed data. Workspace import/export behavior remains governed
 by the existing schema validator and desktop file-safety checks.
+
+Sprint 12B upgrade fixtures include representative saved workspace files and verify they are
+preserved through database migration. Incompatible future workspace schemas must be flagged rather
+than silently overwritten.
