@@ -110,3 +110,6 @@ Benchmark execution remains opt-in via RUN_OPT_IN_BENCHMARKS=1.
 ## Sprint 8A Portfolio Compatibility
 
 Portfolio workflows can consume strategy compatibility metadata (account types, lifecycle policies, roll policies, required data constraints).
+
+Sprint 12D adds deterministic small-tier portfolio benchmark evidence and keeps larger position-count
+stress tiers opt-in.

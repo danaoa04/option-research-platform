@@ -246,3 +246,12 @@ Sprint 8B boundaries:
   normalization, certification, comparison, and evidence-based readiness reports.
 - Standard tests remain offline and credential-free; live-provider validation is opt-in and requires
   explicit credentials and licence permission.
+
+## Sprint 12D - Performance Validation Foundation
+
+- Added deterministic performance workload profiles and small benchmark artifacts under
+  `release-artifacts/performance/`.
+- Added bounded chain pagination, payload-size limits, worker/grid guards, resumable workload
+  checkpoints, and performance readiness reporting.
+- Large stress and endurance tiers remain opt-in; unexecuted endurance should not be treated as
+  passed evidence.

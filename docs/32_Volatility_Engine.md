@@ -170,3 +170,7 @@ Synthetic fixture surfaces contain 15 explicit grid locations: 14 supplied IV va
 missing node. The frontend creates visual geometry for the 14 values only. Interpolated and
 extrapolated nodes are labelled, missing regions remain absent, and checksums are displayed in node
 details and catalogues.
+
+Sprint 12D adds a WebGL safety boundary: if the visible node count exceeds the configured runtime
+limit, the surface falls back to the accessible non-WebGL presentation instead of attempting an
+unbounded render.

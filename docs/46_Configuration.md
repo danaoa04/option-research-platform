@@ -30,3 +30,7 @@ Sprint 12C provider configuration records provider id, environment, dataset, sch
 scope, retry/timeout/rate-limit settings, cache/import policy, licensing classification, export
 policy, and credential references. Secret values are not valid configuration values; use environment
 or OS-secret references instead.
+
+Sprint 12D runtime limits include `webglNodeLimit` and `virtualizationThreshold`, and the
+performance harness assumes bounded page sizes, bounded worker counts, and explicit opt-in for heavy
+stress and endurance workloads.

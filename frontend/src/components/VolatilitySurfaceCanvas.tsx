@@ -10,11 +10,16 @@ type Props = {
 export function VolatilitySurfaceCanvas({ nodes, nodeLimit, onSelect }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [available, setAvailable] = useState(true);
-  const visible = nodes.filter((node) => node.iv !== null).slice(0, nodeLimit);
+  const visible = nodes.filter((node) => node.iv !== null);
+  const nodeLimitExceeded = visible.length > nodeLimit;
 
   useEffect(() => {
     const element = canvas.current;
     if (navigator.userAgent.includes("jsdom")) {
+      setAvailable(false);
+      return;
+    }
+    if (nodeLimitExceeded) {
       setAvailable(false);
       return;
     }
@@ -23,15 +28,21 @@ export function VolatilitySurfaceCanvas({ nodes, nodeLimit, onSelect }: Props) {
       setAvailable(false);
       return;
     }
+    setAvailable(true);
     gl.viewport(0, 0, element.width, element.height);
     gl.clearColor(0.025, 0.055, 0.1, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
-  }, [nodes]);
+    return () => {
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+    };
+  }, [nodeLimitExceeded, nodes]);
 
   if (!available) {
     return (
       <div className="surface-fallback" role="status">
-        WebGL is unavailable. The complete accessible node table remains available below.
+        {nodeLimitExceeded
+          ? `WebGL rendering is disabled for ${visible.length} nodes because the configured limit is ${nodeLimit}.`
+          : "WebGL is unavailable. The complete accessible node table remains available below."}
       </div>
     );
   }

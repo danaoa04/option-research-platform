@@ -33,3 +33,14 @@ Sprint 12C adds credential-free provider validation gates:
 
 Live provider tests are skipped unless `ORP_LIVE_PROVIDER_TESTS` is explicitly set with provider
 credentials and licence permission.
+
+Sprint 12D adds deterministic performance gates:
+
+- `make benchmark-small`
+- `make performance-check`
+
+Heavier performance suites remain opt-in:
+
+- `make benchmark-large`
+- `make stress-test`
+- `make endurance-test`

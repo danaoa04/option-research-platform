@@ -40,3 +40,7 @@ Sprint 12C deployment boundary: packaged and local release checks must not inclu
 licensed provider payloads, or unrestricted restricted-data exports. Provider credentials are
 presence/status checked only unless an explicit live-validation run is authorized outside the
 standard credential-free gates.
+
+Sprint 12D adds release-artifact performance evidence under `release-artifacts/performance/`.
+These measurements describe the local audited environment only and are used to block obvious
+regressions, not to promise universal runtime characteristics.

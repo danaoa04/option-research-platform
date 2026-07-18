@@ -897,3 +897,8 @@ flowchart LR
     Reports --> Store[(Institutional Research Artifacts)]
     Store --> Workspace
 ```
+
+Sprint 12D extends the core-engine validation boundary with synthetic workload profiles,
+deterministic performance budgets, bounded pagination/payload guards, resumable workload
+checkpoints, and readiness categories that separate measured, warning, blocked, and unvalidated
+areas.

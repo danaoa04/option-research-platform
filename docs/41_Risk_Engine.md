@@ -67,3 +67,6 @@ flowchart LR
 
 Remediation selection records a research preference only. There is no broker, order staging,
 routing, or execution capability in this workspace, and scenario results are never forecasts.
+
+Sprint 12D adds grid-size guards and performance-readiness reporting so very large scenario matrices
+can be bounded or rejected cleanly instead of growing without limit.

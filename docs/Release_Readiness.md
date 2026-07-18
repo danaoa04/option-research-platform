@@ -28,3 +28,7 @@ Sprint 12C keeps public provider readiness blocked until live validation, entitl
 licence review, provider-specific documentation, and restricted-export enforcement evidence exist.
 Fixture-only certification is useful release evidence for the validation layer, not proof of
 licensed provider correctness.
+
+Sprint 12D adds performance readiness categories for chain ingestion/querying, database, optimizer,
+portfolio, reports, WebGL, cancellation, crash recovery, endurance, and regression monitoring.
+Unexecuted endurance or large-stress tiers remain `unvalidated`.

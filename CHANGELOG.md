@@ -229,3 +229,13 @@ All notable changes to this project will be documented in this file.
   certification Make targets.
 - Live provider validation, licensed data review, signing/notarization, and public provider-readiness
   claims remain deferred until explicit evidence is available.
+
+## Sprint 12D performance and reliability foundation
+
+- Added a deterministic performance-validation layer with workload profiles, synthetic chain
+  generation, small benchmark artifacts, budget evaluation, regression comparison, bounded
+  pagination/payload/grid/worker guards, resumable workload checkpoints, and performance readiness
+  reporting.
+- Added `make benchmark-small`, `make benchmark-large`, `make performance-check`, `make stress-test`,
+  and `make endurance-test`.
+- Added performance summary/readiness API handlers and WebGL node-limit fallback/disposal coverage.

@@ -28,3 +28,12 @@ Provider setup troubleshooting:
 - Restricted/export-prohibited datasets should fail export with a policy error.
 - Live-provider tests should remain skipped unless explicit credentials and licence permission are
   supplied.
+
+Performance and scaling troubleshooting:
+
+- `make performance-check` should fail when a measured small-tier budget regresses beyond the
+  blocking threshold.
+- `make benchmark-small` writes artifacts to `release-artifacts/performance/`; missing files usually
+  mean the benchmark command did not complete.
+- WebGL-heavy views should fall back to the accessible table/status path when the configured node
+  limit is exceeded.

@@ -2,7 +2,7 @@ PYTHON ?= python3
 VENV ?= .venv
 RUST_REMAP_ENV = CARGO_ENCODED_RUSTFLAGS=$$(printf '%s\037%s' '--remap-path-prefix=$(CURDIR)=.' '--remap-path-prefix='$$HOME'=~')
 
-.PHONY: setup lint format test docs frontend-install frontend-lint frontend-typecheck frontend-test frontend-build frontend-e2e quality desktop-check desktop-build backend-sidecar sidecar-check version-check release-audit release-manifest bundle-check release-check release-build rc-build clean-install-test upgrade-test recovery-test provider-test data-import-test data-certification-test
+.PHONY: setup lint format test docs frontend-install frontend-lint frontend-typecheck frontend-test frontend-build frontend-e2e quality desktop-check desktop-build backend-sidecar sidecar-check version-check release-audit release-manifest bundle-check release-check release-build rc-build clean-install-test upgrade-test recovery-test provider-test data-import-test data-certification-test benchmark benchmark-small benchmark-large performance-check stress-test endurance-test
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -97,6 +97,23 @@ data-import-test:
 
 data-certification-test:
 	. $(VENV)/bin/activate && pytest backend/tests/test_provider_fixture_closure.py backend/tests/test_provider_validation.py
+
+benchmark: benchmark-small
+
+benchmark-small:
+	. $(VENV)/bin/activate && python -m scripts.benchmark_small
+
+benchmark-large:
+	. $(VENV)/bin/activate && RUN_OPT_IN_BENCHMARKS=1 python -m scripts.benchmark_small
+
+performance-check:
+	. $(VENV)/bin/activate && python -m scripts.performance_check
+
+stress-test:
+	. $(VENV)/bin/activate && RUN_OPT_IN_BENCHMARKS=1 python -m scripts.performance_check
+
+endurance-test:
+	@echo "Opt-in endurance testing remains environment-specific and is not executed by default."
 
 quality: lint test frontend-lint frontend-typecheck frontend-test frontend-build desktop-check
 	git diff --check

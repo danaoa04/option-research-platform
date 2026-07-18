@@ -39,3 +39,18 @@ Sprint 12D will focus on performance stress testing, large datasets, long-runnin
 backtests, high-volume chains, optimizer/WebGL scaling, profiling, and endurance
 reliability. Sprint 12C does not begin that stress work beyond targeted synthetic
 provider-validation measurements.
+
+## Sprint 12D
+
+- [x] Workload profiles, deterministic small benchmark harness, and performance budgets
+- [x] Synthetic large-chain generation, pagination, payload, worker, and grid guards
+- [x] Deterministic cancellation/resume checkpoint harness
+- [x] Performance artifacts and readiness report in `release-artifacts/performance/`
+- [x] API routes for performance summary and readiness
+- [x] WebGL limit fallback and disposal coverage
+- [ ] Opt-in large stress and representative endurance execution
+- [ ] Full frontend route timing and desktop endurance evidence
+
+Sprint 12E will focus on user documentation, tutorials, onboarding, support diagnostics, release
+notes, release-candidate usability testing, and final documentation validation. Sprint 12D does not
+begin signing, notarization, or public-release publication.

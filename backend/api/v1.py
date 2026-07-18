@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 from backend.data.provider_api import ProviderApiService, quality_snapshot
+from backend.performance import build_artifact_set, default_readiness_report, run_small_benchmarks
 from backend.release.migration import MigrationManager
 from backend.release.provenance import collect_provenance
 from fastapi import APIRouter
@@ -124,3 +125,14 @@ def provider_validation_demo(provider: str) -> dict[str, object]:
 @router.get("/providers/{provider}/readiness")
 def provider_readiness(provider: str) -> dict[str, object]:
     return envelope(provider_service.readiness_report(provider).data)
+
+
+@router.get("/performance/summary")
+def performance_summary() -> dict[str, object]:
+    measurements = run_small_benchmarks()
+    return envelope(build_artifact_set(measurements).benchmark_summary)
+
+
+@router.get("/performance/readiness")
+def performance_readiness() -> dict[str, object]:
+    return envelope(default_readiness_report(run_small_benchmarks()).serialize())

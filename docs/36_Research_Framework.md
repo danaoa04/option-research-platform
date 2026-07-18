@@ -172,3 +172,6 @@ Portfolio allocation and strategy-selection are added as a downstream determinis
 ## Sprint 8A Research Workflow Support
 
 Research workflows can now request canonical strategy payloads, validate leg structures, and persist reproducible strategy-definition artifacts.
+
+Sprint 12D adds deterministic small-tier performance evidence for optimization, serialization, and
+bounded workload execution while leaving large historical and endurance suites opt-in.

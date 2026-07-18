@@ -40,3 +40,14 @@ def test_compatibility_catalogue_marks_fixture_only_boundaries() -> None:
     assert by_domain["system"]["fixture_only"] is False
     assert by_domain["volatility"]["fixture_only"] is True
     assert by_domain["providers"]["authorization"] == "local-desktop-process"
+
+
+def test_performance_routes_serialize_summary_and_readiness() -> None:
+    summary = client.get("/v1/performance/summary")
+    readiness = client.get("/v1/performance/readiness")
+
+    assert summary.status_code == 200
+    assert readiness.status_code == 200
+    assert "benchmarks" in summary.json()["data"]
+    assert "categories" in readiness.json()["data"]
+    assert "release_candidate_ready" in readiness.json()["data"]
