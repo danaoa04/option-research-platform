@@ -37,3 +37,19 @@ Performance and scaling troubleshooting:
   mean the benchmark command did not complete.
 - WebGL-heavy views should fall back to the accessible table/status path when the configured node
   limit is exceeded.
+
+## Symptom guide
+
+- App will not launch: verify the app bundle is complete and review the sidecar
+  log.
+- Sidecar will not start: inspect `logs/sidecar.log`, `crash-state.json`, and
+  [Diagnostics](Diagnostics.md).
+- Provider authentication fails: confirm credential presence, entitlement, and
+  export-policy state without printing secrets.
+- Import fails: confirm the file is under an allowed root and matches a
+  supported schema.
+- Backtest or optimizer stalls: confirm the run remains fixture-backed and check
+  events and diagnostics before retrying.
+- 3D surface unavailable: use the table fallback and review WebGL status.
+- Export fails: verify the dataset classification permits the requested export.
+- Workspace cannot open: confirm the workspace schema version is supported.

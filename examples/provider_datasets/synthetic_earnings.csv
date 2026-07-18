@@ -1,0 +1,3 @@
+symbol,event_date,event_type,window,classification
+XYZ,2026-07-22,earnings,post_close,synthetic
+AAPL,2026-07-24,earnings,post_close,synthetic

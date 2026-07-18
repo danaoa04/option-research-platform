@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0",
+  "classification": "synthetic",
+  "licensed_data_included": false,
+  "provider_credentials_included": false,
+  "datasets": [
+    {
+      "id": "synthetic-options",
+      "path": "examples/provider_datasets/synthetic_options.csv",
+      "purpose": "option chain and baseline quotes",
+      "checksum": "sha256:62f78bfff750d21e05e4c66c105e149d65ddb64fb8d37db14f2367b312585976"
+    },
+    {
+      "id": "synthetic-bad-quotes",
+      "path": "examples/provider_datasets/synthetic_bad_quotes.csv",
+      "purpose": "invalid and quarantine examples",
+      "checksum": "sha256:dd0915dc27df41bee9ebb3167884111f878ce52e11e8db6aa31a3b2f17040f7e"
+    },
+    {
+      "id": "synthetic-equity-reference",
+      "path": "examples/provider_datasets/synthetic_equity_reference.csv",
+      "purpose": "underlying reference data",
+      "checksum": "sha256:fbed2c99b256d90f85cff34638c21d46c3f4c3316640fcaab49e88bda9219cd5"
+    },
+    {
+      "id": "synthetic-earnings",
+      "path": "examples/provider_datasets/synthetic_earnings.csv",
+      "purpose": "event metadata",
+      "checksum": "sha256:b8e54fe3d2f697b4e1cbbf7660259ce23e41c3913fa69f25fa175ecf1749796d"
+    },
+    {
+      "id": "synthetic-dividends",
+      "path": "examples/provider_datasets/synthetic_dividends.csv",
+      "purpose": "dividend metadata",
+      "checksum": "sha256:614dc3004aa5a439f6ee1ec2dd8da6eddd869c65e00d459d972494abe4cfb6ce"
+    },
+    {
+      "id": "synthetic-corporate-actions",
+      "path": "examples/provider_datasets/synthetic_corporate_actions.csv",
+      "purpose": "corporate action examples",
+      "checksum": "sha256:1ee89e15c5ace7409cfb8c191c5253a2988ba0be38abab699262b68718f393df"
+    },
+    {
+      "id": "synthetic-adjusted-contracts",
+      "path": "examples/provider_datasets/synthetic_adjusted_contracts.csv",
+      "purpose": "adjusted contract examples",
+      "checksum": "sha256:3085cc1995923c85215986c70e02fa9855b5876deb4b5e55c8b3c38e117e18bb"
+    },
+    {
+      "id": "synthetic-sparse-quotes",
+      "path": "examples/provider_datasets/synthetic_sparse_quotes.csv",
+      "purpose": "sparse data examples",
+      "checksum": "sha256:f8e6825cac59ae0f10d5633b8617ce3402f9194bd992e67c4cf49f0709fd4563"
+    }
+  ]
+}

@@ -32,3 +32,34 @@ licensed provider correctness.
 Sprint 12D adds performance readiness categories for chain ingestion/querying, database, optimizer,
 portfolio, reports, WebGL, cancellation, crash recovery, endurance, and regression monitoring.
 Unexecuted endurance or large-stress tiers remain `unvalidated`.
+
+## Documentation readiness model
+
+The release-candidate documentation model tracks:
+
+- installation docs;
+- onboarding;
+- strategy docs;
+- backtest docs;
+- optimizer docs;
+- risk docs;
+- replay docs;
+- volatility docs;
+- provider docs;
+- import docs;
+- troubleshooting;
+- recovery;
+- diagnostics;
+- examples;
+- accessibility;
+- known limitations;
+- release notes;
+- usability validation.
+
+Statuses remain one of:
+
+- `ready`
+- `ready_with_warnings`
+- `incomplete`
+- `blocked`
+- `unvalidated`

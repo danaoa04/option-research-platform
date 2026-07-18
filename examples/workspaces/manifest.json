@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "workspace_schema_version": 1,
+  "licensed_data_included": false,
+  "provider_credentials_included": false,
+  "workspaces": [
+    {
+      "id": "example-bull-put-spread",
+      "path": "examples/workspaces/bull-put-spread.orp-workspace",
+      "purpose": "Bull Put Spread Research",
+      "checksum": "sha256:f8f6b4b660fb10ad8298187914463142bdf99db81d8c5fbd4646f26430bc65d1"
+    },
+    {
+      "id": "example-iron-condor",
+      "path": "examples/workspaces/iron-condor.orp-workspace",
+      "purpose": "Iron Condor Research",
+      "checksum": "sha256:a8a7476ffa20f48265130e57c4408d34682c7b8faf3f897f13bb3040022a9376"
+    },
+    {
+      "id": "example-earnings-calendar",
+      "path": "examples/workspaces/earnings-calendar.orp-workspace",
+      "purpose": "Earnings Calendar Spread",
+      "checksum": "sha256:88a9317c69ec410bd261c56acbb575fc2eb6b48eb2a0d2b0bd21dc46f147b955"
+    },
+    {
+      "id": "example-pmcc-management",
+      "path": "examples/workspaces/pmcc-management.orp-workspace",
+      "purpose": "PMCC Management",
+      "checksum": "sha256:e47ae7665caeef15089e2d61a55404b202ca468d28bd89cca980efb4a1aeb0eb"
+    },
+    {
+      "id": "example-volatility-term-structure",
+      "path": "examples/workspaces/volatility-term-structure.orp-workspace",
+      "purpose": "Volatility Term Structure",
+      "checksum": "sha256:74819ef37de830d8c399658f24d8ead17983dc1fe730452d6394c82f316f4b01"
+    },
+    {
+      "id": "example-risk-scenario-analysis",
+      "path": "examples/workspaces/risk-scenario-analysis.orp-workspace",
+      "purpose": "Risk Scenario Analysis",
+      "checksum": "sha256:2939cbec4af651153cb8fca8dec34931dced1dbb9450191298b1ac309904a8b5"
+    },
+    {
+      "id": "example-replay-branch-comparison",
+      "path": "examples/workspaces/replay-branch-comparison.orp-workspace",
+      "purpose": "Replay Branch Comparison",
+      "checksum": "sha256:0cd5a90d8739e55ea153965ee17eda71bdad9dec42f1b85182bb5f7b9771c71c"
+    }
+  ]
+}

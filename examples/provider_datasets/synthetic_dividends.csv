@@ -1,0 +1,3 @@
+symbol,ex_date,pay_date,amount,currency
+SPY,2026-09-18,2026-09-30,1.62,USD
+MSFT,2026-08-14,2026-09-10,0.83,USD

@@ -1,0 +1,4 @@
+symbol,name,asset_type,currency,primary_exchange
+SPY,Synthetic Liquid ETF,etf,USD,ARCA
+XYZ,Synthetic Earnings Equity,equity,USD,NASDAQ
+SPX,Synthetic Cash Settled Index,index,USD,CBOE

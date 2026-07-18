@@ -1,0 +1,18 @@
+{
+  "workspaceId": "example-risk-scenario-analysis",
+  "workspaceType": "risk",
+  "schemaVersion": 1,
+  "version": 1,
+  "checksum": "sha256:example-risk-scenario-analysis",
+  "updatedAt": "2026-07-18T10:00:00Z",
+  "payload": {
+    "title": "Risk Scenario Analysis",
+    "tab": "scenarios",
+    "portfolioId": "portfolio-diversified-01",
+    "scenarioId": "scenario-down-vol-up",
+    "limitations": [
+      "Stress analysis only",
+      "Synthetic positions"
+    ]
+  }
+}

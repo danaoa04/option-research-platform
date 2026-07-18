@@ -1,0 +1,3 @@
+root,expiration,strike,option_type,multiplier,adjusted,deliverable_note
+XYZ,2026-10-16,50,call,100,false,standard contract
+XYZ1,2026-10-16,25,call,100,true,synthetic adjusted contract after split

@@ -1,0 +1,18 @@
+{
+  "workspaceId": "example-pmcc-management",
+  "workspaceType": "research",
+  "schemaVersion": 1,
+  "version": 1,
+  "checksum": "sha256:example-pmcc-management",
+  "updatedAt": "2026-07-18T10:00:00Z",
+  "payload": {
+    "title": "PMCC Management",
+    "dataset": "synthetic-dividends",
+    "tab": "validation",
+    "strategyId": "strategy-pmcc-demo",
+    "limitations": [
+      "Fixture workflow",
+      "No broker connectivity"
+    ]
+  }
+}

@@ -4,6 +4,8 @@ Data classifications are `synthetic`, `public`, `user_supplied`,
 `provider_derived`, `licensed`, `restricted`, `export_prohibited`,
 `derived_only`, and `unknown`.
 
+This document is a product-policy guide only and does not provide legal advice.
+
 Restricted and export-prohibited records are blocked from generic JSON, CSV,
 HTML, report, workspace, diagnostic, and cloud-sync outputs. Licensed and
 provider-derived records require redacted or derived-only exports unless a

@@ -1,0 +1,19 @@
+{
+  "workspaceId": "example-iron-condor",
+  "workspaceType": "strategy",
+  "schemaVersion": 1,
+  "version": 1,
+  "checksum": "sha256:example-iron-condor",
+  "updatedAt": "2026-07-18T10:00:00Z",
+  "payload": {
+    "title": "Iron Condor Research",
+    "underlying": "SPY",
+    "expiration": "2026-09-18",
+    "strategyTemplate": "iron-condor",
+    "dataset": "synthetic-options",
+    "limitations": [
+      "Synthetic fixture only",
+      "Not profitability evidence"
+    ]
+  }
+}

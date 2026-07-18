@@ -54,3 +54,17 @@ provider-validation measurements.
 Sprint 12E will focus on user documentation, tutorials, onboarding, support diagnostics, release
 notes, release-candidate usability testing, and final documentation validation. Sprint 12D does not
 begin signing, notarization, or public-release publication.
+
+## Sprint 12E
+
+- [x] User-facing documentation index and guide architecture
+- [x] Getting started, installation, quick start, and user-guide hubs
+- [x] Strategy, backtesting, optimization, portfolio, risk, replay, and
+  volatility guides
+- [x] Provider, import, certification, diagnostics, support, accessibility, and
+  limitations documentation
+- [x] Versioned synthetic example datasets and example workspaces
+- [x] Documentation, examples, and onboarding validation commands
+- [x] Release-notes and RC-testing documentation for `1.0.0-rc.1`
+- [ ] Signing and notarization
+- [ ] Public-release installation instructions

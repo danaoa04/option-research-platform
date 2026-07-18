@@ -1,0 +1,17 @@
+{
+  "workspaceId": "example-replay-branch-comparison",
+  "workspaceType": "replay",
+  "schemaVersion": 1,
+  "version": 1,
+  "checksum": "sha256:example-replay-branch-comparison",
+  "updatedAt": "2026-07-18T10:00:00Z",
+  "payload": {
+    "title": "Replay Branch Comparison",
+    "tab": "replay",
+    "sessionId": "replay-fixture-14",
+    "limitations": [
+      "Synthetic replay history",
+      "No execution pathway"
+    ]
+  }
+}

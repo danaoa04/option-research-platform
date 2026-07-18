@@ -1,0 +1,18 @@
+{
+  "workspaceId": "example-earnings-calendar",
+  "workspaceType": "research",
+  "schemaVersion": 1,
+  "version": 1,
+  "checksum": "sha256:example-earnings-calendar",
+  "updatedAt": "2026-07-18T10:00:00Z",
+  "payload": {
+    "title": "Earnings Calendar Spread",
+    "dataset": "synthetic-earnings",
+    "tab": "configure",
+    "strategyId": "strategy-calendar-v2",
+    "limitations": [
+      "Synthetic event metadata",
+      "Historical simulation only"
+    ]
+  }
+}

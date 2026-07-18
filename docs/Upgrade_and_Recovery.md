@@ -33,3 +33,13 @@ Commands:
   sidecar, verifies backup metadata, and writes `release-artifacts/upgrade/upgrade-evidence.json`.
 - `make recovery-test` validates corrupt/future/old/interrupted states, backup restore, log
   rotation, and cache cleanup in disposable directories.
+
+## Recovery ladder
+
+1. Restart the app.
+2. Retry in offline fixture mode.
+3. Clear cache or reset UI settings if the failure is non-destructive.
+4. Export workspaces and reports if the app is still reachable.
+5. Use a verified backup for database restore.
+6. Perform a full reset only after preserving evidence and understanding that it
+   is destructive.

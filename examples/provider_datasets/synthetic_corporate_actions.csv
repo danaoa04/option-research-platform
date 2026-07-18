@@ -1,0 +1,3 @@
+symbol,effective_date,action_type,ratio,notes
+XYZ,2026-10-01,split,2:1,synthetic forward split
+SPY,2026-09-18,cash_dividend,,synthetic dividend event

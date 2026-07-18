@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 12E user-facing release-candidate documentation, onboarding,
+  troubleshooting, support, example datasets/workspaces, glossary and
+  accessibility docs, plus documentation/examples/onboarding validation
+  commands.
+
 - Added Sprint 12C offline provider-validation foundation with conservative provider audit, typed
   provider configuration, credential-status reporting, licensed-data classifications, export
   enforcement, dataset manifests, lineage events, option normalization, validation, certification,

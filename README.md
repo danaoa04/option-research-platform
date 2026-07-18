@@ -3,7 +3,9 @@
 ## Vision
 
 
-Option Research Platform is a production-ready research and engineering foundation for quantitative options analysis, strategy development, backtesting, and experimentation.
+Option Research Platform is a production-ready research and engineering
+foundation for quantitative options analysis, strategy development,
+backtesting, and experimentation.
 
 ## Scope
 
@@ -31,6 +33,20 @@ Use the following workflow to get started:
 2. Install dependencies with `pip install -r requirements-dev.txt`.
 3. Run `make setup`, `make lint`, `make test`, and `make format`.
 
+## User documentation
+
+Version `1.0.0-rc.1` now includes a user-facing documentation layer for the
+local release candidate:
+
+- [Getting Started](docs/Getting_Started.md)
+- [Installation](docs/Installation.md)
+- [Quick Start](docs/Quick_Start.md)
+- [Provider Setup](docs/Provider_Setup.md)
+- [Backtesting Guide](docs/Backtesting_Guide.md)
+- [Volatility Guide](docs/Volatility_Guide.md)
+- [Troubleshooting](docs/Troubleshooting.md)
+- [Known Limitations](docs/Known_Limitations.md)
+
 ## Version 1 Release Candidate
 
 Sprint 12A introduces the unsigned Apple Silicon `1.0.0-rc.1` release foundation. The canonical
@@ -52,6 +68,12 @@ Sprint 12B validation commands:
 
 These commands use disposable paths and write evidence under `release-artifacts/`. They validate
 local clean-profile behavior, not signed/notarized distribution or an external clean machine.
+
+Sprint 12E adds documentation-specific validation:
+
+1. `make docs-check`
+2. `make examples-check`
+3. `make onboarding-check`
 
 ## Database Foundation
 
