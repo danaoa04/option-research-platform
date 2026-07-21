@@ -239,33 +239,46 @@ fn sidecar_path() -> Result<PathBuf, String> {
 
 fn start_sidecar(app: &tauri::AppHandle) -> Result<Child, String> {
     let binary = sidecar_path()?;
+    let executable_directory = binary
+        .parent()
+        .ok_or("Sidecar executable directory unavailable")?;
+    let provenance = executable_directory.join("../Resources/release/build-provenance.json");
     let app_data = app
         .path()
         .app_data_dir()
         .map_err(|_| "Application data directory unavailable")?;
     fs::create_dir_all(&app_data).map_err(|_| "Unable to prepare application data directory")?;
-    Command::new(binary)
-        .args([
-            "--host",
-            "127.0.0.1",
-            "--port",
-            &BACKEND_PORT.to_string(),
-            "--app-data",
-            app_data
+    let mut command = Command::new(binary);
+    command.args([
+        "--host",
+        "127.0.0.1",
+        "--port",
+        &BACKEND_PORT.to_string(),
+        "--app-data",
+        app_data
+            .to_str()
+            .ok_or("Application data path is invalid")?,
+        "--release-profile",
+        "release-candidate",
+        "--api-version",
+        "v1",
+        "--protocol-version",
+        "1",
+        "--parent-pid",
+        &std::process::id().to_string(),
+        "--migration-policy",
+        "automatic",
+        "--fixture-mode",
+    ]);
+    if provenance.is_file() {
+        command.args([
+            "--build-provenance",
+            provenance
                 .to_str()
-                .ok_or("Application data path is invalid")?,
-            "--release-profile",
-            "release-candidate",
-            "--api-version",
-            "v1",
-            "--protocol-version",
-            "1",
-            "--parent-pid",
-            &std::process::id().to_string(),
-            "--migration-policy",
-            "automatic",
-            "--fixture-mode",
-        ])
+                .ok_or("Build provenance path is invalid")?,
+        ]);
+    }
+    command
         .env_clear()
         .env("PATH", "/usr/bin:/bin")
         .stdin(Stdio::null())

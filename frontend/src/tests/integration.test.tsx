@@ -139,12 +139,15 @@ describe("production integration boundaries", () => {
       apiVersion: null,
       availableEndpoints: [],
       backendVersion: null,
+      buildProfile: null,
       checkedAt: "now",
+      gitCommit: null,
       migrationStatus: "unknown",
       missingOptionalEndpoints: [],
       mutationsAllowed: false,
       schemaVersion: null,
       state: "fixture_only_fallback",
+      targetArchitecture: null,
     });
     expect(JSON.stringify(bundle)).not.toContain("credential=");
     expect(bundle.frontend.version).toBe(releaseMetadata.applicationVersion);
@@ -159,6 +162,8 @@ describe("production integration boundaries", () => {
     expect(screen.getByText("release-candidate")).toBeInTheDocument();
     expect(screen.getByText("0022_provider_runtime_operations")).toBeInTheDocument();
     expect(screen.getByText("1.0.0")).toBeInTheDocument();
+    expect(screen.getByText("arm64")).toBeInTheDocument();
+    expect(screen.getByText("unsigned")).toBeInTheDocument();
   });
 
   it("opens the accessible command launcher via keyboard", () => {

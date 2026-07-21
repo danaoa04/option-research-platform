@@ -1,7 +1,7 @@
 # Installation
 
 Version `1.0.0-rc.1` is currently validated as an unsigned Apple Silicon macOS
-release-candidate artifact.
+release-candidate ZIP for internal evaluation.
 
 ## Current support status
 
@@ -9,6 +9,7 @@ release-candidate artifact.
 - Build state: unsigned.
 - Not notarized: yes; notarization remains incomplete.
 - Intel macOS, Windows, Linux, and universal binaries: unvalidated.
+- Distribution format: `.app` inside a versioned ZIP.
 
 ## What first launch does
 
@@ -34,6 +35,8 @@ Provider credentials are not required for offline fixture mode.
 ## macOS launch notes
 
 - Gatekeeper may warn because the build is unsigned.
+- Public distribution is blocked until Developer ID signing, notarization,
+  stapling, and Gatekeeper acceptance are actually validated.
 - Keep the app bundle intact; missing packaged resources can prevent startup.
 - Logs, diagnostics, exports, and workspaces live under the application-data
   directory, not in the source tree.
@@ -57,3 +60,8 @@ Use `make clean-install-test` to rebuild the unsigned local RC, copy it to an
 isolated install path, launch it under a disposable clean user profile, verify
 health and fixture mode, shut it down, and write evidence under
 `release-artifacts/clean-install/`.
+
+The release ZIP is named
+`option-research-platform-1.0.0-rc.1-macos-arm64.zip`. Preserve the complete
+`.app` while extracting or copying it. Signing instructions are in
+[macOS Signing and Notarization](Release_Signing_and_Notarization.md).

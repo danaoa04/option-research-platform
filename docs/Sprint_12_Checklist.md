@@ -68,3 +68,23 @@ begin signing, notarization, or public-release publication.
 - [x] Release-notes and RC-testing documentation for `1.0.0-rc.1`
 - [ ] Signing and notarization
 - [ ] Public-release installation instructions
+
+## Sprint 12F
+
+- [x] Canonical `1.0.0-rc.1` version retained and final release audit expanded
+- [x] Browser E2E command and machine-readable final evidence
+- [x] Packaged desktop launch, sidecar health, fixture, and shutdown evidence
+- [x] Hardened runtime and least-privilege entitlement audit
+- [x] Credential-safe Developer ID signing and `notarytool` workflows
+- [x] Versioned macOS arm64 ZIP, manifest, provenance, checksums, and draft release inventory
+- [x] Same-version reinstall validation with retained application data
+- [x] Manual-only CI release-candidate workflow without tag or public-release publication
+- [ ] Developer ID signing (blocked: no valid identity on the validation machine)
+- [ ] Notarization and stapling (blocked by signing credentials)
+- [ ] Gatekeeper acceptance (blocked by unsigned artifact)
+- [ ] Human-operated final desktop onboarding/dogfood evidence
+- [ ] External clean-machine validation and third-party legal review
+
+Sprint 12G, if pursued, is the Windows closure: x64 sidecar, Tauri Windows bundle, Windows icons,
+WebView2, app-data paths, Defender behavior, MSI/NSIS installation, code signing, clean Windows
+install, upgrade/reinstall, and release artifacts. Sprint 12F does not claim Windows support.

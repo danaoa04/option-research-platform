@@ -18,6 +18,7 @@ documentation for the platform.
 - [Troubleshooting](Troubleshooting.md)
 - [Known Limitations](Known_Limitations.md)
 - [Release Notes 1.0.0-rc.1](Release_Notes_1.0.0-rc.1.md)
+- [macOS Signing and Notarization](Release_Signing_and_Notarization.md)
 
 ## Sprint Checklists
 

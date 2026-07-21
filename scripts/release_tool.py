@@ -256,6 +256,7 @@ def bundle_check() -> None:
     required = {
         "Contents/Info.plist",
         "Contents/MacOS/orp-backend",
+        "Contents/Resources/icon.icns",
         "Contents/Resources/release/LICENSE",
         "Contents/Resources/release/Third_Party_Notices.md",
         "Contents/Resources/release/release-manifest.json",

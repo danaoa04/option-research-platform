@@ -28,6 +28,7 @@ REQUIRED_DOCS = [
     ROOT / "docs/Glossary.md",
     ROOT / "docs/Known_Limitations.md",
     ROOT / "docs/Release_Notes_1.0.0-rc.1.md",
+    ROOT / "docs/Release_Signing_and_Notarization.md",
     ROOT / "docs/RC_Testing.md",
     ROOT / "docs/Support.md",
 ]
@@ -43,12 +44,25 @@ REQUIRED_STRINGS = {
         "docs/Known_Limitations.md",
     ],
     ROOT / "docs/Installation.md": ["Apple Silicon", "unsigned", "notarized"],
-    ROOT / "docs/Release_Notes_1.0.0-rc.1.md": ["1.0.0-rc.1", "unsigned", "Apple Silicon"],
+    ROOT / "docs/Release_Notes_1.0.0-rc.1.md": [
+        "1.0.0-rc.1",
+        "unsigned",
+        "Apple Silicon",
+        "option-research-platform-1.0.0-rc.1-macos-arm64.zip",
+        "Gatekeeper",
+    ],
     ROOT / "docs/Known_Limitations.md": [
         "Windows",
         "Linux",
         "broker connectivity",
         "order execution",
+        "External clean-machine",
+    ],
+    ROOT / "docs/Release_Signing_and_Notarization.md": [
+        "Developer ID Application",
+        "notarytool",
+        "hardened runtime",
+        "no non-default entitlements",
     ],
     ROOT / "docs/Support.md": [
         "App version:",
@@ -101,9 +115,7 @@ def collect_errors() -> list[str]:
             href = match.group(1)
             target = _resolve_markdown_link(path, href)
             if target is not None and not target.exists():
-                errors.append(
-                    f"Broken link in {path.relative_to(ROOT)}: {href}"
-                )
+                errors.append(f"Broken link in {path.relative_to(ROOT)}: {href}")
 
     return errors
 

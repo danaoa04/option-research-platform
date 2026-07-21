@@ -5,5 +5,7 @@ export const releaseMetadata = {
   fixtureVersion: "1.0.0",
   releaseProfile: "release-candidate",
   sidecarProtocolVersion: "1",
+  signingStatus: "unsigned",
+  targetArchitecture: "arm64",
   workspaceSchemaVersion: 1,
 } as const;

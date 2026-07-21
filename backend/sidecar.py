@@ -32,6 +32,7 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("--api-version", default="v1")
     value.add_argument("--protocol-version", default="1")
     value.add_argument("--parent-pid", type=int)
+    value.add_argument("--build-provenance", type=Path)
     value.add_argument(
         "--migration-policy",
         choices=("automatic", "validate-only"),
@@ -49,6 +50,23 @@ def prepare_app_data(path: Path | None) -> Path:
     os.environ["ORP_APP_DATA"] = str(root)
     os.environ["ORP_DATABASE_PATH"] = str(initialized.database)
     return root
+
+
+def configure_build_provenance(path: Path | None) -> None:
+    if path is None:
+        return
+    if not path.is_absolute():
+        parser().error("--build-provenance must be an absolute path")
+    if path.is_symlink():
+        parser().error("--build-provenance is unsafe")
+    metadata = path.resolve()
+    try:
+        details = metadata.stat()
+    except OSError:
+        parser().error("--build-provenance is unavailable")
+    if not metadata.is_file() or details.st_size > 64 * 1024:
+        parser().error("--build-provenance is unsafe")
+    os.environ["ORP_BUILD_PROVENANCE_PATH"] = str(metadata)
 
 
 def configure_logging(root: Path) -> None:
@@ -108,6 +126,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if arguments.protocol_version != release.versions.sidecar_protocol_version:
         parser().error("--protocol-version is incompatible with this sidecar")
     root = prepare_app_data(arguments.app_data)
+    configure_build_provenance(arguments.build_provenance)
     configure_logging(root)
     migration = MigrationManager(root / release.database_filename)
     try:

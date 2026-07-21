@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "frontend/src-tauri/target/release/bundle/macos/Option Research Platform.app"
 EXECUTABLE = APP / "Contents/MacOS/option-research-platform-desktop"
 EVIDENCE = ROOT / "release-artifacts/smoke-test-evidence.json"
+MANIFEST = APP / "Contents/Resources/release/release-manifest.json"
 
 
 def port_closed(port: int) -> bool:
@@ -66,15 +67,25 @@ def main() -> int:
         time.sleep(0.1)
     else:
         raise SystemExit("Packaged sidecar remained after application shutdown")
+    if not MANIFEST.is_file():
+        raise SystemExit("Packaged release manifest is missing")
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    provenance = payload.get("build_provenance")
+    expected_provenance = manifest.get("build_provenance")
+    if not isinstance(provenance, dict) or provenance != expected_provenance:
+        raise SystemExit("Packaged health provenance does not match the release manifest")
     EVIDENCE.parent.mkdir(exist_ok=True)
     EVIDENCE.write_text(
         json.dumps(
             {
                 "application_version": payload["version"],
                 "api_version": payload["api_version"],
+                "git_commit": provenance["git_commit"],
                 "migration_status": payload["migration_status"],
+                "release_profile": provenance["build_profile"],
                 "sidecar_shutdown": "confirmed",
                 "status": "passed",
+                "target_architecture": provenance["target_architecture"],
             },
             indent=2,
             sort_keys=True,

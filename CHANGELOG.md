@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Added Sprint 12F macOS release-candidate closure tooling: hardened-runtime
+  configuration, credential-safe signing/notarization commands, final browser
+  and packaged smoke evidence, reinstall validation, security/licence scans,
+  versioned ZIP/checksum/provenance generation, draft GitHub release metadata,
+  manual release CI, and explicit unsigned-public-release blockers.
+
 - Added Sprint 12E user-facing release-candidate documentation, onboarding,
   troubleshooting, support, example datasets/workspaces, glossary and
   accessibility docs, plus documentation/examples/onboarding validation

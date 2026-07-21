@@ -19,12 +19,17 @@ flowchart LR
   D --> E[Tauri macOS bundle]
   E --> F[manifest and checksums]
   F --> G[bundle inspection]
-  G --> H[packaged smoke evidence]
+  G --> H[browser and packaged smoke evidence]
+  H --> I[optional Developer ID signing]
+  I --> J[optional notarization and stapling]
+  J --> K[versioned ZIP and final checksums]
 ```
 
 Use `make release-check` for a dirty development audit, `make release-build` for a local unsigned
 development bundle, and `make rc-build` only from a clean tree. Artifacts are written under the
-Git-ignored `release-artifacts/` directory. Signing and notarization are not Sprint 12A claims.
+Git-ignored `release-artifacts/` directory. `make release-finalize` prepares the deterministic-name
+ZIP, final manifest, SHA-256 checksums, provenance, readiness evidence, and draft GitHub release
+inventory. See [macOS Signing and Notarization](Release_Signing_and_Notarization.md).
 
 Sprint 12B adds `make clean-install-test`, `make upgrade-test`, and `make recovery-test`. These
 commands use disposable paths, copy or run packaged artifacts outside normal user data, and write
@@ -41,5 +46,7 @@ evidence under `release-artifacts/clean-install/`, `release-artifacts/upgrade/`,
 - Fixtures: synthetic dataset/content version.
 - Sidecar protocol: desktop-to-backend startup and readiness contract version.
 
-Dependency inputs are locked by Python, npm, and Cargo lock files. A public release remains blocked
-until clean-machine testing, licence review, signing, and notarization complete.
+Dependency inputs are locked by Python, npm, and Cargo lock files. An internal RC may remain
+unsigned only when the limitation is explicit. Public macOS release remains blocked until external
+clean-machine testing, licence review, Developer ID signing, notarization, stapling, and Gatekeeper
+acceptance complete.

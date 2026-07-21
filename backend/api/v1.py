@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -34,6 +35,41 @@ CAPABILITIES = (
 )
 
 
+def runtime_provenance() -> dict[str, str | bool]:
+    path_value = os.environ.get("ORP_BUILD_PROVENANCE_PATH")
+    if path_value:
+        path = Path(path_value)
+        try:
+            if path.is_file() and not path.is_symlink() and path.stat().st_size <= 64 * 1024:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+                if isinstance(payload, dict):
+                    allowed = {
+                        "api_version",
+                        "application_version",
+                        "build_profile",
+                        "build_timestamp",
+                        "database_schema_version",
+                        "dirty",
+                        "fixture_version",
+                        "git_branch",
+                        "git_commit",
+                        "node_version",
+                        "python_version",
+                        "rust_version",
+                        "sidecar_protocol_version",
+                        "target_architecture",
+                        "target_platform",
+                    }
+                    return {
+                        key: value
+                        for key, value in payload.items()
+                        if key in allowed and isinstance(value, str | bool)
+                    }
+        except OSError, json.JSONDecodeError:
+            pass
+    return collect_provenance(os.environ.get("ORP_RELEASE_PROFILE", "development")).serialize()
+
+
 def envelope(data: object) -> dict[str, object]:
     return ApiEnvelope(data).serialize()
 
@@ -45,9 +81,7 @@ def health() -> dict[str, object]:
     migration_status = (
         MigrationManager(Path(database_path)).status().value if database_path else "not_configured"
     )
-    provenance = collect_provenance(
-        os.environ.get("ORP_RELEASE_PROFILE", "development")
-    ).serialize()
+    provenance = runtime_provenance()
     return {
         "api_version": API_VERSION,
         "backend_build": BUILD_IDENTIFIER,

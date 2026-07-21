@@ -29,3 +29,24 @@ For each task, record:
 - whether documentation was needed;
 - blockers;
 - whether the issue reproduces in offline mode.
+
+Automation writes `final-e2e.json` and `desktop-smoke.json`; it does not count as
+a human dogfood observation. Record human results in
+`manual-rc-validation.json` only after actually completing the checklist.
+
+## Final RC commands
+
+```text
+make final-e2e
+make final-desktop-smoke
+make clean-install-test
+make upgrade-test
+make reinstall-test
+make recovery-test
+make release-finalize
+```
+
+The current desktop harness validates packaged launch, sidecar health, fixture
+support, and shutdown. Native file dialogs, a human-observed report export, and
+workspace reopen through the packaged UI remain unvalidated until manually
+recorded.

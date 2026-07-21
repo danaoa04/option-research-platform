@@ -13,6 +13,8 @@ are project-created synthetic records, contain no licensed market data, credenti
 data, and use the project licence. No separate WebGL library is bundled; rendering uses the browser
 WebGL API.
 
-Before public release, generate complete dependency licence reports on each target platform and
-have counsel review attribution, redistribution, PyInstaller bootloader, WebKit, and native system
-framework obligations.
+Sprint 12F validates that the notice, Python locks, npm lock, Cargo lock, project licence, and
+synthetic-fixture classification are present. This remains an engineering inventory. Before public
+release, generate complete dependency licence reports on each target platform and have counsel
+review attribution, redistribution, PyInstaller bootloader, WebKit, and native system framework
+obligations.

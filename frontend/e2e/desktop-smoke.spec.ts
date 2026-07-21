@@ -33,13 +33,14 @@ test("documented offline quick-start flow remains navigable", async ({ page }) =
   await page.getByRole("link", { name: "Backtests" }).click();
   await expect(page.getByRole("heading", { name: "Runs" })).toBeVisible();
   await page.getByRole("button", { name: "configure" }).click();
-  await expect(page.getByText("Strategy & data")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Strategy & data" })).toBeVisible();
+  await page.getByRole("button", { name: "Review & run" }).click();
   await page.getByRole("button", { name: "Validate configuration" }).click();
-  await expect(page.getByText("valid_with_warnings")).toBeVisible();
+  await expect(page.getByText("ready with warnings")).toBeVisible();
 
   await page.getByRole("link", { name: "Risk Lab" }).click();
   await expect(page.getByRole("heading", { name: "Scenarios" })).toBeVisible();
-  await page.getByText("deterministic scenario is synthetic and is not a forecast").scrollIntoViewIfNeeded();
+  await page.getByText(/Deterministic shock, not a forecast/).scrollIntoViewIfNeeded();
 
   await page.getByRole("button", { name: "reports" }).click();
   await page.getByRole("button", { name: "Preview report" }).click();
@@ -47,4 +48,30 @@ test("documented offline quick-start flow remains navigable", async ({ page }) =
 
   await page.getByRole("link", { name: "Diagnostics" }).click();
   await expect(page.getByText("release-candidate")).toBeVisible();
+});
+
+test("provider, research, replay, and release diagnostics remain available", async ({ page }) => {
+  await page.goto("/");
+
+  await page.getByRole("link", { name: "Data", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Data providers" })).toBeVisible();
+  await expect(page.getByText("ORATS", { exact: true })).toBeVisible();
+
+  await page.getByRole("link", { name: "Backtests" }).click();
+  await page.getByRole("button", { name: "results" }).click();
+  await expect(page.getByRole("heading", { name: "Results" })).toBeVisible();
+  await expect(page.getByRole("table", { name: "Equity curve tabular alternative" }))
+    .toContainText("$112,400");
+
+  await page.getByRole("link", { name: "Replay" }).click();
+  await expect(page.getByRole("heading", { name: "Replay", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Replay session replay-fixture-14" }))
+    .toBeVisible();
+
+  await page.getByRole("link", { name: "Diagnostics" }).click();
+  await expect(page.getByText("1.0.0-rc.1")).toBeVisible();
+  await expect(page.getByText("arm64")).toBeVisible();
+  await expect(page.getByText("unsigned", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Generate diagnostic preview" }).click();
+  await expect(page.locator("pre.diagnostic-preview")).toContainText('"schemaVersion": 1');
 });

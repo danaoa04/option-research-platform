@@ -75,6 +75,21 @@ Sprint 12E adds documentation-specific validation:
 2. `make examples-check`
 3. `make onboarding-check`
 
+Sprint 12F adds macOS RC closure commands:
+
+1. `make final-e2e`
+2. `make final-desktop-smoke`
+3. `make reinstall-test`
+4. `make signing-status`
+5. `make release-finalize`
+
+The finalizer prepares a versioned Apple Silicon ZIP, SHA-256 checksums,
+provenance, release manifest, readiness evidence, and draft GitHub release
+inventory. The current local artifact remains unsigned and not notarized;
+public macOS distribution is blocked until Developer ID signing, notarization,
+stapling, Gatekeeper acceptance, external clean-machine validation, and licence
+review are actually completed.
+
 ## Database Foundation
 
 The repository includes a production-oriented database foundation in `backend/database`:

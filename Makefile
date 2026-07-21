@@ -1,8 +1,9 @@
 PYTHON ?= python3
 VENV ?= .venv
+RELEASE_PROFILE ?= development
 RUST_REMAP_ENV = CARGO_ENCODED_RUSTFLAGS=$$(printf '%s\037%s' '--remap-path-prefix=$(CURDIR)=.' '--remap-path-prefix='$$HOME'=~')
 
-.PHONY: setup lint format test docs docs-check examples-check onboarding-check frontend-install frontend-lint frontend-typecheck frontend-test frontend-build frontend-e2e quality desktop-check desktop-build backend-sidecar sidecar-check version-check release-audit release-manifest bundle-check release-check release-build rc-build clean-install-test upgrade-test recovery-test provider-test data-import-test data-certification-test benchmark benchmark-small benchmark-large performance-check stress-test endurance-test
+.PHONY: setup lint format test docs docs-check examples-check onboarding-check frontend-install frontend-lint frontend-typecheck frontend-test frontend-build frontend-e2e quality desktop-check desktop-build backend-sidecar sidecar-check version-check release-audit release-manifest bundle-check release-check release-build rc-build final-e2e final-desktop-smoke signing-status sign-rc notarize-rc release-finalize reinstall-test clean-install-test upgrade-test recovery-test provider-test data-import-test data-certification-test benchmark benchmark-small benchmark-large performance-check stress-test endurance-test
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -81,19 +82,41 @@ release-check: release-audit
 
 release-build: quality backend-sidecar
 	cd frontend && $(RUST_REMAP_ENV) npm exec tauri build -- --bundles app
-	. $(VENV)/bin/activate && python -m scripts.release_tool manifest --profile development
+	. $(VENV)/bin/activate && python -m scripts.release_tool manifest --profile $(RELEASE_PROFILE)
 	. $(VENV)/bin/activate && python -m scripts.release_tool bundle-check
 	. $(VENV)/bin/activate && python -m scripts.package_smoke
 
 rc-build:
 	. $(VENV)/bin/activate && python -m scripts.release_tool policy --profile release-candidate
-	$(MAKE) release-build
+	. $(VENV)/bin/activate && python -m scripts.release_finalize source-policy
+	$(MAKE) RELEASE_PROFILE=release-candidate release-build
+
+final-e2e:
+	. $(VENV)/bin/activate && python -m scripts.release_finalize browser-e2e
+
+final-desktop-smoke: release-build
+	. $(VENV)/bin/activate && python -m scripts.release_finalize desktop-smoke
+
+signing-status:
+	. $(VENV)/bin/activate && python -m scripts.release_finalize signing-status
+
+sign-rc:
+	. $(VENV)/bin/activate && python -m scripts.release_finalize sign
+
+notarize-rc:
+	. $(VENV)/bin/activate && python -m scripts.release_finalize notarize
+
+release-finalize:
+	. $(VENV)/bin/activate && python -m scripts.release_finalize finalize
 
 clean-install-test: release-build
 	. $(VENV)/bin/activate && python -m scripts.clean_install_test
 
 upgrade-test: backend-sidecar
 	. $(VENV)/bin/activate && python -m scripts.upgrade_test
+
+reinstall-test: release-build
+	. $(VENV)/bin/activate && python -m scripts.reinstall_test
 
 recovery-test:
 	. $(VENV)/bin/activate && python -m scripts.recovery_test

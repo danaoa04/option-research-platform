@@ -52,16 +52,17 @@ def wait_for_health() -> tuple[dict[str, object], float]:
 def launch_app(
     executable: Path,
     home: Path,
+    artifacts_root: Path = ARTIFACTS,
 ) -> tuple[subprocess.Popen[str], dict[str, object], float]:
     environment = {
         "HOME": str(home),
         "PATH": "/usr/bin:/bin",
-        "TMPDIR": str(ARTIFACTS / "tmp"),
+        "TMPDIR": str(artifacts_root / "tmp"),
     }
     Path(environment["TMPDIR"]).mkdir(parents=True, exist_ok=True)
     process = subprocess.Popen(
         [str(executable)],
-        cwd=str(ARTIFACTS),
+        cwd=str(artifacts_root),
         env=environment,
         stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,
